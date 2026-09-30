@@ -114,6 +114,25 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
+          <Section title="Checkbox" align="block">
+<div className="flex flex-col gap-1 p-4">
+  <QUI.Checkbox label="Unchecked" />
+  <QUI.Checkbox label="Checked" defaultChecked />
+  <QUI.Checkbox label="Indeterminate" indeterminate />
+  <QUI.Checkbox label="Disabled" disabled />
+  <QUI.Checkbox label="Disabled checked" disabled defaultChecked />
+</div>
+          </Section>
+          <Section title="CircularProgress" align="row">
+<div className="flex items-center gap-4 p-4">
+  <QUI.CircularProgress size="sm" value={40} />
+  <QUI.CircularProgress size="md" value={70} />
+  <QUI.CircularProgress size="md" value={70} variant="success" />
+  <QUI.CircularProgress size="md" value={70} variant="warning" />
+  <QUI.CircularProgress size="md" value={70} variant="danger" />
+  <QUI.CircularProgress size="md" indeterminate />
+</div>
+          </Section>
           <Section title="Icon" align="row">
 <div className="flex items-center gap-3 [--node-size:20px]">
   <QUI.Icon icon={Icons.Settings} tint="secondary" />
@@ -144,6 +163,32 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
+          <Section title="Input" align="block">
+<div className="flex flex-col gap-3 p-4">
+  <QUI.Input placeholder="Search…" size="md" startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />} />
+  <QUI.Input placeholder="Large" size="lg" />
+  <QUI.Input placeholder="Extra large" size="xl" />
+  <QUI.Input placeholder="2xl" size="2xl" />
+  <QUI.Input placeholder="Disabled" disabled />
+</div>
+          </Section>
+          <Section title="LinearProgress" align="block">
+<div className="flex flex-col gap-4 p-4">
+  <QUI.LinearProgress label="Uploading" value={62} />
+  <QUI.LinearProgress size="sm" variant="success" value={100} />
+  <QUI.LinearProgress variant="warning" value={40} />
+  <QUI.LinearProgress variant="danger" value={15} />
+  <QUI.LinearProgress indeterminate />
+</div>
+          </Section>
+          <Section title="NumberField" align="row">
+<div className="flex items-center gap-4 p-4">
+  <QUI.NumberField size="sm" aria-label="Quantity" defaultValue={1} min={0} max={10} />
+  <QUI.NumberField size="md" aria-label="Quantity" defaultValue={1} min={0} max={10} />
+  <QUI.NumberField size="lg" aria-label="Quantity" defaultValue={1} min={0} max={10} />
+  <QUI.NumberField size="md" aria-label="Quantity" defaultValue={1} disabled />
+</div>
+          </Section>
           <Section title="Pill" align="block">
 <div className="flex flex-col gap-4 p-4">
   <div className="flex flex-wrap items-center gap-3">
@@ -163,6 +208,21 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
+          <Section title="Radio" align="row">
+<QUI.RadioGroup defaultValue="a" className="flex-row gap-4">
+  <QUI.Radio value="a" aria-label="Option A" />
+  <QUI.Radio value="b" aria-label="Option B" />
+  <QUI.Radio value="c" aria-label="Option C (disabled)" disabled />
+</QUI.RadioGroup>
+          </Section>
+          <Section title="RadioGroup" align="block">
+<QUI.RadioGroup defaultValue="md" className="p-4">
+  <QUI.RadioOption value="sm" label="Small" />
+  <QUI.RadioOption value="md" label="Medium" />
+  <QUI.RadioOption value="lg" label="Large" />
+  <QUI.RadioOption value="xl" label="Extra large (disabled)" disabled />
+</QUI.RadioGroup>
+          </Section>
           <Section title="Separator" align="row">
 <div className="flex w-full flex-col gap-3">
   <span className="text-sm text-secondary">Above</span>
@@ -175,9 +235,45 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
+          <Section title="Skeleton" align="block">
+<div className="flex flex-col gap-6 p-4">
+  <QUI.Skeleton aria-label="Loading card" inlineSize="16rem">
+    <QUI.SkeletonItem blockSize="1.25rem" />
+    <QUI.SkeletonItem blockSize="0.875rem" inlineSize="10rem" />
+  </QUI.Skeleton>
+  <QUI.Skeleton aria-label="Loading profile" layout="row">
+    <QUI.SkeletonItem variant="circle" inlineSize="2.5rem" blockSize="2.5rem" />
+    <QUI.Skeleton aria-label="" inlineSize="12rem">
+      <QUI.SkeletonItem blockSize="1rem" />
+      <QUI.SkeletonItem blockSize="0.875rem" inlineSize="8rem" />
+    </QUI.Skeleton>
+  </QUI.Skeleton>
+</div>
+          </Section>
           <Section title="Spinner" align="row">
 <div className="[--node-size:20px] text-icon-secondary">
   <QUI.Spinner />
+</div>
+          </Section>
+          <Section title="Switch" align="block">
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex items-center gap-3">
+    <QUI.Switch size="sm" />
+    <QUI.Switch size="md" />
+    <QUI.Switch size="lg" />
+  </div>
+  <div className="flex items-center gap-3">
+    <QUI.Switch defaultChecked />
+    <QUI.Switch disabled />
+    <QUI.Switch disabled defaultChecked />
+  </div>
+</div>
+          </Section>
+          <Section title="TextArea" align="block">
+<div className="flex flex-col gap-3 p-4">
+  <QUI.TextArea placeholder="Write something…" size="md" />
+  <QUI.TextArea placeholder="Auto-resizing, up to 6 rows" autoResize maxRows={6} />
+  <QUI.TextArea placeholder="Disabled" disabled />
 </div>
           </Section>
           <Section title="Tooltip" align="row">
