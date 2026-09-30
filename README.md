@@ -37,21 +37,18 @@ qui/
 
 ## Status
 
-**Phase 1 (atoms) is complete** — 20 components: `Button`, `IconButton`, `Pill` (button-family
-controls), `Badge`, `Avatar`/`AvatarGroup`, `Tooltip`, `Separator`, `Spinner`, `Icon`,
-`Input`, `TextArea`, `NumberField`, `Checkbox`, `Radio`/`RadioGroup`, `Switch`, `Skeleton`,
-`CircularProgress`, `LinearProgress`, plus `QuiProvider` (direction + tooltip context). A
-components gallery (`apps/playground`, auto-generated from `__DOC` comments in each component's
-source — see below) renders all of them.
+**Phases 1 and 2 are complete** — 35 components total. A components gallery (`apps/playground`,
+auto-generated from `__DOC` comments in each component's source — see below) renders all of them,
+each with a props panel listing its options (from a matching `__PROPS` comment).
 
 Propel ships ~60 components; the rest are being ported incrementally, phased roughly:
 
 1. **Atoms** — done ✅: Button, IconButton, Badge, Pill, Avatar(+Group), Tooltip, Separator,
    Spinner, Icon, Input, TextArea, NumberField, Checkbox, Radio(+Group), Switch, Skeleton,
    CircularProgress, LinearProgress
-2. **Molecules** (next): Select/Combobox/Autocomplete, Menu/ContextMenu, Popover,
-   Dialog/AlertDialog/Drawer, Tabs, Accordion, Breadcrumb, Pagination, Toast, Field wrappers
-3. **Organisms**: Table, NavigationMenu, Toolbar, Calendar, Charts, virtualized List, Banner
+2. **Molecules** — done ✅: Field, Breadcrumb, Pagination, Tabs, Accordion, Popover, Menu,
+   ContextMenu, Select, Combobox, Autocomplete, Dialog, AlertDialog, Drawer, Toast
+3. **Organisms** (next): Table, NavigationMenu, Toolbar, Calendar, Charts, virtualized List, Banner
 
 ## Refreshing tokens from a newer propel release
 
@@ -101,13 +98,19 @@ Not yet pushed — no GitHub remote configured. To push to `https://github.com/R
   hostnames aren't blocked by Vite's host check.
 - Each demo can also show a props panel: add a `__PROPS {...} PROPS__` comment next to the
   `__DOC` block, a JSON object mapping prop name → either an array of accepted literal values or
-  the string `"boolean"`. The generator renders it as a table beside the demo. All 20 current
-  atoms have one; add one to every new component going forward.
+  the string `"boolean"`. The generator renders it as a table beside the demo. All 35 current
+  components have one; add one to every new component going forward. A file defining several
+  components (e.g. `Menu.tsx`) can key its block with `"ComponentName.propName"` when one flat
+  namespace would be ambiguous — see `Menu.tsx`'s `__PROPS` block for the pattern.
 
 **Known not yet done**:
-- Phase 1 (atoms) is complete. Next up is Phase 2 (molecules): Select/Combobox/Autocomplete,
-  Menu/ContextMenu, Popover, Dialog/AlertDialog/Drawer, Tabs, Accordion, Breadcrumb, Pagination,
-  Toast, Field wrappers. Then Phase 3 (organisms).
+- Phases 1 and 2 (atoms + molecules) are complete. Next up is Phase 3 (organisms): Table,
+  NavigationMenu, Toolbar, Calendar, Charts, virtualized List, Banner.
+- The 15 molecules (`Field`, `Breadcrumb`, `Pagination`, `Tabs`, `Accordion`, `Popover`, `Menu`,
+  `ContextMenu`, `Select`, `Combobox`, `Autocomplete`, `Dialog`, `AlertDialog`, `Drawer`, `Toast`)
+  were built via 5 parallel subagents plus `Popover` built directly — each is solid (typechecked,
+  built, and click-verified with zero console errors in Chrome), but they haven't had the same
+  multi-session real-world usage the atoms have. Watch for rough edges as they get used.
 - `@makeplane/propel`'s compiled npm package (`npm pack @makeplane/propel && tar xzf ...`) is the
   fastest way to check a component's real class composition/behavior before writing qui's own
   version — e.g. `dist/elements/<name>/variants.js` for the cva shape, `dist/components/<name>/
