@@ -91,3 +91,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 Button.displayName = "Button";
+
+/* __DOC_BLOCK
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Button variant="primary" label="Primary" />
+    <QUI.Button variant="secondary" label="Secondary" />
+    <QUI.Button variant="tertiary" label="Tertiary" />
+    <QUI.Button variant="ghost" label="Ghost" />
+    <QUI.Button variant="danger" label="Danger" />
+    <QUI.Button variant="danger-outline" label="Danger outline" />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Button size="xs" label="xs" />
+    <QUI.Button size="sm" label="sm" />
+    <QUI.Button size="md" label="md" />
+    <QUI.Button size="lg" label="lg" />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Button label="Loading" loading />
+    <QUI.Button label="Disabled" disabled />
+    <QUI.Button variant="secondary" label="Loading" loading />
+  </div>
+</div>
+DOC__ */

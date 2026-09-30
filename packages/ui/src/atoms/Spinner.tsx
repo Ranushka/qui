@@ -48,3 +48,9 @@ export function Spinner({ active = true, children, className, ...props }: Spinne
     </span>
   );
 }
+
+/* __DOC
+<div className="[--node-size:20px] text-icon-secondary">
+  <QUI.Spinner />
+</div>
+DOC__ */

@@ -38,3 +38,12 @@ export function Icon({ icon: IconComponent, tint, size, className, ...props }: I
     </span>
   );
 }
+
+/* __DOC
+<div className="flex items-center gap-3 [--node-size:20px]">
+  <QUI.Icon icon={Icons.Settings} tint="secondary" />
+  <QUI.Icon icon={Icons.Settings} tint="muted" />
+  <QUI.Icon icon={Icons.Settings} tint="danger" />
+  <QUI.Icon icon={Icons.Settings} tint="placeholder" />
+</div>
+DOC__ */
