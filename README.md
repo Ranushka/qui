@@ -99,6 +99,10 @@ Not yet pushed — no GitHub remote configured. To push to `https://github.com/R
 - For a public preview, the playground dev server can be tunneled with `ngrok http 5174`; its
   `vite.config.ts` already has `server.allowedHosts: [".ngrok-free.app"]` so ngrok's dynamic
   hostnames aren't blocked by Vite's host check.
+- Each demo can also show a props panel: add a `__PROPS {...} PROPS__` comment next to the
+  `__DOC` block, a JSON object mapping prop name → either an array of accepted literal values or
+  the string `"boolean"`. The generator renders it as a table beside the demo. All 20 current
+  atoms have one; add one to every new component going forward.
 
 **Known not yet done**:
 - Phase 1 (atoms) is complete. Next up is Phase 2 (molecules): Select/Combobox/Autocomplete,
