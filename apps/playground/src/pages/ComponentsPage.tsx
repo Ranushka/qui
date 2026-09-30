@@ -580,6 +580,42 @@ export function ComponentsPage() {
           </Section>
         </div>
       </div>
+
+      <div>
+        <h1 className="mb-3 text-base font-semibold">Organisms</h1>
+        <div className="flex flex-col gap-6">
+          <Section title="Table" align="block" props={{"density":["comfortable","compact"]}}>
+<div className="flex w-full flex-col gap-8 p-4">
+  <QUI.Table>
+    <QUI.TableHeader>
+      <QUI.TableRow>
+        <QUI.TableHead>Name</QUI.TableHead>
+        <QUI.TableHead>Status</QUI.TableHead>
+        <QUI.TableHead sortDirection="ascending" onSort={() => {}}>Points</QUI.TableHead>
+      </QUI.TableRow>
+    </QUI.TableHeader>
+    <QUI.TableBody>
+      <QUI.TableRow><QUI.TableCell>Login page</QUI.TableCell><QUI.TableCell>Done</QUI.TableCell><QUI.TableCell>3</QUI.TableCell></QUI.TableRow>
+      <QUI.TableRow selected><QUI.TableCell>Billing</QUI.TableCell><QUI.TableCell>In progress</QUI.TableCell><QUI.TableCell>8</QUI.TableCell></QUI.TableRow>
+      <QUI.TableRow><QUI.TableCell>Onboarding</QUI.TableCell><QUI.TableCell>Todo</QUI.TableCell><QUI.TableCell>5</QUI.TableCell></QUI.TableRow>
+    </QUI.TableBody>
+  </QUI.Table>
+  <QUI.Table density="compact">
+    <QUI.TableHeader>
+      <QUI.TableRow>
+        <QUI.TableHead>Name</QUI.TableHead>
+        <QUI.TableHead>Status</QUI.TableHead>
+      </QUI.TableRow>
+    </QUI.TableHeader>
+    <QUI.TableBody>
+      <QUI.TableRow><QUI.TableCell>Login page</QUI.TableCell><QUI.TableCell>Done</QUI.TableCell></QUI.TableRow>
+      <QUI.TableRow><QUI.TableCell>Billing</QUI.TableCell><QUI.TableCell>In progress</QUI.TableCell></QUI.TableRow>
+    </QUI.TableBody>
+  </QUI.Table>
+</div>
+          </Section>
+        </div>
+      </div>
     </div>
   );
 }

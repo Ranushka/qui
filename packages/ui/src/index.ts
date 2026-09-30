@@ -39,3 +39,4 @@ export * from "./molecules/Dialog";
 export * from "./molecules/AlertDialog";
 export * from "./molecules/Drawer";
 export * from "./molecules/Toast";
+export * from "./organisms/Table";
