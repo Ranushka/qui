@@ -37,17 +37,19 @@ qui/
 
 ## Status
 
-Early scaffold. Built so far: `Button`, `IconButton`, `Pill` (button-family controls), `Badge`
-(status pill), `Avatar`/`AvatarGroup`, `Tooltip`, `Separator`, `Spinner`, `Icon`, `QuiProvider`
-(direction + tooltip context) — 10 components total. A components gallery (`apps/playground`,
-auto-generated from `__DOC` comments in each component's source — see below) renders all of them.
+**Phase 1 (atoms) is complete** — 20 components: `Button`, `IconButton`, `Pill` (button-family
+controls), `Badge`, `Avatar`/`AvatarGroup`, `Tooltip`, `Separator`, `Spinner`, `Icon`,
+`Input`, `TextArea`, `NumberField`, `Checkbox`, `Radio`/`RadioGroup`, `Switch`, `Skeleton`,
+`CircularProgress`, `LinearProgress`, plus `QuiProvider` (direction + tooltip context). A
+components gallery (`apps/playground`, auto-generated from `__DOC` comments in each component's
+source — see below) renders all of them.
 
 Propel ships ~60 components; the rest are being ported incrementally, phased roughly:
 
-1. **Atoms**: Button ✅, IconButton ✅, Badge ✅/Pill ✅, Avatar ✅(+Group ✅),
-   Input/TextArea/NumberField, Checkbox/Radio/Switch, Tooltip ✅, Separator ✅, Spinner ✅,
-   Skeleton, Progress (circular/linear)
-2. **Molecules**: Select/Combobox/Autocomplete, Menu/ContextMenu, Popover,
+1. **Atoms** — done ✅: Button, IconButton, Badge, Pill, Avatar(+Group), Tooltip, Separator,
+   Spinner, Icon, Input, TextArea, NumberField, Checkbox, Radio(+Group), Switch, Skeleton,
+   CircularProgress, LinearProgress
+2. **Molecules** (next): Select/Combobox/Autocomplete, Menu/ContextMenu, Popover,
    Dialog/AlertDialog/Drawer, Tabs, Accordion, Breadcrumb, Pagination, Toast, Field wrappers
 3. **Organisms**: Table, NavigationMenu, Toolbar, Calendar, Charts, virtualized List, Banner
 
@@ -99,8 +101,9 @@ Not yet pushed — no GitHub remote configured. To push to `https://github.com/R
   hostnames aren't blocked by Vite's host check.
 
 **Known not yet done**:
-- Remaining Phase 1 atoms: Input/TextArea/NumberField, Checkbox/Radio/Switch, Skeleton, Progress
-  (circular/linear). Then Phase 2 (molecules) and Phase 3 (organisms).
+- Phase 1 (atoms) is complete. Next up is Phase 2 (molecules): Select/Combobox/Autocomplete,
+  Menu/ContextMenu, Popover, Dialog/AlertDialog/Drawer, Tabs, Accordion, Breadcrumb, Pagination,
+  Toast, Field wrappers. Then Phase 3 (organisms).
 - `@makeplane/propel`'s compiled npm package (`npm pack @makeplane/propel && tar xzf ...`) is the
   fastest way to check a component's real class composition/behavior before writing qui's own
   version — e.g. `dist/elements/<name>/variants.js` for the cva shape, `dist/components/<name>/
