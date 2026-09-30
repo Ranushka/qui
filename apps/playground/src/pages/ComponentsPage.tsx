@@ -73,10 +73,37 @@ export function ComponentsPage() {
   <QUI.Icon icon={Icons.Settings} tint="placeholder" />
 </div>
           </Section>
+          <Section title="IconButton" align="block">
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.IconButton variant="primary" aria-label="Add" icon={<QUI.Icon icon={Icons.Plus} />} />
+    <QUI.IconButton variant="secondary" aria-label="Settings" icon={<QUI.Icon icon={Icons.Settings} />} />
+    <QUI.IconButton variant="tertiary" aria-label="More" icon={<QUI.Icon icon={Icons.MoreHorizontal} />} />
+    <QUI.IconButton variant="ghost" aria-label="Close" icon={<QUI.Icon icon={Icons.X} />} />
+    <QUI.IconButton variant="danger" aria-label="Delete" icon={<QUI.Icon icon={Icons.Trash2} />} />
+    <QUI.IconButton variant="danger-outline" aria-label="Delete" icon={<QUI.Icon icon={Icons.Trash2} />} />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.IconButton size="xs" aria-label="Add" icon={<QUI.Icon icon={Icons.Plus} />} />
+    <QUI.IconButton size="sm" aria-label="Add" icon={<QUI.Icon icon={Icons.Plus} />} />
+    <QUI.IconButton size="md" aria-label="Add" icon={<QUI.Icon icon={Icons.Plus} />} />
+    <QUI.IconButton size="lg" aria-label="Add" icon={<QUI.Icon icon={Icons.Plus} />} />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.IconButton aria-label="Loading" icon={<QUI.Icon icon={Icons.Plus} />} loading />
+    <QUI.IconButton aria-label="Disabled" icon={<QUI.Icon icon={Icons.Plus} />} disabled />
+  </div>
+</div>
+          </Section>
           <Section title="Spinner" align="row">
 <div className="[--node-size:20px] text-icon-secondary">
   <QUI.Spinner />
 </div>
+          </Section>
+          <Section title="Tooltip" align="row">
+<QUI.Tooltip label="Save changes">
+  <QUI.Button label="Hover me" />
+</QUI.Tooltip>
           </Section>
         </div>
       </div>
