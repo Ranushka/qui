@@ -37,13 +37,15 @@ qui/
 
 ## Status
 
-Early scaffold. Built so far: `Button` (all 6 variants × 4 sizes, loading/disabled states),
-`Spinner`, `Icon`, `QuiProvider` (direction + tooltip context).
+Early scaffold. Built so far: `Button` and `IconButton` (all 6 variants × 4 sizes,
+loading/disabled states), `Tooltip`, `Spinner`, `Icon`, `QuiProvider` (direction + tooltip
+context). A components gallery (`apps/playground`, auto-generated from `__DOC` comments in
+each component's source — see below) renders all of them.
 
 Propel ships ~60 components; the rest are being ported incrementally, phased roughly:
 
-1. **Atoms**: Button ✅, IconButton, Badge/Pill, Avatar(+Group), Input/TextArea/NumberField,
-   Checkbox/Radio/Switch, Tooltip, Separator, Spinner ✅, Skeleton, Progress (circular/linear)
+1. **Atoms**: Button ✅, IconButton ✅, Badge/Pill, Avatar(+Group), Input/TextArea/NumberField,
+   Checkbox/Radio/Switch, Tooltip ✅, Separator, Spinner ✅, Skeleton, Progress (circular/linear)
 2. **Molecules**: Select/Combobox/Autocomplete, Menu/ContextMenu, Popover,
    Dialog/AlertDialog/Drawer, Tabs, Accordion, Breadcrumb, Pagination, Toast, Field wrappers
 3. **Organisms**: Table, NavigationMenu, Toolbar, Calendar, Charts, virtualized List, Banner
@@ -67,37 +69,44 @@ pnpm --filter playground dev
 
 ## Session progress / restart notes (as of 2026-09-30)
 
-**Repo state**: local git repo initialized, one commit so far (`aae6853`,
-"Initial scaffold: tokens + Button, pixel-matching Plane's propel design
-system"). Not yet pushed — no GitHub remote configured. To push to
-`https://github.com/Ranushka/qui`:
+**Repo state**: local git repo, commits so far:
+- `aae6853` — initial scaffold: tokens + Button
+- `04f1b5e` — this restart-notes section
+- `0f6ea1a` — ported `generate-components-page.mjs` from atsak (see below); added `__DOC` blocks
+- `48575c5` — added `Tooltip` and `IconButton` atoms, extracted shared `lib/control-chrome.ts`
+
+Not yet pushed — no GitHub remote configured. To push to `https://github.com/Ranushka/qui`:
 1. Run `! gh auth login` yourself (Claude won't handle credentials).
 2. Then: `gh repo create Ranushka/qui --private --source=. --remote=origin --push`
    (or create it empty on GitHub first and `git remote add origin ... && git push -u origin main`).
 
-**Verified working**: `packages/tokens` (real propel OKLCH tokens, comments
-stripped, font family switched to `"Inter"` for Google Fonts) builds to
-`dist/tokens.css`. `packages/ui`'s `Button` (6 variants × 4 sizes,
-loading/disabled) renders pixel-correct against Plane's real button chrome —
-confirmed via a live `apps/playground` render in Chrome, zero console errors,
-checked twice.
+**Verified working**:
+- `packages/tokens` (real propel OKLCH tokens, comments stripped, font family switched to
+  `"Inter"` for Google Fonts) builds to `dist/tokens.css`.
+- `packages/ui`'s `Button`, `IconButton`, `Icon`, `Spinner`, `Tooltip` all render pixel-correct
+  against Plane's real chrome — confirmed via a live `apps/playground` render in Chrome, zero
+  console errors. Tooltip's hover-open/positioning verified too (Base UI's `restMs`-based open
+  delay is ~600ms — don't assume a tooltip failed to appear from a screenshot taken sooner than
+  that after hovering).
+- The full `apps/playground` lifecycle now works end-to-end: `pnpm --filter playground dev` /
+  `build` runs `predev`/`prebuild` → `scripts/generate-components-page.mjs` → regenerates
+  `src/pages/ComponentsPage.tsx` from every `__DOC`/`__DOC_BLOCK` comment found in
+  `packages/ui/src/{atoms,molecules,organisms}` → `vite dev`/`build`. This was previously broken
+  (see below) and is now fixed and committed.
+- For a public preview, the playground dev server can be tunneled with `ngrok http 5174`; its
+  `vite.config.ts` already has `server.allowedHosts: [".ngrok-free.app"]` so ngrok's dynamic
+  hostnames aren't blocked by Vite's host check.
 
-**Known broken / not yet done**:
-- `apps/playground/package.json`'s `predev`/`prebuild` scripts reference
-  `scripts/generate-components-page.mjs`, which **does not exist yet** — this
-  breaks the normal `pnpm --filter playground dev` / `pnpm build` flow with
-  `MODULE_NOT_FOUND`. It needs to be ported from
-  `~/projects/atsak/apps/playground/scripts/generate-components-page.mjs`
-  (adapt away the `QDS`/`Finance` namespace split — qui only has one
-  `packages/ui`, not a separate finance-ui package). Until it's ported, run
-  the playground directly with `npx vite --port 5174` from
-  `apps/playground/`, bypassing the lifecycle hook.
-- No `__DOC` / `__DOC_BLOCK` comment annotations added to `Button.tsx` yet
-  (needed once the gallery generator above exists).
-- Everything past Button in the Phase 1 atoms list above is still unbuilt:
-  IconButton, Badge/Pill, Avatar(+Group), Input/TextArea/NumberField,
-  Checkbox/Radio/Switch, Tooltip, Separator, Skeleton, Progress. Then Phase 2
-  (molecules) and Phase 3 (organisms).
+**Known not yet done**:
+- Everything past Button/IconButton/Tooltip/Icon/Spinner in the Phase 1 atoms list above is
+  still unbuilt: Badge/Pill, Avatar(+Group), Input/TextArea/NumberField, Checkbox/Radio/Switch,
+  Separator, Skeleton, Progress (circular/linear). Then Phase 2 (molecules) and Phase 3
+  (organisms).
+- `@makeplane/propel`'s compiled npm package (`npm pack @makeplane/propel && tar xzf ...`) is the
+  fastest way to check a component's real class composition/behavior before writing qui's own
+  version — e.g. `dist/elements/<name>/variants.js` for the cva shape, `dist/components/<name>/
+  <name>.js` for how the ready-made composes elements. Re-pack fresh each session; nothing from
+  it is kept in the repo (AGPL — see licensing note above).
 
 **Licensing approach to keep following** (already applied to tokens/Button):
 extract propel's design **token values** only (colors, spacing, radii,
