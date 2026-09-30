@@ -42,6 +42,55 @@ export function ComponentsPage() {
       <div>
         <h1 className="mb-3 text-base font-semibold">Atoms</h1>
         <div className="flex flex-col gap-6">
+          <Section title="Avatar" align="block">
+<div className="flex flex-wrap items-center gap-4 p-4">
+  <QUI.Avatar size="2xs" alt="Ada Lovelace" />
+  <QUI.Avatar size="xs" alt="Ada Lovelace" />
+  <QUI.Avatar size="sm" alt="Ada Lovelace" />
+  <QUI.Avatar size="md" alt="Ada Lovelace" />
+  <QUI.Avatar size="lg" alt="Ada Lovelace" />
+  <QUI.Avatar size="xl" alt="Ada Lovelace" />
+  <QUI.Avatar size="2xl" alt="Ada Lovelace" />
+  <QUI.Avatar size="md" alt="Grace Hopper" />
+  <QUI.Avatar size="md" alt="Barbara Liskov" />
+  <QUI.Avatar size="md" />
+  <QUI.Avatar size="md" alt="Katherine Johnson" tooltip />
+</div>
+          </Section>
+          <Section title="AvatarGroup" align="row">
+<QUI.AvatarGroup size="md" max={3} overflowTooltip="Dana, Erin">
+  <QUI.Avatar alt="Ada Lovelace" />
+  <QUI.Avatar alt="Grace Hopper" />
+  <QUI.Avatar alt="Barbara Liskov" />
+  <QUI.Avatar alt="Dana Scott" />
+  <QUI.Avatar alt="Erin Meyer" />
+</QUI.AvatarGroup>
+          </Section>
+          <Section title="Badge" align="block">
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-2">
+    <QUI.Badge label="Neutral" />
+    <QUI.Badge variant="grey" label="Grey" />
+    <QUI.Badge variant="brand" label="Brand" />
+    <QUI.Badge variant="info" label="Info" />
+    <QUI.Badge variant="purple" label="Purple" />
+    <QUI.Badge variant="indigo" label="Indigo" />
+    <QUI.Badge variant="success" label="Success" />
+    <QUI.Badge variant="emerald" label="Emerald" />
+    <QUI.Badge variant="warning" label="Warning" />
+    <QUI.Badge variant="yellow" label="Yellow" />
+    <QUI.Badge variant="danger" label="Danger" />
+    <QUI.Badge variant="crimson" label="Crimson" />
+    <QUI.Badge variant="orange" label="Orange" />
+  </div>
+  <div className="flex flex-wrap items-center gap-2">
+    <QUI.Badge size="xs" variant="brand" label="xs" />
+    <QUI.Badge size="sm" variant="brand" label="sm" />
+    <QUI.Badge size="md" variant="brand" label="md" />
+    <QUI.Badge variant="success" label="With icon" startIcon={<QUI.Icon icon={Icons.Check} />} />
+  </div>
+</div>
+          </Section>
           <Section title="Button" align="block">
 <div className="flex flex-col gap-4 p-4">
   <div className="flex flex-wrap items-center gap-3">
@@ -92,6 +141,37 @@ export function ComponentsPage() {
   <div className="flex flex-wrap items-center gap-3">
     <QUI.IconButton aria-label="Loading" icon={<QUI.Icon icon={Icons.Plus} />} loading />
     <QUI.IconButton aria-label="Disabled" icon={<QUI.Icon icon={Icons.Plus} />} disabled />
+  </div>
+</div>
+          </Section>
+          <Section title="Pill" align="block">
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Pill variant="outline" label="Outline" startIcon={<QUI.Icon icon={Icons.Filter} />} />
+    <QUI.Pill variant="soft" label="Soft" startIcon={<QUI.Icon icon={Icons.Filter} />} />
+    <QUI.Pill variant="ghost" label="Ghost" startIcon={<QUI.Icon icon={Icons.Filter} />} />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Pill size="xs" label="xs" />
+    <QUI.Pill size="sm" label="sm" />
+    <QUI.Pill size="md" label="md" />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Pill label="Placeholder" placeholder />
+    <QUI.Pill label="Loading" loading />
+    <QUI.Pill label="Disabled" disabled />
+  </div>
+</div>
+          </Section>
+          <Section title="Separator" align="row">
+<div className="flex w-full flex-col gap-3">
+  <span className="text-sm text-secondary">Above</span>
+  <QUI.Separator />
+  <span className="text-sm text-secondary">Below</span>
+  <div className="flex h-6 items-center gap-3">
+    <span className="text-sm text-secondary">Left</span>
+    <QUI.Separator orientation="vertical" />
+    <span className="text-sm text-secondary">Right</span>
   </div>
 </div>
           </Section>
