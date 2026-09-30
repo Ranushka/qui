@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@import "@qui/ui/styles.css";
+
+@source "../../../packages/ui/src";
+
+html,
+body,
+#root {
+  height: 100%;
+}

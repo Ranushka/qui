@@ -1,0 +1,31 @@
+{
+  "name": "playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/generate-components-page.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/generate-components-page.mjs",
+    "build": "vite build",
+    "docs:gen": "node scripts/generate-components-page.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"no tests for playground\""
+  },
+  "dependencies": {
+    "@qui/tokens": "workspace:*",
+    "@qui/ui": "workspace:*",
+    "lucide-react": "^0.469.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.0"
+  }
+}

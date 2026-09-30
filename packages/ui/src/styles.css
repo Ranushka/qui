@@ -1,0 +1,7 @@
+@import "@qui/tokens/tokens.css";
+
+@layer base {
+  body {
+    @apply bg-canvas font-body text-primary;
+  }
+}
