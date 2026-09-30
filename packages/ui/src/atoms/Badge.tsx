@@ -74,3 +74,7 @@ export function Badge({ size, variant, label, startIcon, endIcon, className, ...
   </div>
 </div>
 DOC__ */
+
+/* __PROPS
+{ "variant": ["neutral", "grey", "brand", "info", "purple", "indigo", "success", "emerald", "warning", "yellow", "danger", "crimson", "orange"], "size": ["xs", "sm", "md"] }
+PROPS__ */

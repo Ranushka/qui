@@ -80,3 +80,7 @@ Checkbox.displayName = "Checkbox";
   <QUI.Checkbox label="Disabled checked" disabled defaultChecked />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "stretch": ["auto", "full"], "indeterminate": "boolean", "disabled": "boolean", "defaultChecked": "boolean" }
+PROPS__ */

@@ -81,3 +81,7 @@ IconButton.displayName = "IconButton";
   </div>
 </div>
 DOC__ */
+
+/* __PROPS
+{ "variant": ["primary", "secondary", "tertiary", "ghost", "danger", "danger-outline"], "size": ["xs", "sm", "md", "lg"], "showTooltip": "boolean", "loading": "boolean", "disabled": "boolean" }
+PROPS__ */

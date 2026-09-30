@@ -40,3 +40,7 @@ Radio.displayName = "Radio";
   <QUI.Radio value="c" aria-label="Option C (disabled)" disabled />
 </QUI.RadioGroup>
 DOC__ */
+
+/* __PROPS
+{ "disabled": "boolean" }
+PROPS__ */

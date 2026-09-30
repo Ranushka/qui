@@ -73,3 +73,7 @@ export function LinearProgress({ value, size = "md", variant = "brand", showValu
   <QUI.LinearProgress indeterminate />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "size": ["sm", "md"], "variant": ["brand", "success", "warning", "danger"], "indeterminate": "boolean", "showValue": "boolean" }
+PROPS__ */

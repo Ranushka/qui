@@ -80,3 +80,7 @@ export function CircularProgress({ value, size = "md", variant = "brand", indete
   <QUI.CircularProgress size="md" indeterminate />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "size": ["sm", "md"], "variant": ["brand", "success", "warning", "danger"], "indeterminate": "boolean" }
+PROPS__ */

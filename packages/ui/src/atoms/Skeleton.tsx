@@ -88,3 +88,7 @@ export function SkeletonItem({ variant = "bar", blockSize, inlineSize, className
   </QUI.Skeleton>
 </div>
 DOC__ */
+
+/* __PROPS
+{ "layout": ["stack", "row"], "stretch": ["full", "fit"] }
+PROPS__ */

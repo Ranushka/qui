@@ -58,3 +58,7 @@ Switch.displayName = "Switch";
   </div>
 </div>
 DOC__ */
+
+/* __PROPS
+{ "size": ["sm", "md", "lg"], "disabled": "boolean", "readOnly": "boolean", "defaultChecked": "boolean" }
+PROPS__ */

@@ -80,3 +80,7 @@ Pill.displayName = "Pill";
   </div>
 </div>
 DOC__ */
+
+/* __PROPS
+{ "variant": ["outline", "soft", "ghost"], "size": ["xs", "sm", "md"], "loading": "boolean", "placeholder": "boolean", "disabled": "boolean" }
+PROPS__ */

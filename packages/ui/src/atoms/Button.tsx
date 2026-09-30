@@ -89,3 +89,7 @@ Button.displayName = "Button";
   </div>
 </div>
 DOC__ */
+
+/* __PROPS
+{ "variant": ["primary", "secondary", "tertiary", "ghost", "danger", "danger-outline"], "size": ["xs", "sm", "md", "lg"], "stretch": ["auto", "full"], "iconPosition": ["start", "end"], "loading": "boolean", "disabled": "boolean" }
+PROPS__ */

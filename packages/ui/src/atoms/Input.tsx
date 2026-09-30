@@ -67,3 +67,7 @@ Input.displayName = "Input";
   <QUI.Input placeholder="Disabled" disabled />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "size": ["md", "lg", "xl", "2xl"], "disabled": "boolean" }
+PROPS__ */

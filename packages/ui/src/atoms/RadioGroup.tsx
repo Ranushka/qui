@@ -46,3 +46,7 @@ RadioOption.displayName = "RadioOption";
   <QUI.RadioOption value="xl" label="Extra large (disabled)" disabled />
 </QUI.RadioGroup>
 DOC__ */
+
+/* __PROPS
+{ "density": ["comfortable", "compact"] }
+PROPS__ */

@@ -103,3 +103,7 @@ TextArea.displayName = "TextArea";
   <QUI.TextArea placeholder="Disabled" disabled />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "size": ["md", "lg", "xl", "2xl"], "resize": ["none", "vertical", "both"], "autoResize": "boolean", "disabled": "boolean" }
+PROPS__ */

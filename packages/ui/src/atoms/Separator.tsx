@@ -38,3 +38,7 @@ export function Separator({ decorative, className, ...props }: SeparatorProps) {
   </div>
 </div>
 DOC__ */
+
+/* __PROPS
+{ "orientation": ["horizontal", "vertical"], "decorative": "boolean" }
+PROPS__ */

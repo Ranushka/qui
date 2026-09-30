@@ -46,3 +46,7 @@ export function Tooltip({ label, disabled, side = "top", sideOffset = 8, classNa
   <QUI.Button label="Hover me" />
 </QUI.Tooltip>
 DOC__ */
+
+/* __PROPS
+{ "side": ["top", "bottom", "left", "right"], "sideOffset": ["number"], "disabled": "boolean" }
+PROPS__ */

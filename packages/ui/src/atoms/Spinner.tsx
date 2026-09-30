@@ -54,3 +54,7 @@ export function Spinner({ active = true, children, className, ...props }: Spinne
   <QUI.Spinner />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "active": "boolean" }
+PROPS__ */

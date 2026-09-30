@@ -78,3 +78,7 @@ export function NumberField({ size = "md", "aria-label": ariaLabel, "aria-labell
   <QUI.NumberField size="md" aria-label="Quantity" defaultValue={1} disabled />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "size": ["sm", "md", "lg"], "disabled": "boolean" }
+PROPS__ */

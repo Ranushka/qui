@@ -122,3 +122,7 @@ export function AvatarGroup({
   <QUI.Avatar alt="Erin Meyer" />
 </QUI.AvatarGroup>
 DOC__ */
+
+/* __PROPS
+{ "size": ["2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl"], "max": ["number"] }
+PROPS__ */

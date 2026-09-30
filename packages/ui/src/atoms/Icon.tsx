@@ -47,3 +47,7 @@ export function Icon({ icon: IconComponent, tint, size, className, ...props }: I
   <QUI.Icon icon={Icons.Settings} tint="placeholder" />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "tint": ["inherit", "danger", "placeholder", "muted", "secondary", "tertiary"], "size": ["inherit", "xs", "sm", "md", "lg", "xl", "2xl"] }
+PROPS__ */

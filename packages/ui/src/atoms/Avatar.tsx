@@ -118,3 +118,7 @@ export function Avatar({ size, src, alt, fallback, delay, tooltip, tabIndex, cla
   <QUI.Avatar size="md" alt="Katherine Johnson" tooltip />
 </div>
 DOC__ */
+
+/* __PROPS
+{ "size": ["2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl"], "tooltip": "boolean" }
+PROPS__ */
