@@ -308,6 +308,278 @@ export function ComponentsPage() {
           </Section>
         </div>
       </div>
+
+      <div>
+        <h1 className="mb-3 text-base font-semibold">Molecules</h1>
+        <div className="flex flex-col gap-6">
+          <Section title="Accordion" align="block" props={{"multiple":"boolean","disabled":"boolean"}}>
+<div className="flex w-full flex-col p-4">
+  <QUI.Accordion defaultValue={["general"]}>
+    <QUI.AccordionItem value="general">
+      <QUI.AccordionTrigger label="General" icon={<QUI.Icon icon={Icons.Settings} />} />
+      <QUI.AccordionPanel>Workspace name, URL, and timezone.</QUI.AccordionPanel>
+    </QUI.AccordionItem>
+    <QUI.AccordionItem value="members">
+      <QUI.AccordionTrigger label="Members" />
+      <QUI.AccordionPanel>Invite, roles, and permissions.</QUI.AccordionPanel>
+    </QUI.AccordionItem>
+    <QUI.AccordionItem value="billing" disabled>
+      <QUI.AccordionTrigger label="Billing" />
+      <QUI.AccordionPanel>Plan and invoices.</QUI.AccordionPanel>
+    </QUI.AccordionItem>
+  </QUI.Accordion>
+</div>
+          </Section>
+          <Section title="AlertDialog" align="block" props={{"variant":["danger","warning","info","success"],"layout":["inline","split"]}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.AlertDialog>
+    <QUI.AlertDialogTrigger render={<QUI.Button variant="danger" label="Delete project" />} />
+    <QUI.AlertDialogContent>
+      <div className="flex flex-col gap-4 p-5 pb-3 max-sm:text-center">
+        <QUI.AlertDialogIcon variant="danger">
+          <QUI.Icon icon={Icons.Trash2} />
+        </QUI.AlertDialogIcon>
+        <div className="flex flex-col gap-1.5">
+          <QUI.AlertDialogTitle>Delete this project?</QUI.AlertDialogTitle>
+          <QUI.AlertDialogDescription>This can't be undone. All issues, cycles, and pages in this project will be permanently deleted.</QUI.AlertDialogDescription>
+        </div>
+      </div>
+      <QUI.AlertDialogActions>
+        <QUI.AlertDialogClose render={<QUI.Button variant="secondary" label="Cancel" />} />
+        <QUI.Button variant="danger" label="Delete" />
+      </QUI.AlertDialogActions>
+    </QUI.AlertDialogContent>
+  </QUI.AlertDialog>
+</div>
+          </Section>
+          <Section title="Autocomplete" align="block" props={{"size":["md","lg","xl","2xl"],"disabled":"boolean","autoHighlight":["true","always"],"openOnInputClick":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.Autocomplete items={["Afghanistan", "Albania", "Algeria", "Andorra", "Angola"]}>
+    <QUI.AutocompleteInputGroup placeholder="Search countries…" className="w-64" />
+    <QUI.AutocompleteContent>
+      {(item) => <QUI.AutocompleteItem key={item} value={item}>{item}</QUI.AutocompleteItem>}
+    </QUI.AutocompleteContent>
+  </QUI.Autocomplete>
+</div>
+          </Section>
+          <Section title="Breadcrumb" align="block" props={{"current":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.Breadcrumb>
+    <QUI.BreadcrumbItem href="#">Workspace</QUI.BreadcrumbItem>
+    <QUI.BreadcrumbSeparator />
+    <QUI.BreadcrumbItem href="#">Projects</QUI.BreadcrumbItem>
+    <QUI.BreadcrumbSeparator />
+    <QUI.BreadcrumbItem current>Settings</QUI.BreadcrumbItem>
+  </QUI.Breadcrumb>
+  <QUI.Breadcrumb>
+    <QUI.BreadcrumbItem href="#" icon={<QUI.Icon icon={Icons.Home} />}>
+      Home
+    </QUI.BreadcrumbItem>
+    <QUI.BreadcrumbSeparator />
+    <QUI.BreadcrumbItem current icon={<QUI.Icon icon={Icons.Folder} />}>
+      Documents
+    </QUI.BreadcrumbItem>
+  </QUI.Breadcrumb>
+</div>
+          </Section>
+          <Section title="Combobox" align="block" props={{"size":["md","lg","xl","2xl"],"clearable":"boolean","disabled":"boolean","multiple":"boolean","autoHighlight":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.Combobox items={["Apple", "Banana", "Cherry", "Date", "Elderberry"]} defaultValue="Banana">
+    <QUI.ComboboxInputGroup placeholder="Search fruit…" className="w-64" />
+    <QUI.ComboboxContent>
+      {(item) => <QUI.ComboboxItem key={item} value={item}>{item}</QUI.ComboboxItem>}
+    </QUI.ComboboxContent>
+  </QUI.Combobox>
+  <QUI.Combobox items={["Apple", "Banana", "Cherry"]} multiple defaultValue={["Apple"]}>
+    <QUI.ComboboxInputGroup placeholder="Search fruit…" className="w-64" />
+    <QUI.ComboboxContent>
+      {(item) => <QUI.ComboboxItem key={item} value={item}>{item}</QUI.ComboboxItem>}
+    </QUI.ComboboxContent>
+  </QUI.Combobox>
+</div>
+          </Section>
+          <Section title="ContextMenu" align="block" props={{"ContextMenuItem.variant":["neutral","accent","danger"],"ContextMenuItem.selected":"boolean"}}>
+<QUI.ContextMenu>
+  <QUI.ContextMenuTrigger className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-xs-regular text-tertiary">
+    Right-click this area
+  </QUI.ContextMenuTrigger>
+  <QUI.ContextMenuContent>
+    <QUI.ContextMenuItem icon={<QUI.Icon icon={Icons.Pencil} />}>Rename</QUI.ContextMenuItem>
+    <QUI.ContextMenuItem icon={<QUI.Icon icon={Icons.Copy} />} trailing={<span className="text-caption-md-regular text-tertiary">⌘D</span>}>
+      Duplicate
+    </QUI.ContextMenuItem>
+    <QUI.ContextMenuSeparator />
+    <QUI.ContextMenuGroup>
+      <QUI.ContextMenuGroupLabel>Danger zone</QUI.ContextMenuGroupLabel>
+      <QUI.ContextMenuItem variant="danger" icon={<QUI.Icon icon={Icons.Trash} />}>
+        Delete
+      </QUI.ContextMenuItem>
+    </QUI.ContextMenuGroup>
+  </QUI.ContextMenuContent>
+</QUI.ContextMenu>
+          </Section>
+          <Section title="Dialog" align="block" props={{"size":["xs","sm","md","lg","xl","full"],"hideClose":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.Dialog>
+    <QUI.DialogTrigger render={<QUI.Button label="Open dialog" />} />
+    <QUI.DialogContent>
+      <div className="flex flex-col gap-4 p-4 pe-10">
+        <div className="flex flex-col gap-1.5">
+          <QUI.DialogTitle>Invite teammates</QUI.DialogTitle>
+          <QUI.DialogDescription>Send an invite link to anyone you want to collaborate with.</QUI.DialogDescription>
+        </div>
+        <QUI.Input placeholder="name@company.com" />
+      </div>
+      <div className="flex shrink-0 items-center justify-end gap-3 border-t border-subtle p-4">
+        <QUI.DialogClose render={<QUI.Button variant="secondary" label="Cancel" />} />
+        <QUI.Button label="Send invite" />
+      </div>
+    </QUI.DialogContent>
+  </QUI.Dialog>
+</div>
+          </Section>
+          <Section title="Drawer" align="block" props={{"side":["start","end"],"size":["sm","md","lg"],"hideClose":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.Drawer>
+    <QUI.DrawerTrigger render={<QUI.Button label="Open drawer" />} />
+    <QUI.DrawerContent>
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 pe-10">
+        <div className="flex flex-col gap-1.5">
+          <QUI.DrawerTitle>Filters</QUI.DrawerTitle>
+          <QUI.DrawerDescription>Narrow down the issue list by state, priority, and assignee.</QUI.DrawerDescription>
+        </div>
+        <QUI.Input placeholder="Search filters" />
+      </div>
+      <div className="flex shrink-0 items-center justify-end gap-3 border-t border-subtle p-4">
+        <QUI.DrawerClose render={<QUI.Button variant="secondary" label="Cancel" />} />
+        <QUI.Button label="Apply" />
+      </div>
+    </QUI.DrawerContent>
+  </QUI.Drawer>
+</div>
+          </Section>
+          <Section title="Field" align="block" props={{"size":["md","lg","xl","2xl"],"required":"boolean"}}>
+<div className="flex max-w-xs flex-col gap-6 p-4">
+  <QUI.Field label="Workspace name" hint="Shown on your team's billing page.">
+    <QUI.Input placeholder="Acme Inc." />
+  </QUI.Field>
+  <QUI.Field label="Slug" required error="This slug is already taken.">
+    <QUI.Input defaultValue="acme-inc" />
+  </QUI.Field>
+  <QUI.Field label="Description" size="xl" hint="Optional, up to 200 characters.">
+    <QUI.TextArea placeholder="What does your team do?" size="xl" />
+  </QUI.Field>
+  <QUI.Field>
+    <QUI.Checkbox label="Send me product updates" />
+  </QUI.Field>
+</div>
+          </Section>
+          <Section title="Menu" align="block" props={{"MenuItem.variant":["neutral","accent","danger"],"MenuItem.selected":"boolean","MenuCheckboxItem.variant":["neutral","accent","danger"],"MenuRadioItem.variant":["neutral","accent","danger"],"MenuRadioItem.marker":["check","radio"]}}>
+<div className="flex flex-wrap items-start gap-6 p-4">
+  <QUI.Menu>
+    <QUI.MenuTrigger render={<QUI.Button label="Open menu" />} />
+    <QUI.MenuContent>
+      <QUI.MenuItem icon={<QUI.Icon icon={Icons.Pencil} />}>Rename</QUI.MenuItem>
+      <QUI.MenuItem icon={<QUI.Icon icon={Icons.Copy} />} trailing={<span className="text-caption-md-regular text-tertiary">⌘D</span>}>
+        Duplicate
+      </QUI.MenuItem>
+      <QUI.MenuSeparator />
+      <QUI.MenuGroup>
+        <QUI.MenuGroupLabel>Danger zone</QUI.MenuGroupLabel>
+        <QUI.MenuItem variant="danger" icon={<QUI.Icon icon={Icons.Trash} />}>
+          Delete
+        </QUI.MenuItem>
+      </QUI.MenuGroup>
+    </QUI.MenuContent>
+  </QUI.Menu>
+
+  <QUI.Menu>
+    <QUI.MenuTrigger render={<QUI.Button variant="secondary" label="View options" />} />
+    <QUI.MenuContent>
+      <QUI.MenuRadioGroup defaultValue="board">
+        <QUI.MenuGroupLabel>Show as</QUI.MenuGroupLabel>
+        <QUI.MenuRadioItem value="list">List</QUI.MenuRadioItem>
+        <QUI.MenuRadioItem value="board">Board</QUI.MenuRadioItem>
+        <QUI.MenuRadioItem value="calendar">Calendar</QUI.MenuRadioItem>
+      </QUI.MenuRadioGroup>
+      <QUI.MenuSeparator />
+      <QUI.MenuCheckboxItem defaultChecked>Show sub-issues</QUI.MenuCheckboxItem>
+      <QUI.MenuCheckboxItem>Show completed</QUI.MenuCheckboxItem>
+    </QUI.MenuContent>
+  </QUI.Menu>
+</div>
+          </Section>
+          <Section title="Pagination" align="block" props={{}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.Pagination page={1} pageCount={5} onPageChange={() => {}} />
+  <QUI.Pagination page={6} pageCount={12} onPageChange={() => {}} />
+  <QUI.Pagination page={1} pageCount={1} onPageChange={() => {}} />
+</div>
+          </Section>
+          <Section title="Popover" align="row" props={{"variant":["rich","text"],"side":["top","bottom","left","right"],"align":["start","center","end"]}}>
+<QUI.Popover>
+  <QUI.PopoverTrigger render={<QUI.Button label="Open popover" variant="secondary" />} />
+  <QUI.PopoverContent>
+    <QUI.PopoverTitle>Notification settings</QUI.PopoverTitle>
+    <QUI.PopoverBody>
+      <p className="text-body-xs-regular text-secondary">Choose how you want to be notified about activity.</p>
+    </QUI.PopoverBody>
+  </QUI.PopoverContent>
+</QUI.Popover>
+          </Section>
+          <Section title="Select" align="block" props={{"size":["md","lg","xl","2xl"],"disabled":"boolean","required":"boolean","readOnly":"boolean","multiple":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.Select items={[{ label: "Backlog", value: "backlog" }, { label: "In Progress", value: "in-progress" }, { label: "Done", value: "done" }]} defaultValue="backlog">
+    <QUI.SelectTrigger placeholder="Select a status" className="w-56" />
+    <QUI.SelectContent>
+      <QUI.SelectGroup>
+        <QUI.SelectGroupLabel>Status</QUI.SelectGroupLabel>
+        <QUI.SelectItem value="backlog">Backlog</QUI.SelectItem>
+        <QUI.SelectItem value="in-progress">In Progress</QUI.SelectItem>
+        <QUI.SelectSeparator />
+        <QUI.SelectItem value="done">Done</QUI.SelectItem>
+      </QUI.SelectGroup>
+    </QUI.SelectContent>
+  </QUI.Select>
+  <QUI.Select disabled>
+    <QUI.SelectTrigger placeholder="Disabled" className="w-56" />
+    <QUI.SelectContent>
+      <QUI.SelectItem value="a">Option A</QUI.SelectItem>
+    </QUI.SelectContent>
+  </QUI.Select>
+</div>
+          </Section>
+          <Section title="Tabs" align="block" props={{"variant":["contained","underline"],"stretch":["auto","full"],"disabled":"boolean"}}>
+<div className="flex w-full flex-col gap-8 p-4">
+  <QUI.Tabs defaultValue="board">
+    <QUI.TabsList>
+      <QUI.Tab value="board" label="Board" icon={<QUI.Icon icon={Icons.Grid} />} />
+      <QUI.Tab value="list" label="List" icon={<QUI.Icon icon={Icons.List} />} />
+      <QUI.Tab value="timeline" label="Timeline" disabled />
+    </QUI.TabsList>
+    <QUI.TabsPanel value="board">Board view content.</QUI.TabsPanel>
+    <QUI.TabsPanel value="list">List view content.</QUI.TabsPanel>
+    <QUI.TabsPanel value="timeline">Timeline view content.</QUI.TabsPanel>
+  </QUI.Tabs>
+  <QUI.Tabs variant="underline" defaultValue="overview">
+    <QUI.TabsList>
+      <QUI.Tab value="overview" label="Overview" />
+      <QUI.Tab value="activity" label="Activity" />
+      <QUI.Tab value="settings" label="Settings" />
+    </QUI.TabsList>
+    <QUI.TabsPanel value="overview">Overview content.</QUI.TabsPanel>
+    <QUI.TabsPanel value="activity">Activity content.</QUI.TabsPanel>
+    <QUI.TabsPanel value="settings">Settings content.</QUI.TabsPanel>
+  </QUI.Tabs>
+</div>
+          </Section>
+          <Section title="Toast" align="block" props={{"timeout":["number"],"limit":["number"]}}>
+<QUI.ToastProvider>
+  <QUI.ToastLauncher />
+</QUI.ToastProvider>
+          </Section>
+        </div>
+      </div>
     </div>
   );
 }
