@@ -281,12 +281,12 @@ function StateGroup({ group }: { group: (typeof groups)[number] }) {
 
 export function WorkItemsPage() {
   return (
-    <QUI.Box height="screen" background="canvas">
+    <QUI.Box height="full" background="canvas">
       <QUI.Stack height="full">
         <TopBar />
         <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingEnd="2" paddingBottom="2">
           <Rail />
-          <QUI.Box as="main" grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
+          <QUI.Box as="section" aria-label="Core product" grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
             <QUI.Inline height="full" wrap={false} align="stretch" gap="0">
               <Sidebar />
               <QUI.Stack grow>
