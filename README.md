@@ -37,7 +37,7 @@ qui/
 
 ## Status
 
-**Phases 1–3 are complete** — 42 components total. A components gallery (`apps/playground`,
+**Phases 1–4 are complete** — 72 components total (gallery count; some files export several parts). A components gallery (`apps/playground`,
 auto-generated from `__DOC` comments in each component's source — see below) renders all of them,
 each with a props panel listing its options (from a matching `__PROPS` comment).
 
@@ -50,6 +50,13 @@ Propel ships ~60 components; the rest are being ported incrementally, phased rou
    ContextMenu, Select, Combobox, Autocomplete, Dialog, AlertDialog, Drawer, Toast
 3. **Organisms** — done ✅: Table, Banner, Toolbar, NavigationMenu, Calendar (react-day-picker),
    VirtualList (@tanstack/react-virtual), Charts (recharts: Bar, Line, Area, Pie, Donut)
+4. **Remaining propel parity** — done ✅:
+   - Field wrappers: InputField, TextAreaField, SelectField, ComboboxField, AutocompleteField,
+     CheckboxField, CheckboxGroupField, SwitchField, RadioGroupField, Fieldset, Form
+   - Buttons: TextButton, AnchorButton, Toggle/IconToggle, ButtonGroup, SplitButton, IconSplitButton
+   - Inputs: Slider, CheckboxGroup, Swatch, OTPField, ExpandableSearch
+   - Display & overlays: Shortcut, LogoSpinner (brand-neutral), WorkspaceAvatar, Collapsible,
+     ScrollArea, PreviewCard, SuggestionMenu, List (sidebar, non-virtualized)
 
 ## Refreshing tokens from a newer propel release
 
@@ -105,10 +112,18 @@ Not yet pushed — no GitHub remote configured. To push to `https://github.com/R
   namespace would be ambiguous — see `Menu.tsx`'s `__PROPS` block for the pattern.
 
 **Known not yet done**:
-- Phases 1–3 are complete. Remaining propel components (e.g. its non-virtualized sidebar `List`,
-  Calendar month/year picker views) aren't ported yet. Phase 3's Toolbar, NavigationMenu,
-  Calendar, VirtualList and Charts were built by 5 parallel subagents in git worktrees and
-  merged; all tests pass but none has been visually checked in a browser yet.
+- Phases 1–4 are complete; 127 tests pass. Phases 3–4 were built by parallel subagents in git
+  worktrees and merged. Visually checked so far: Banner, Calendar, Table, NavigationMenu,
+  Toolbar, VirtualList, and Charts' bar/line/area. NOT yet visually checked: Pie/Donut charts
+  (rendered empty in a hidden Chrome tab — likely paused animation, unconfirmed) and every
+  Phase 4 component.
+- Known bug: `cn` (stock twMerge) treats typography tokens like `text-body-xs-regular` as text
+  colors, so combining one with `text-primary` in one `cn()` call drops one of them. New Phase 4
+  components use `cnTypography` (lib/cn.ts) instead; existing ones (e.g. Menu rows) are likely
+  affected until `cn` itself is configured the same way.
+- Simplified vs propel: ComboboxField (no select-all / virtualized list / +N overflow),
+  AutocompleteField, SelectField (no pill variant/header/footer); Calendar lacks month/year views.
+- `Field` now applies invalid styling + `aria-invalid` whenever `error` is set.
 - Fresh checkout gotcha: run `pnpm --filter @qui/tokens build` before the playground build —
   `packages/tokens/dist` isn't committed.
 - Charts' palette uses Tailwind arbitrary-property classes, so consuming apps must have Tailwind
