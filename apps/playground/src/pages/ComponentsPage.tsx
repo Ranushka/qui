@@ -192,6 +192,23 @@ export function ComponentsPage() {
   <QUI.CircularProgress size="md" indeterminate />
 </div>
           </Section>
+          <Section title="Heading" align="block" props={{"level":[1,2,3,4,5,6],"size":[1,2,3,4,5,6],"weight":["regular","medium","semibold","bold"],"color":["primary","secondary","tertiary","accent","danger","success","warning","info","on-color","inverse","inherit"],"align":["start","center","end"],"truncate":"boolean"}}>
+<div className="flex w-full flex-col gap-3 p-4">
+  <QUI.Heading level={1}>Heading 1</QUI.Heading>
+  <QUI.Heading level={2}>Heading 2</QUI.Heading>
+  <QUI.Heading level={3}>Heading 3</QUI.Heading>
+  <QUI.Heading level={4}>Heading 4</QUI.Heading>
+  <QUI.Heading level={5}>Heading 5</QUI.Heading>
+  <QUI.Heading level={6}>Heading 6</QUI.Heading>
+  <div className="flex flex-wrap items-baseline gap-4">
+    <QUI.Heading level={3} weight="regular">Regular</QUI.Heading>
+    <QUI.Heading level={3} weight="medium">Medium</QUI.Heading>
+    <QUI.Heading level={3} weight="semibold">Semibold</QUI.Heading>
+    <QUI.Heading level={3} weight="bold">Bold</QUI.Heading>
+  </div>
+  <QUI.Heading level={2} size={5} color="secondary">An h2 that looks like h5</QUI.Heading>
+</div>
+          </Section>
           <Section title="Icon" align="row" props={{"tint":["inherit","danger","placeholder","muted","secondary","tertiary"],"size":["inherit","xs","sm","md","lg","xl","2xl"]}}>
 <div className="flex items-center gap-3 [--node-size:20px]">
   <QUI.Icon icon={Icons.Settings} tint="secondary" />
@@ -362,6 +379,47 @@ export function ComponentsPage() {
     <QUI.Switch defaultChecked />
     <QUI.Switch disabled />
     <QUI.Switch disabled defaultChecked />
+  </div>
+</div>
+          </Section>
+          <Section title="Text" align="block" props={{"variant":["body","caption"],"size (body)":["2xs","xs","sm","md"],"size (caption)":["3xs","2xs","xs","sm","md"],"weight":["regular","medium","semibold","bold"],"color":["primary","secondary","tertiary","placeholder","disabled","accent","danger","success","warning","info","link","on-color","inverse","inherit"],"align":["start","center","end"],"maxLines":[1,2,3,4],"tabularNums":"boolean","as":["span","p","div","label","strong","em","small","li","dt","dd","figcaption","legend"]}}>
+<div className="flex w-full flex-col gap-6 p-4">
+  <div className="flex flex-col gap-1">
+    <QUI.Text size="md">Body md — The quick brown fox jumps over the lazy dog.</QUI.Text>
+    <QUI.Text size="sm">Body sm — The quick brown fox jumps over the lazy dog.</QUI.Text>
+    <QUI.Text size="xs">Body xs — The quick brown fox jumps over the lazy dog.</QUI.Text>
+    <QUI.Text size="2xs">Body 2xs — The quick brown fox jumps over the lazy dog.</QUI.Text>
+  </div>
+  <div className="flex flex-col gap-1">
+    <QUI.Text variant="caption" size="md">Caption md — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text variant="caption" size="sm">Caption sm — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text variant="caption" size="xs">Caption xs — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text variant="caption" size="2xs">Caption 2xs — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text variant="caption" size="3xs">Caption 3xs — Updated 3 minutes ago</QUI.Text>
+  </div>
+  <div className="flex flex-wrap gap-4">
+    <QUI.Text weight="regular">Regular</QUI.Text>
+    <QUI.Text weight="medium">Medium</QUI.Text>
+    <QUI.Text weight="semibold">Semibold</QUI.Text>
+    <QUI.Text weight="bold">Bold</QUI.Text>
+  </div>
+  <div className="flex flex-wrap gap-4">
+    <QUI.Text color="primary">primary</QUI.Text>
+    <QUI.Text color="secondary">secondary</QUI.Text>
+    <QUI.Text color="tertiary">tertiary</QUI.Text>
+    <QUI.Text color="placeholder">placeholder</QUI.Text>
+    <QUI.Text color="disabled">disabled</QUI.Text>
+    <QUI.Text color="accent">accent</QUI.Text>
+    <QUI.Text color="link">link</QUI.Text>
+    <QUI.Text color="success">success</QUI.Text>
+    <QUI.Text color="warning">warning</QUI.Text>
+    <QUI.Text color="danger">danger</QUI.Text>
+    <QUI.Text color="info">info</QUI.Text>
+  </div>
+  <div className="w-64">
+    <QUI.Text as="p" color="secondary" maxLines={2}>
+      A long description that wraps onto a second line and then gets cut with an ellipsis instead of pushing the layout around.
+    </QUI.Text>
   </div>
 </div>
           </Section>

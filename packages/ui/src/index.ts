@@ -9,6 +9,8 @@ export { Tooltip, type TooltipProps } from "./atoms/Tooltip";
 export { Badge, type BadgeProps } from "./atoms/Badge";
 export { Pill, type PillProps } from "./atoms/Pill";
 export { Separator, type SeparatorProps } from "./atoms/Separator";
+export * from "./atoms/Text";
+export * from "./atoms/Heading";
 export { Avatar, type AvatarProps } from "./atoms/Avatar";
 export { AvatarGroup, type AvatarGroupProps } from "./atoms/AvatarGroup";
 export type { AvatarSize } from "./lib/avatar-shared";

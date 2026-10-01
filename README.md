@@ -43,7 +43,7 @@ each with a props panel listing its options (from a matching `__PROPS` comment).
 
 Propel ships ~60 components; the rest are being ported incrementally, phased roughly:
 
-1. **Atoms** — done ✅: Button, IconButton, Badge, Pill, Avatar(+Group), Tooltip, Separator,
+1. **Atoms** — done ✅: Text, Heading (typography — the only way apps set text size/weight/color), Button, IconButton, Badge, Pill, Avatar(+Group), Tooltip, Separator,
    Spinner, Icon, Input, TextArea, NumberField, Checkbox, Radio(+Group), Switch, Skeleton,
    CircularProgress, LinearProgress
 2. **Molecules** — done ✅: Field, Breadcrumb, Pagination, Tabs, Accordion, Popover, Menu,
