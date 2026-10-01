@@ -625,6 +625,42 @@ export function ComponentsPage() {
   </QUI.Table>
 </div>
           </Section>
+          <Section title="Toolbar" align="block" props={{"Toolbar.size":["sm","md"],"Toolbar.elevation":["flat","raised"],"Toolbar.loopFocus":"boolean","Toolbar.disabled":"boolean","ToolbarButton.variant":["primary","secondary","tertiary","ghost","danger","danger-outline"],"ToolbarButton.showTooltip":"boolean","ToolbarButton.disabled":"boolean","ToolbarToggle.pressed":"boolean","ToolbarToggleGroup.multiple":"boolean"}}>
+<div className="flex w-full flex-col gap-6 p-4">
+  <QUI.Toolbar aria-label="Formatting" elevation="raised">
+    <QUI.Menu>
+      <QUI.ToolbarMenuTrigger label="Paragraph" />
+      <QUI.MenuContent>
+        <QUI.MenuItem>Paragraph</QUI.MenuItem>
+        <QUI.MenuItem>Heading 1</QUI.MenuItem>
+        <QUI.MenuItem>Heading 2</QUI.MenuItem>
+      </QUI.MenuContent>
+    </QUI.Menu>
+    <QUI.ToolbarSeparator />
+    <QUI.ToolbarGroup aria-label="Text style">
+      <QUI.ToolbarToggle aria-label="Bold" icon={<QUI.Icon icon={Icons.Bold} />} defaultPressed />
+      <QUI.ToolbarToggle aria-label="Italic" icon={<QUI.Icon icon={Icons.Italic} />} />
+      <QUI.ToolbarToggle aria-label="Underline" icon={<QUI.Icon icon={Icons.Underline} />} />
+    </QUI.ToolbarGroup>
+    <QUI.ToolbarSeparator />
+    <QUI.ToolbarToggleGroup aria-label="Alignment" defaultValue={["left"]}>
+      <QUI.ToolbarToggle value="left" aria-label="Align left" icon={<QUI.Icon icon={Icons.AlignLeft} />} />
+      <QUI.ToolbarToggle value="center" aria-label="Align center" icon={<QUI.Icon icon={Icons.AlignCenter} />} />
+      <QUI.ToolbarToggle value="right" aria-label="Align right" icon={<QUI.Icon icon={Icons.AlignRight} />} />
+    </QUI.ToolbarToggleGroup>
+    <QUI.ToolbarSeparator />
+    <QUI.ToolbarButton label="Comment" icon={<QUI.Icon icon={Icons.MessageSquare} />} />
+    <QUI.ToolbarButton aria-label="Delete" icon={<QUI.Icon icon={Icons.Trash2} />} disabled />
+  </QUI.Toolbar>
+  <QUI.Toolbar aria-label="Issue filters" size="md">
+    <QUI.ToolbarInput aria-label="Filter issues" placeholder="Filter issues…" />
+    <QUI.ToolbarSeparator />
+    <QUI.ToolbarButton variant="secondary" label="Display" icon={<QUI.Icon icon={Icons.SlidersHorizontal} />} />
+    <QUI.ToolbarLink href="#" label="Docs" icon={<QUI.Icon icon={Icons.ExternalLink} />} />
+    <QUI.ToolbarButton variant="primary" label="New issue" icon={<QUI.Icon icon={Icons.Plus} />} />
+  </QUI.Toolbar>
+</div>
+          </Section>
         </div>
       </div>
     </div>
