@@ -625,6 +625,37 @@ export function ComponentsPage() {
   </QUI.Table>
 </div>
           </Section>
+          <Section title="VirtualList" align="block" props={{"density":["comfortable","compact"],"role":["listbox","list"],"estimated":"boolean","overscan":[8],"height":[320]}}>
+<div className="flex w-full flex-col gap-8 p-4">
+  <QUI.VirtualList
+    aria-label="Work items"
+    height={280}
+    items={Array.from({ length: 10000 }, (_, i) => ({ id: "WEB-" + (i + 1), title: "Work item " + (i + 1), points: (i * 7) % 13 }))}
+    getItemKey={(item) => item.id}
+    isItemSelected={(_, i) => i === 2}
+    renderItem={(item) => (
+      <div className="flex w-full items-center gap-3">
+        <span className="w-20 shrink-0 text-body-xs-medium text-tertiary">{item.id}</span>
+        <span className="min-w-0 flex-1 truncate text-primary">{item.title}</span>
+        <QUI.Badge label={item.points + " pts"} />
+      </div>
+    )}
+  />
+  <QUI.VirtualList
+    aria-label="Activity log"
+    role="list"
+    density="compact"
+    height={200}
+    items={Array.from({ length: 10000 }, (_, i) => "Event #" + (i + 1))}
+    renderItem={(item) => (
+      <span className="flex items-center gap-2">
+        <QUI.Icon icon={Icons.Activity} />
+        {item}
+      </span>
+    )}
+  />
+</div>
+          </Section>
         </div>
       </div>
     </div>
