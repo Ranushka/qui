@@ -8,7 +8,7 @@ import * as QUI from "../src";
  * below lists every component the check covers.
  */
 type Leaks<C> = C extends React.JSXElementConstructor<infer P>
-  ? Extract<keyof P, "className" | "style"> extends never
+  ? Extract<keyof P, "className" | "style" | `${string}ClassName` | `${string}Style`> extends never
     ? never
     : true
   : never;

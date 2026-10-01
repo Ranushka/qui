@@ -75,7 +75,6 @@ export const ComboboxInputGroup = React.forwardRef<HTMLDivElement, ComboboxInput
 ComboboxInputGroup.displayName = "ComboboxInputGroup";
 
 export interface ComboboxContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Positioner>, "className" | "children">> {
-  popupClassName?: string;
   /** Message shown when nothing matches the current filter. */
   emptyMessage?: React.ReactNode;
   /** The per-item render function (or static content) forwarded to Base UI's `Combobox.List`. */
@@ -84,11 +83,11 @@ export interface ComboboxContentProps extends NoClass<Omit<React.ComponentPropsW
 
 /** `Portal` → `Positioner` → styled popup surface, wrapping the filtered `List` plus an `Empty` state. */
 export const ComboboxContent = React.forwardRef<HTMLDivElement, ComboboxContentProps>(
-  ({ sideOffset = 4, popupClassName, emptyMessage = "No results found.", children, ...props }, ref) => {
+  ({ sideOffset = 4, emptyMessage = "No results found.", children, ...props }, ref) => {
     return (
       <BaseCombobox.Portal>
         <BaseCombobox.Positioner ref={ref} sideOffset={sideOffset} className={cn("z-50 outline-none")} {...props}>
-          <BaseCombobox.Popup className={cn(comboboxPopupVariants(), popupClassName)}>
+          <BaseCombobox.Popup className={cn(comboboxPopupVariants())}>
             <BaseCombobox.Empty className={comboboxEmptyVariants()}>{emptyMessage}</BaseCombobox.Empty>
             <BaseCombobox.List className={comboboxListVariants()}>{children}</BaseCombobox.List>
           </BaseCombobox.Popup>

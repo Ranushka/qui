@@ -53,7 +53,6 @@ export interface TextAreaProps extends NoClass<Omit<React.TextareaHTMLAttributes
   autoResize?: boolean;
   /** Caps `autoResize` growth at this many rows. */
   maxRows?: number;
-  groupClassName?: string;
 }
 
 /**
@@ -62,7 +61,7 @@ export interface TextAreaProps extends NoClass<Omit<React.TextareaHTMLAttributes
  * `maxRows` caps that growth before scrolling takes over.
  */
 export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ size = "md", autoResize = false, maxRows, resize = "vertical", groupClassName, onInput, ...props }, ref) => {
+  ({ size = "md", autoResize = false, maxRows, resize = "vertical", onInput, ...props }, ref) => {
     const localRef = React.useRef<HTMLTextAreaElement | null>(null);
     const setRef = React.useCallback(
       (node: HTMLTextAreaElement | null) => {
@@ -78,7 +77,7 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     }, [autoResize, maxRows, props.value]);
 
     return (
-      <div className={cn(textAreaGroupVariants({ resize: autoResize ? "none" : resize }), groupClassName)}>
+      <div className={cn(textAreaGroupVariants({ resize: autoResize ? "none" : resize }))}>
         <textarea
           ref={setRef}
           className={cn(textAreaVariants({ size }), autoResize && "h-auto")}

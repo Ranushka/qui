@@ -73,7 +73,6 @@ export const AutocompleteInputGroup = React.forwardRef<HTMLDivElement, Autocompl
 AutocompleteInputGroup.displayName = "AutocompleteInputGroup";
 
 export interface AutocompleteContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Positioner>, "className" | "children">> {
-  popupClassName?: string;
   /** Message shown when nothing matches the current text. */
   emptyMessage?: React.ReactNode;
   /** The per-item render function (or static content) forwarded to Base UI's `Autocomplete.List`. */
@@ -82,11 +81,11 @@ export interface AutocompleteContentProps extends NoClass<Omit<React.ComponentPr
 
 /** `Portal` → `Positioner` → styled popup surface, wrapping the suggestion `List` plus an `Empty` state. */
 export const AutocompleteContent = React.forwardRef<HTMLDivElement, AutocompleteContentProps>(
-  ({ sideOffset = 4, popupClassName, emptyMessage = "No matches.", children, ...props }, ref) => {
+  ({ sideOffset = 4, emptyMessage = "No matches.", children, ...props }, ref) => {
     return (
       <BaseAutocomplete.Portal>
         <BaseAutocomplete.Positioner ref={ref} sideOffset={sideOffset} className={cn("z-50 outline-none")} {...props}>
-          <BaseAutocomplete.Popup className={cn(autocompletePopupVariants(), popupClassName)}>
+          <BaseAutocomplete.Popup className={cn(autocompletePopupVariants())}>
             <BaseAutocomplete.Empty className={autocompleteEmptyVariants()}>{emptyMessage}</BaseAutocomplete.Empty>
             <BaseAutocomplete.List className="p-1 outline-none">{children}</BaseAutocomplete.List>
           </BaseAutocomplete.Popup>

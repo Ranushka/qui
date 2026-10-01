@@ -6,7 +6,7 @@ import { TextArea, type TextAreaProps } from "../atoms/TextArea";
 import { Field } from "./Field";
 import type { FieldSize } from "../lib/field-parts";
 
-export interface TextAreaFieldProps extends NoClass<Omit<TextAreaProps, "size" | "className" | "groupClassName" | "required" | "value" | "defaultValue">> {
+export interface TextAreaFieldProps extends NoClass<Omit<TextAreaProps, "size" | "className" | "required" | "value" | "defaultValue">> {
   /** Size of the control and its label/helper text. @default "lg" */
   size?: FieldSize;
   /** Label naming the text area. */

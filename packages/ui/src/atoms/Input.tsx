@@ -34,8 +34,6 @@ export interface InputProps extends NoClass<Omit<React.ComponentPropsWithoutRef<
   startSlot?: React.ReactNode;
   /** Trailing content inside the bordered frame. */
   endSlot?: React.ReactNode;
-  /** Classes for the bordered frame around the input, when `startSlot`/`endSlot` are used. */
-  groupClassName?: string;
 }
 
 /**
@@ -44,9 +42,9 @@ export interface InputProps extends NoClass<Omit<React.ComponentPropsWithoutRef<
  * same frame without being part of the focusable control.
  */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ size = "md", startSlot, endSlot, groupClassName, ...props }, ref) => {
+  ({ size = "md", startSlot, endSlot, ...props }, ref) => {
     return (
-      <div className={cn(inputGroupVariants({ size }), groupClassName)}>
+      <div className={cn(inputGroupVariants({ size }))}>
         {startSlot}
         <BaseInput ref={ref} className={cn(inputVariants({ size }))} {...props} />
         {endSlot}

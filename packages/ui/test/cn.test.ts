@@ -15,4 +15,16 @@ describe("cn", () => {
     expect(cn("text-secondary", "text-primary")).toBe("text-primary");
     expect(cn("text-sm text-body-xs-medium")).toBe("text-body-xs-medium");
   });
+
+  it("keeps a border-width token alongside a border color", () => {
+    expect(cn("border-sm border-subtle-1")).toBe("border-sm border-subtle-1");
+    expect(cn("border-lg", "border-accent-strong")).toBe("border-lg border-accent-strong");
+    expect(cn("border-t-sm border-subtle")).toBe("border-t-sm border-subtle");
+    expect(cn("border-sm", "border-lg")).toBe("border-lg");
+  });
+
+  it("keeps a shadow token alongside other classes and lets shadow-none override it", () => {
+    expect(cn("shadow-raised-100 border-sm")).toBe("shadow-raised-100 border-sm");
+    expect(cn("shadow-overlay-100", "shadow-none")).toBe("shadow-none");
+  });
 });

@@ -70,17 +70,15 @@ export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerPr
 SelectTrigger.displayName = "SelectTrigger";
 
 export interface SelectContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseSelect.Positioner>, "className">> {
-  /** Classes for the popup surface itself (border/shadow/radius), distinct from the positioner. */
-  popupClassName?: string;
 }
 
 /** `Portal` → `Positioner` → styled popup surface, wrapping the option `List`. Side/align/offset live here. */
 export const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
-  ({ sideOffset = 4, popupClassName, children, ...props }, ref) => {
+  ({ sideOffset = 4, children, ...props }, ref) => {
     return (
       <BaseSelect.Portal>
         <BaseSelect.Positioner ref={ref} sideOffset={sideOffset} className={cn("z-50 outline-none")} {...props}>
-          <BaseSelect.Popup className={cn(selectPopupVariants(), popupClassName)}>
+          <BaseSelect.Popup className={cn(selectPopupVariants())}>
             <BaseSelect.List className={selectListVariants()}>{children}</BaseSelect.List>
           </BaseSelect.Popup>
         </BaseSelect.Positioner>

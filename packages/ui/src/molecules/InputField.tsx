@@ -4,7 +4,7 @@ import { Input, type InputProps } from "../atoms/Input";
 import { Field } from "./Field";
 import type { FieldSize } from "../lib/field-parts";
 
-export interface InputFieldProps extends NoClass<Omit<InputProps, "size" | "startSlot" | "endSlot" | "className" | "groupClassName" | "required">> {
+export interface InputFieldProps extends NoClass<Omit<InputProps, "size" | "startSlot" | "endSlot" | "className" | "required">> {
   /** Size of the control and its label/helper text. @default "lg" */
   size?: FieldSize;
   /** Label placement: above the control, or beside it. @default "vertical" */
