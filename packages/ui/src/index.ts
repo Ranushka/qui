@@ -43,3 +43,4 @@ export * from "./organisms/Table";
 export * from "./organisms/Banner";
 export * from "./organisms/NavigationMenu";
 export * from "./organisms/Calendar";
+export * from "./organisms/VirtualList";
