@@ -1,5 +1,14 @@
 import type * as React from "react";
-import { paddingClass, paddingXClass, paddingYClass, type Space } from "./space";
+import {
+  paddingBottomClass,
+  paddingClass,
+  paddingEndClass,
+  paddingStartClass,
+  paddingTopClass,
+  paddingXClass,
+  paddingYClass,
+  type Space,
+} from "./space";
 
 /**
  * Props every layout atom (Box, Stack, Inline, Grid) shares: the element, padding on the spacing
@@ -18,6 +27,8 @@ const widthClass: Record<ContainerSize | "full" | "auto", string> = {
   "3xs": "w-3xs", "2xs": "w-2xs", xs: "w-xs", sm: "w-sm", md: "w-md", lg: "w-lg", xl: "w-xl", "2xl": "w-2xl",
 };
 
+const heightClass = { full: "h-full", screen: "h-dvh" } as const;
+
 const maxWidthClass: Record<ContainerSize, string> = {
   "3xs": "max-w-3xs", "2xs": "max-w-2xs", xs: "max-w-xs", sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-xl", "2xl": "max-w-2xl",
 };
@@ -30,11 +41,18 @@ export type LayoutProps = Omit<React.HTMLAttributes<HTMLElement>, "className" | 
   paddingX?: Space;
   /** Overrides `padding` on the block (top/bottom) sides. */
   paddingY?: Space;
+  /** Single-side overrides, e.g. indenting a nested row. Start/end are logical, so they flip in RTL. */
+  paddingTop?: Space;
+  paddingBottom?: Space;
+  paddingStart?: Space;
+  paddingEnd?: Space;
   /** Fixed width from the container scale, or fill the parent. */
   width?: keyof typeof widthClass;
   /** Cap the width from the container scale while still shrinking on narrow screens. */
   maxWidth?: ContainerSize;
-  /** Take the remaining space in a Stack/Inline row (and allow content inside to truncate). */
+  /** Fill the parent's height, or the viewport's (app shells). */
+  height?: keyof typeof heightClass;
+  /** Take the remaining space in a Stack column or Inline row, and let content inside truncate or scroll. */
   grow?: boolean;
   /** `false` keeps this element at its natural size when a Stack/Inline row runs out of space. @default true */
   shrink?: boolean;
@@ -46,8 +64,13 @@ export function layoutClasses<P extends LayoutProps>({
   padding,
   paddingX,
   paddingY,
+  paddingTop,
+  paddingBottom,
+  paddingStart,
+  paddingEnd,
   width,
   maxWidth,
+  height,
   grow,
   shrink = true,
   ...rest
@@ -56,12 +79,17 @@ export function layoutClasses<P extends LayoutProps>({
     padding && paddingClass[padding],
     paddingX && paddingXClass[paddingX],
     paddingY && paddingYClass[paddingY],
+    paddingTop && paddingTopClass[paddingTop],
+    paddingBottom && paddingBottomClass[paddingBottom],
+    paddingStart && paddingStartClass[paddingStart],
+    paddingEnd && paddingEndClass[paddingEnd],
     width && widthClass[width],
     maxWidth && maxWidthClass[maxWidth],
-    grow && "min-w-0 flex-1",
+    height && heightClass[height],
+    grow && "min-h-0 min-w-0 flex-1",
     !shrink && "shrink-0",
   ];
-  return { Tag: (as ?? "div") as LayoutTag, classes, rest: rest as Omit<P, keyof LayoutProps> & Omit<LayoutProps, "as" | "padding" | "paddingX" | "paddingY" | "width" | "maxWidth" | "grow" | "shrink"> };
+  return { Tag: (as ?? "div") as LayoutTag, classes, rest };
 }
 
 export const alignItemsClass = {

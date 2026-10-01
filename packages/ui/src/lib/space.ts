@@ -37,3 +37,21 @@ export const paddingYClass: Record<Space, string> = {
   "0": "py-0", "0.5": "py-0.5", "1": "py-1", "1.5": "py-1.5", "2": "py-2", "3": "py-3", "4": "py-4",
   "5": "py-5", "6": "py-6", "8": "py-8", "10": "py-10", "12": "py-12", "16": "py-16",
 };
+
+export const paddingTopClass: Record<Space, string> = {
+  "0": "pt-0", "0.5": "pt-0.5", "1": "pt-1", "1.5": "pt-1.5", "2": "pt-2", "3": "pt-3", "4": "pt-4", "5": "pt-5", "6": "pt-6", "8": "pt-8", "10": "pt-10", "12": "pt-12", "16": "pt-16",
+};
+
+export const paddingBottomClass: Record<Space, string> = {
+  "0": "pb-0", "0.5": "pb-0.5", "1": "pb-1", "1.5": "pb-1.5", "2": "pb-2", "3": "pb-3", "4": "pb-4", "5": "pb-5", "6": "pb-6", "8": "pb-8", "10": "pb-10", "12": "pb-12", "16": "pb-16",
+};
+
+/** Logical (inline-start) side, so it flips in right-to-left layouts. */
+export const paddingStartClass: Record<Space, string> = {
+  "0": "ps-0", "0.5": "ps-0.5", "1": "ps-1", "1.5": "ps-1.5", "2": "ps-2", "3": "ps-3", "4": "ps-4", "5": "ps-5", "6": "ps-6", "8": "ps-8", "10": "ps-10", "12": "ps-12", "16": "ps-16",
+};
+
+/** Logical (inline-end) side, so it flips in right-to-left layouts. */
+export const paddingEndClass: Record<Space, string> = {
+  "0": "pe-0", "0.5": "pe-0.5", "1": "pe-1", "1.5": "pe-1.5", "2": "pe-2", "3": "pe-3", "4": "pe-4", "5": "pe-5", "6": "pe-6", "8": "pe-8", "10": "pe-10", "12": "pe-12", "16": "pe-16",
+};
