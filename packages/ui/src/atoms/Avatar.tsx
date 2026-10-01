@@ -7,24 +7,16 @@ import { Icon } from "./Icon";
 import { Tooltip } from "./Tooltip";
 import {
   AvatarGroupContext,
+  avatarFallbackVariantClass,
+  avatarInitialsTextClass,
   getAvatarInitials,
   getAvatarVariant,
   getAvatarVariantSeed,
   getFirstAvatarInitial,
   type AvatarSize,
-  type AvatarVariant,
 } from "../lib/avatar-shared";
 
-const initialsTextClass: Record<AvatarSize, string> = {
-  "2xs": "text-caption-2xs-regular",
-  xs: "text-caption-2xs-regular",
-  sm: "text-caption-sm-regular",
-  md: "text-caption-md-regular",
-  lg: "text-body-xs-regular",
-  xl: "text-h6-regular",
-  "2xl": "text-h4-regular",
-  "3xl": "text-h3-regular",
-};
+const initialsTextClass = avatarInitialsTextClass;
 
 const avatarVariants = cva("relative inline-flex shrink-0 items-center justify-center overflow-clip rounded-full border-subtle bg-layer-1", {
   variants: {
@@ -42,14 +34,7 @@ const avatarVariants = cva("relative inline-flex shrink-0 items-center justify-c
   defaultVariants: { size: "md" },
 });
 
-const fallbackVariantClass: Record<AvatarVariant, string> = {
-  orange: "bg-label-orange-bg-strong text-on-color",
-  indigo: "bg-label-indigo-bg-strong text-on-color",
-  emerald: "bg-label-emerald-bg-strong text-on-color",
-  crimson: "bg-label-crimson-bg-strong text-on-color",
-  pink: "bg-label-pink-bg-strong text-on-color",
-  purple: "bg-label-purple-bg-strong text-on-color",
-};
+const fallbackVariantClass = avatarFallbackVariantClass;
 
 export interface AvatarProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Root>, "children"> {
   size?: AvatarSize;

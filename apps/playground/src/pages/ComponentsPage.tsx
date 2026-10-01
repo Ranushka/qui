@@ -206,6 +206,13 @@ export function ComponentsPage() {
   <QUI.LinearProgress indeterminate />
 </div>
           </Section>
+          <Section title="LogoSpinner" align="row" props={{"size":["sm","md","fluid"]}}>
+<div className="flex items-center gap-8">
+  <QUI.LogoSpinner size="sm" alt="Loading" />
+  <QUI.LogoSpinner size="md" alt="Loading workspace" />
+  <QUI.LogoSpinner size="md" alt="Loading" logo={<Icons.Rocket className="text-icon-secondary" />} />
+</div>
+          </Section>
           <Section title="NumberField" align="row" props={{"size":["sm","md","lg"],"disabled":"boolean"}}>
 <div className="flex items-center gap-4 p-4">
   <QUI.NumberField size="sm" aria-label="Quantity" defaultValue={1} min={0} max={10} />
@@ -260,6 +267,12 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
+          <Section title="Shortcut" align="row" props={{"size":["sm","md"]}}>
+<div className="flex items-center gap-4">
+  <QUI.Shortcut keys="⌘ K" />
+  <QUI.Shortcut keys="Ctrl Shift P" size="sm" />
+</div>
+          </Section>
           <Section title="Skeleton" align="block" props={{"layout":["stack","row"],"stretch":["full","fit"]}}>
 <div className="flex flex-col gap-6 p-4">
   <QUI.Skeleton aria-label="Loading card" inlineSize="16rem">
@@ -305,6 +318,21 @@ export function ComponentsPage() {
 <QUI.Tooltip label="Save changes">
   <QUI.Button label="Hover me" />
 </QUI.Tooltip>
+          </Section>
+          <Section title="WorkspaceAvatar" align="block" props={{"size":["2xs","xs","sm","md","lg","xl","2xl","3xl"],"tooltip":"boolean"}}>
+<div className="flex flex-wrap items-center gap-4 p-4">
+  <QUI.WorkspaceAvatar size="2xs" alt="Acme Robotics" />
+  <QUI.WorkspaceAvatar size="xs" alt="Acme Robotics" />
+  <QUI.WorkspaceAvatar size="sm" alt="Acme Robotics" />
+  <QUI.WorkspaceAvatar size="md" alt="Acme Robotics" />
+  <QUI.WorkspaceAvatar size="lg" alt="Acme Robotics" />
+  <QUI.WorkspaceAvatar size="xl" alt="Acme Robotics" />
+  <QUI.WorkspaceAvatar size="2xl" alt="Acme Robotics" />
+  <QUI.WorkspaceAvatar size="xl" alt="Northwind" />
+  <QUI.WorkspaceAvatar size="xl" alt="Globex" fallback="GX" />
+  <QUI.WorkspaceAvatar size="xl" />
+  <QUI.WorkspaceAvatar size="xl" alt="Initech" tooltip />
+</div>
           </Section>
         </div>
       </div>
@@ -380,6 +408,24 @@ export function ComponentsPage() {
       Documents
     </QUI.BreadcrumbItem>
   </QUI.Breadcrumb>
+</div>
+          </Section>
+          <Section title="Collapsible" align="block" props={{"placement":["inline","sidebar"],"indicator":"boolean","hug":"boolean","defaultOpen":"boolean","disabled":"boolean","keepMounted":"boolean"}}>
+<div className="flex w-full flex-col gap-4 p-4">
+  <QUI.Collapsible defaultOpen trigger="Description" icon={<QUI.Icon icon={Icons.FileText} tint="secondary" />}>
+    Collapsibles hide supporting detail until it's asked for.
+  </QUI.Collapsible>
+  <QUI.Collapsible
+    trigger="Attachments"
+    trailing={<QUI.IconButton variant="ghost" size="sm" aria-label="Add attachment" icon={<QUI.Icon icon={Icons.Plus} />} />}
+  >
+    No attachments yet.
+  </QUI.Collapsible>
+  <div className="w-60">
+    <QUI.Collapsible defaultOpen placement="sidebar" trigger="Favorites">
+      <div className="px-2 py-1 text-body-xs-regular text-secondary">Pinned projects go here.</div>
+    </QUI.Collapsible>
+  </div>
 </div>
           </Section>
           <Section title="Combobox" align="block" props={{"size":["md","lg","xl","2xl"],"clearable":"boolean","disabled":"boolean","multiple":"boolean","autoHighlight":"boolean"}}>
@@ -474,6 +520,60 @@ export function ComponentsPage() {
   </QUI.Field>
 </div>
           </Section>
+          <Section title="List" align="block" props={{"List.gap":["px","0.5"],"List.loopFocus":"boolean","ListItem.level":["1","2","3","4","5"],"ListItem.density":["comfortable","compact"],"ListSection.indicator":"boolean"}}>
+<div className="flex w-full flex-wrap gap-8 p-4">
+  <div className="w-60">
+    <QUI.List aria-label="Workspace">
+      <QUI.ListItem>
+        <QUI.ListItemLink href="#" aria-current="page" startIcon={<QUI.Icon icon={Icons.House} />} label="Home" />
+      </QUI.ListItem>
+      <QUI.ListItem>
+        <QUI.ListItemLink href="#" startIcon={<QUI.Icon icon={Icons.Inbox} />} label="Inbox" count={12} />
+      </QUI.ListItem>
+      <QUI.ListItem>
+        <QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Search} />} label="Search" />
+      </QUI.ListItem>
+      <QUI.CollapsibleRoot defaultOpen>
+        <QUI.ListItem>
+          <QUI.ListItemLink href="#" startIcon={<QUI.Icon icon={Icons.Folder} />} label="Projects" />
+          <QUI.ListItemDisclosureTrigger aria-label="Toggle projects" />
+        </QUI.ListItem>
+        <QUI.CollapsiblePanel>
+          <QUI.List aria-label="Projects">
+            <QUI.ListItem level={2}>
+              <QUI.ListItemLink href="#" label="Website" />
+            </QUI.ListItem>
+            <QUI.ListItem level={2}>
+              <QUI.ListItemLink href="#" label="Mobile app" count={3} />
+            </QUI.ListItem>
+          </QUI.List>
+        </QUI.CollapsiblePanel>
+      </QUI.CollapsibleRoot>
+    </QUI.List>
+  </div>
+  <div className="w-60">
+    <QUI.ListSection label="Favorites" defaultOpen>
+      <QUI.List aria-label="Favorites" gap="px">
+        <QUI.ListItem density="compact">
+          <QUI.ListItemLink href="#" startIcon={<QUI.Icon icon={Icons.Star} />} label="Roadmap" />
+        </QUI.ListItem>
+        <QUI.ListItem density="compact">
+          <QUI.ListItemLink href="#" startIcon={<QUI.Icon icon={Icons.Star} />} label="Bugs" count={4} />
+        </QUI.ListItem>
+      </QUI.List>
+    </QUI.ListSection>
+    <QUI.ListSectionHeading>Settings</QUI.ListSectionHeading>
+    <QUI.List aria-label="Settings">
+      <QUI.ListItem>
+        <QUI.ListItemLink href="#" label="General" />
+      </QUI.ListItem>
+      <QUI.ListItem>
+        <QUI.ListItemLink href="#" label="Members" />
+      </QUI.ListItem>
+    </QUI.List>
+  </div>
+</div>
+          </Section>
           <Section title="Menu" align="block" props={{"MenuItem.variant":["neutral","accent","danger"],"MenuItem.selected":"boolean","MenuCheckboxItem.variant":["neutral","accent","danger"],"MenuRadioItem.variant":["neutral","accent","danger"],"MenuRadioItem.marker":["check","radio"]}}>
 <div className="flex flex-wrap items-start gap-6 p-4">
   <QUI.Menu>
@@ -527,6 +627,57 @@ export function ComponentsPage() {
   </QUI.PopoverContent>
 </QUI.Popover>
           </Section>
+          <Section title="PreviewCard" align="row" props={{"PreviewCardContent.side":["top","bottom","left","right"],"PreviewCardContent.align":["start","center","end"]}}>
+<p className="text-body-sm-regular text-secondary">
+  Blocked by{" "}
+  <QUI.PreviewCard>
+    <QUI.PreviewCardTrigger href="#" className="text-accent-primary underline underline-offset-2">
+      WEB-142
+    </QUI.PreviewCardTrigger>
+    <QUI.PreviewCardContent>
+      <QUI.PreviewCardBody>
+        <QUI.PreviewCardEyebrow>
+          <QUI.Icon icon={Icons.CircleDot} tint="secondary" />
+          <QUI.PreviewCardEyebrowLabel>WEB-142</QUI.PreviewCardEyebrowLabel>
+        </QUI.PreviewCardEyebrow>
+        <QUI.PreviewCardTitle>Migrate auth to the new session service</QUI.PreviewCardTitle>
+        <QUI.PreviewCardDescription>Swap cookie sessions for short-lived tokens across web and API.</QUI.PreviewCardDescription>
+        <QUI.PreviewCardPropertyGroup>
+          <QUI.Avatar size="sm" alt="Ada Lovelace" />
+          <QUI.Badge label="In progress" />
+        </QUI.PreviewCardPropertyGroup>
+        <QUI.PreviewCardMeta>Updated 2 hours ago</QUI.PreviewCardMeta>
+      </QUI.PreviewCardBody>
+    </QUI.PreviewCardContent>
+  </QUI.PreviewCard>
+  .
+</p>
+          </Section>
+          <Section title="ScrollArea" align="block" props={{"orientation":["vertical","horizontal","both"],"visibility":["auto","always"],"size":["sm","md","lg"]}}>
+<div className="flex flex-wrap gap-6 p-4">
+  <div className="flex h-48 w-64 flex-col rounded-lg border border-subtle bg-layer-1">
+    <QUI.ScrollArea orientation="vertical">
+      <div className="flex flex-col gap-2 p-3 text-body-sm-regular text-secondary">
+        <p>Cycles group work into time-boxed iterations.</p>
+        <p>Modules group work by feature or deliverable.</p>
+        <p>Views save a filtered slice of work items.</p>
+        <p>Pages hold long-form notes and specs.</p>
+        <p>Intake collects requests from outside the team.</p>
+        <p>Estimates size work in points or hours.</p>
+        <p>Labels tag work items across projects.</p>
+      </div>
+    </QUI.ScrollArea>
+  </div>
+  <div className="flex h-48 w-64 flex-col rounded-lg border border-subtle bg-layer-1">
+    <QUI.ScrollArea orientation="both" visibility="always" size="md">
+      <div className="w-[32rem] p-3 text-body-sm-regular text-secondary">
+        <p>Scroll both ways — this block is wider and taller than its frame, so both scrollbars and the corner render.</p>
+        <p className="mt-24">Bottom of the content.</p>
+      </div>
+    </QUI.ScrollArea>
+  </div>
+</div>
+          </Section>
           <Section title="Select" align="block" props={{"size":["md","lg","xl","2xl"],"disabled":"boolean","required":"boolean","readOnly":"boolean","multiple":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <QUI.Select items={[{ label: "Backlog", value: "backlog" }, { label: "In Progress", value: "in-progress" }, { label: "Done", value: "done" }]} defaultValue="backlog">
@@ -548,6 +699,19 @@ export function ComponentsPage() {
     </QUI.SelectContent>
   </QUI.Select>
 </div>
+          </Section>
+          <Section title="SuggestionMenu" align="row" props={{"width":["fixed","fit"],"loopFocus":"boolean"}}>
+<QUI.SuggestionMenu aria-label="Insert block">
+  <QUI.SuggestionMenuGroup label="Basic blocks">
+    <QUI.SuggestionMenuItem icon={<Icons.Type />} label="Text" />
+    <QUI.SuggestionMenuItem icon={<Icons.Heading1 />} label="Heading 1" trailing={<QUI.Shortcut keys="#" />} />
+    <QUI.SuggestionMenuItem icon={<Icons.List />} label="Bulleted list" trailing={<QUI.Shortcut keys="-" />} />
+  </QUI.SuggestionMenuGroup>
+  <QUI.SuggestionMenuGroup label="Embeds">
+    <QUI.SuggestionMenuItem icon={<Icons.Image />} label="Image" />
+    <QUI.SuggestionMenuItem icon={<Icons.Table />} label="Table" />
+  </QUI.SuggestionMenuGroup>
+</QUI.SuggestionMenu>
           </Section>
           <Section title="Tabs" align="block" props={{"variant":["contained","underline"],"stretch":["auto","full"],"disabled":"boolean"}}>
 <div className="flex w-full flex-col gap-8 p-4">

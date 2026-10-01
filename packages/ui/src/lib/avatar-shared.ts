@@ -9,6 +9,28 @@ export const AvatarGroupContext = React.createContext<AvatarSize | undefined>(un
 export const AVATAR_VARIANTS = ["orange", "indigo", "emerald", "crimson", "pink", "purple"] as const;
 export type AvatarVariant = (typeof AVATAR_VARIANTS)[number];
 
+/** Initials type ramp per avatar size — shared by the person `Avatar` and `WorkspaceAvatar`. */
+export const avatarInitialsTextClass: Record<AvatarSize, string> = {
+  "2xs": "text-caption-2xs-regular",
+  xs: "text-caption-2xs-regular",
+  sm: "text-caption-sm-regular",
+  md: "text-caption-md-regular",
+  lg: "text-body-xs-regular",
+  xl: "text-h6-regular",
+  "2xl": "text-h4-regular",
+  "3xl": "text-h3-regular",
+};
+
+/** Filled initials surface per deterministic variant. */
+export const avatarFallbackVariantClass: Record<AvatarVariant, string> = {
+  orange: "bg-label-orange-bg-strong text-on-color",
+  indigo: "bg-label-indigo-bg-strong text-on-color",
+  emerald: "bg-label-emerald-bg-strong text-on-color",
+  crimson: "bg-label-crimson-bg-strong text-on-color",
+  pink: "bg-label-pink-bg-strong text-on-color",
+  purple: "bg-label-purple-bg-strong text-on-color",
+};
+
 /**
  * Deterministically picks a variant from a seed (a name or initials) so the same seed always gets
  * the same color. Callers must pass a non-empty seed — see {@link getAvatarVariantSeed}.
