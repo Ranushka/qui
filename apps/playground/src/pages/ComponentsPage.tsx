@@ -148,6 +148,23 @@ export function ComponentsPage() {
   <QUI.Checkbox label="Disabled checked" disabled defaultChecked />
 </div>
           </Section>
+          <Section title="CheckboxGroup" align="block" props={{"density":["comfortable","compact"],"disabled":"boolean"}}>
+<div className="flex flex-wrap gap-8 p-4">
+  <QUI.CheckboxGroup aria-label="Notifications" defaultValue={["email"]}>
+    <QUI.Checkbox value="email" label="Email" />
+    <QUI.Checkbox value="push" label="Push" />
+    <QUI.Checkbox value="sms" label="SMS (disabled)" disabled />
+  </QUI.CheckboxGroup>
+  <QUI.CheckboxGroup aria-label="Platforms" density="compact" allValues={["web", "ios", "android"]} defaultValue={["web"]}>
+    <QUI.Checkbox parent label="All platforms" />
+    <div className="flex flex-col pl-4">
+      <QUI.Checkbox value="web" label="Web" />
+      <QUI.Checkbox value="ios" label="iOS" />
+      <QUI.Checkbox value="android" label="Android" />
+    </div>
+  </QUI.CheckboxGroup>
+</div>
+          </Section>
           <Section title="CircularProgress" align="row" props={{"size":["sm","md"],"variant":["brand","success","warning","danger"],"indeterminate":"boolean"}}>
 <div className="flex items-center gap-4 p-4">
   <QUI.CircularProgress size="sm" value={40} />
@@ -275,9 +292,33 @@ export function ComponentsPage() {
   </QUI.Skeleton>
 </div>
           </Section>
+          <Section title="Slider" align="block" props={{"size":["sm","md","lg"],"showValue":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-sm flex-col gap-6 p-4">
+  <QUI.Slider label="Volume" defaultValue={40} />
+  <QUI.Slider label="Price range" defaultValue={[20, 80]} format={{ style: "currency", currency: "USD", maximumFractionDigits: 0 }} getAriaLabel={(i) => (i === 0 ? "Minimum price" : "Maximum price")} />
+  <QUI.Slider aria-label="Small" size="sm" showValue={false} defaultValue={30} />
+  <QUI.Slider aria-label="Large" size="lg" showValue={false} defaultValue={70} />
+  <QUI.Slider label="Disabled" defaultValue={50} disabled />
+</div>
+          </Section>
           <Section title="Spinner" align="row" props={{"active":"boolean"}}>
 <div className="[--node-size:20px] text-icon-secondary">
   <QUI.Spinner />
+</div>
+          </Section>
+          <Section title="Swatch" align="block" props={{"fill":["#3f76ff","#ef4444","#22c55e"]}}>
+<div className="flex flex-col gap-3 p-4">
+  <div className="flex items-center gap-2 [--node-size:16px]">
+    <QUI.Swatch fill="#3f76ff" />
+    <QUI.Swatch fill="#ef4444" />
+    <QUI.Swatch fill="#f59e0b" />
+    <QUI.Swatch fill="#22c55e" />
+    <QUI.Swatch fill="#a855f7" />
+  </div>
+  <div className="flex items-center gap-2">
+    <QUI.Pill variant="outline" label="Bug" startIcon={<QUI.Swatch fill="#ef4444" />} />
+    <QUI.Pill variant="outline" label="Feature" startIcon={<QUI.Swatch fill="#22c55e" />} />
+  </div>
 </div>
           </Section>
           <Section title="Switch" align="block" props={{"size":["sm","md","lg"],"disabled":"boolean","readOnly":"boolean","defaultChecked":"boolean"}}>
@@ -458,6 +499,17 @@ export function ComponentsPage() {
   </QUI.Drawer>
 </div>
           </Section>
+          <Section title="ExpandableSearch" align="block" props={{"size":["md","lg","xl","2xl"],"defaultExpanded":"boolean","disabled":"boolean","required":"boolean"}}>
+<div className="flex flex-col items-start gap-4 p-4">
+  <QUI.ExpandableSearch aria-label="Search issues" />
+  <QUI.ExpandableSearch aria-label="Search projects" size="lg" defaultValue="Roadmap" />
+  <QUI.ExpandableSearch aria-label="Search countries" items={["Afghanistan", "Albania", "Algeria", "Andorra", "Angola"]}>
+    <QUI.AutocompleteContent>
+      {(item) => <QUI.AutocompleteItem key={item} value={item}>{item}</QUI.AutocompleteItem>}
+    </QUI.AutocompleteContent>
+  </QUI.ExpandableSearch>
+</div>
+          </Section>
           <Section title="Field" align="block" props={{"size":["md","lg","xl","2xl"],"required":"boolean"}}>
 <div className="flex max-w-xs flex-col gap-6 p-4">
   <QUI.Field label="Workspace name" hint="Shown on your team's billing page.">
@@ -507,6 +559,15 @@ export function ComponentsPage() {
       <QUI.MenuCheckboxItem>Show completed</QUI.MenuCheckboxItem>
     </QUI.MenuContent>
   </QUI.Menu>
+</div>
+          </Section>
+          <Section title="OTPField" align="block" props={{"size":["lg","xl","2xl"],"mask":"boolean","disabled":"boolean","readOnly":"boolean","validationType":["numeric","alpha","alphanumeric","none"]}}>
+<div className="flex flex-col gap-6 p-4">
+  <QUI.OTPField length={6} />
+  <QUI.OTPField length={6} size="xl" groups={[3, 3]} hint="Resend code in 0:42" />
+  <QUI.OTPField length={4} size="2xl" defaultValue="12" error="That code has expired." />
+  <QUI.OTPField length={4} mask defaultValue="1234" />
+  <QUI.OTPField length={4} disabled />
 </div>
           </Section>
           <Section title="Pagination" align="block" props={{}}>

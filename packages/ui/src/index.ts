@@ -22,6 +22,9 @@ export { Switch, type SwitchProps } from "./atoms/Switch";
 export { Skeleton, SkeletonItem, type SkeletonProps, type SkeletonItemProps } from "./atoms/Skeleton";
 export { CircularProgress, type CircularProgressProps } from "./atoms/CircularProgress";
 export { LinearProgress, type LinearProgressProps } from "./atoms/LinearProgress";
+export { Slider, type SliderProps } from "./atoms/Slider";
+export { CheckboxGroup, type CheckboxGroupProps } from "./atoms/CheckboxGroup";
+export { Swatch, type SwatchProps } from "./atoms/Swatch";
 
 // Molecules
 export * from "./molecules/Field";
@@ -39,6 +42,8 @@ export * from "./molecules/Dialog";
 export * from "./molecules/AlertDialog";
 export * from "./molecules/Drawer";
 export * from "./molecules/Toast";
+export * from "./molecules/OTPField";
+export * from "./molecules/ExpandableSearch";
 export * from "./organisms/Table";
 export * from "./organisms/Banner";
 export * from "./organisms/NavigationMenu";
