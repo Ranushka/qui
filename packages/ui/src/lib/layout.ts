@@ -1,0 +1,78 @@
+import type * as React from "react";
+import { paddingClass, paddingXClass, paddingYClass, type Space } from "./space";
+
+/**
+ * Props every layout atom (Box, Stack, Inline, Grid) shares: the element, padding on the spacing
+ * scale, and sizing on Tailwind's container scale. As with `space.ts`, every class is spelled out
+ * so Tailwind can see it.
+ */
+
+export type LayoutTag =
+  | "div" | "section" | "article" | "header" | "footer" | "main" | "nav" | "aside" | "ul" | "ol" | "li" | "form";
+
+/** Tailwind's container scale: 3xs = 16rem, 2xs = 18rem, xs = 20rem, sm = 24rem, md = 28rem, lg = 32rem, xl = 36rem, 2xl = 42rem. */
+export type ContainerSize = "3xs" | "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+
+const widthClass: Record<ContainerSize | "full" | "auto", string> = {
+  full: "w-full", auto: "w-auto",
+  "3xs": "w-3xs", "2xs": "w-2xs", xs: "w-xs", sm: "w-sm", md: "w-md", lg: "w-lg", xl: "w-xl", "2xl": "w-2xl",
+};
+
+const maxWidthClass: Record<ContainerSize, string> = {
+  "3xs": "max-w-3xs", "2xs": "max-w-2xs", xs: "max-w-xs", sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-xl", "2xl": "max-w-2xl",
+};
+
+export type LayoutProps = Omit<React.HTMLAttributes<HTMLElement>, "className" | "style" | "color"> & {
+  /** Element to render. Pick for meaning; looks come from the other props. @default "div" */
+  as?: LayoutTag;
+  padding?: Space;
+  /** Overrides `padding` on the inline (left/right) sides. */
+  paddingX?: Space;
+  /** Overrides `padding` on the block (top/bottom) sides. */
+  paddingY?: Space;
+  /** Fixed width from the container scale, or fill the parent. */
+  width?: keyof typeof widthClass;
+  /** Cap the width from the container scale while still shrinking on narrow screens. */
+  maxWidth?: ContainerSize;
+  /** Take the remaining space in a Stack/Inline row (and allow content inside to truncate). */
+  grow?: boolean;
+  /** `false` keeps this element at its natural size when a Stack/Inline row runs out of space. @default true */
+  shrink?: boolean;
+};
+
+/** Splits the shared layout props off, returning their classes and the remaining props. */
+export function layoutClasses<P extends LayoutProps>({
+  as,
+  padding,
+  paddingX,
+  paddingY,
+  width,
+  maxWidth,
+  grow,
+  shrink = true,
+  ...rest
+}: P) {
+  const classes = [
+    padding && paddingClass[padding],
+    paddingX && paddingXClass[paddingX],
+    paddingY && paddingYClass[paddingY],
+    width && widthClass[width],
+    maxWidth && maxWidthClass[maxWidth],
+    grow && "min-w-0 flex-1",
+    !shrink && "shrink-0",
+  ];
+  return { Tag: (as ?? "div") as LayoutTag, classes, rest: rest as Omit<P, keyof LayoutProps> & Omit<LayoutProps, "as" | "padding" | "paddingX" | "paddingY" | "width" | "maxWidth" | "grow" | "shrink"> };
+}
+
+export const alignItemsClass = {
+  start: "items-start", center: "items-center", end: "items-end", stretch: "items-stretch", baseline: "items-baseline",
+} as const;
+
+export const justifyClass = {
+  start: "justify-start", center: "justify-center", end: "justify-end", between: "justify-between",
+} as const;
+
+/** Resets the list styling `ul`/`ol` bring along, so a layout list looks like any other layout. */
+export function listReset(tag: LayoutTag) {
+  return (tag === "ul" || tag === "ol") && "m-0 list-none p-0";
+}

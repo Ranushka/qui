@@ -133,6 +133,29 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
+          <Section title="Box" align="block" props={{"background":["canvas","surface-1","surface-2","layer-1","layer-2","layer-3"],"border":["subtle","strong"],"borderEdge":["all","top","bottom","start","end"],"dashed":"boolean","radius":["sm","md","lg","xl","full"],"shadow":["raised-100","raised-200","raised-300","overlay-100","overlay-200"],"overflow":["hidden","auto"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+<QUI.Grid columns={3} collapseBelow="md" gap="4" padding="4" width="full">
+  <QUI.Box background="layer-1" border="subtle" radius="lg" padding="4">
+    <QUI.Text>Card: layer-1, subtle border, lg radius</QUI.Text>
+  </QUI.Box>
+  <QUI.Box background="surface-1" radius="lg" shadow="raised-200" padding="4">
+    <QUI.Text>Raised: surface-1 with raised-200 shadow</QUI.Text>
+  </QUI.Box>
+  <QUI.Box border="subtle" dashed radius="lg" padding="6">
+    <QUI.Text variant="caption" color="tertiary" align="center" as="p">Empty state drop zone</QUI.Text>
+  </QUI.Box>
+  <QUI.Box background="layer-1" border="subtle" radius="lg" overflow="hidden">
+    <QUI.Box padding="4">
+      <QUI.Text>Panel body</QUI.Text>
+    </QUI.Box>
+    <QUI.Box as="footer" border="subtle" borderEdge="top" background="layer-2" paddingX="4" paddingY="3">
+      <QUI.Inline justify="end">
+        <QUI.Button size="sm" label="Done" />
+      </QUI.Inline>
+    </QUI.Box>
+  </QUI.Box>
+</QUI.Grid>
+          </Section>
           <Section title="Button" align="block" props={{"variant":["primary","secondary","tertiary","ghost","danger","danger-outline"],"size":["xs","sm","md","lg"],"stretch":["auto","full"],"iconPosition":["start","end"],"loading":"boolean","disabled":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <div className="flex flex-wrap items-center gap-3">
@@ -192,6 +215,18 @@ export function ComponentsPage() {
   <QUI.CircularProgress size="md" indeterminate />
 </div>
           </Section>
+          <Section title="Grid" align="block" props={{"columns":[1,2,3,4,5,6],"collapseBelow":["sm","md","lg"],"gap / rowGap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+<QUI.Grid columns={3} collapseBelow="md" gap="4" padding="4" width="full">
+  {["Open", "In progress", "Done"].map((title, i) => (
+    <QUI.Box key={title} background="layer-1" border="subtle" radius="lg" padding="4">
+      <QUI.Stack gap="1">
+        <QUI.Text variant="caption" color="tertiary">{title}</QUI.Text>
+        <QUI.Heading level={4}>{[24, 8, 112][i]}</QUI.Heading>
+      </QUI.Stack>
+    </QUI.Box>
+  ))}
+</QUI.Grid>
+          </Section>
           <Section title="Heading" align="block" props={{"level":[1,2,3,4,5,6],"size":[1,2,3,4,5,6],"weight":["regular","medium","semibold","bold"],"color":["primary","secondary","tertiary","accent","danger","success","warning","info","on-color","inverse","inherit"],"align":["start","center","end"],"truncate":"boolean"}}>
 <div className="flex w-full flex-col gap-3 p-4">
   <QUI.Heading level={1}>Heading 1</QUI.Heading>
@@ -238,6 +273,26 @@ export function ComponentsPage() {
     <QUI.IconButton aria-label="Disabled" icon={<QUI.Icon icon={Icons.Plus} />} disabled />
   </div>
 </div>
+          </Section>
+          <Section title="Inline" align="block" props={{"gap / rowGap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"justify":["start","center","end","between"],"wrap":"boolean","padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+<QUI.Stack gap="6" padding="4" width="full">
+  <QUI.Inline gap="3">
+    <QUI.Button label="Create issue" />
+    <QUI.Button variant="secondary" label="Import" />
+    <QUI.Button variant="tertiary" label="Export" />
+  </QUI.Inline>
+  <QUI.Inline gap="1.5">
+    <QUI.Pill label="Frontend" />
+    <QUI.Pill label="Bug" />
+    <QUI.Pill label="High priority" />
+  </QUI.Inline>
+  <QUI.Inline justify="between" wrap={false} gap="4">
+    <QUI.Box grow>
+      <QUI.Text maxLines={1}>A long issue title that truncates instead of pushing the actions off the row</QUI.Text>
+    </QUI.Box>
+    <QUI.Text variant="caption" color="tertiary">WEB-142</QUI.Text>
+  </QUI.Inline>
+</QUI.Stack>
           </Section>
           <Section title="Input" align="block" props={{"size":["md","lg","xl","2xl"],"disabled":"boolean"}}>
 <div className="flex flex-col gap-3 p-4">
@@ -352,6 +407,20 @@ export function ComponentsPage() {
 <div className="[--node-size:20px] text-icon-secondary">
   <QUI.Spinner />
 </div>
+          </Section>
+          <Section title="Stack" align="block" props={{"gap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"justify":["start","center","end","between"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+<QUI.Stack gap="6" padding="4" maxWidth="md">
+  <QUI.Stack gap="1">
+    <QUI.Heading level={3}>Project settings</QUI.Heading>
+    <QUI.Text color="secondary">Stack puts children in a column with a gap from the spacing scale.</QUI.Text>
+  </QUI.Stack>
+  <QUI.InputField label="Name" placeholder="Website redesign" />
+  <QUI.InputField label="Identifier" placeholder="WEB" />
+  <QUI.Inline justify="end" gap="2">
+    <QUI.Button variant="secondary" label="Cancel" />
+    <QUI.Button label="Save" />
+  </QUI.Inline>
+</QUI.Stack>
           </Section>
           <Section title="Swatch" align="block" props={{"fill":["#3f76ff","#ef4444","#22c55e"]}}>
 <div className="flex flex-col gap-3 p-4">
