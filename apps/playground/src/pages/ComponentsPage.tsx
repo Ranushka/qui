@@ -67,6 +67,23 @@ export function ComponentsPage() {
       <div>
         <h1 className="mb-3 text-base font-semibold">Atoms</h1>
         <div className="flex flex-col gap-6">
+          <Section title="AnchorButton" align="block" props={{"variant":["primary","secondary"],"size":["xs","sm","md","lg"],"iconPosition":["start","end"],"external":"boolean","disabled":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-6">
+    <QUI.AnchorButton href="#" label="Read the docs" />
+    <QUI.AnchorButton href="#" variant="secondary" label="Privacy policy" />
+    <QUI.AnchorButton href="https://plane.so" label="plane.so" external />
+    <QUI.AnchorButton href="#" label="Attachments" icon={<QUI.Icon icon={Icons.Paperclip} />} />
+    <QUI.AnchorButton href="#" label="Disabled link" disabled />
+  </div>
+  <div className="flex flex-wrap items-center gap-6">
+    <QUI.AnchorButton href="#" size="xs" label="xs" />
+    <QUI.AnchorButton href="#" size="sm" label="sm" />
+    <QUI.AnchorButton href="#" size="md" label="md" />
+    <QUI.AnchorButton href="#" size="lg" label="lg" />
+  </div>
+</div>
+          </Section>
           <Section title="Avatar" align="block" props={{"size":["2xs","xs","sm","md","lg","xl","2xl","3xl"],"tooltip":"boolean"}}>
 <div className="flex flex-wrap items-center gap-4 p-4">
   <QUI.Avatar size="2xs" alt="Ada Lovelace" />
@@ -301,6 +318,45 @@ export function ComponentsPage() {
   <QUI.TextArea placeholder="Disabled" disabled />
 </div>
           </Section>
+          <Section title="TextButton" align="block" props={{"variant":["primary","secondary"],"size":["md","lg"],"iconPosition":["start","end"],"type":["button","submit","reset"],"disabled":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-6">
+    <QUI.TextButton label="View all" />
+    <QUI.TextButton variant="secondary" label="Cancel" />
+    <QUI.TextButton label="Add link" icon={<QUI.Icon icon={Icons.Plus} />} />
+    <QUI.TextButton variant="secondary" label="Next" icon={<QUI.Icon icon={Icons.ArrowRight} />} iconPosition="end" />
+  </div>
+  <div className="flex flex-wrap items-center gap-6">
+    <QUI.TextButton size="md" label="Medium" />
+    <QUI.TextButton size="lg" label="Large" />
+    <QUI.TextButton label="Disabled" icon={<QUI.Icon icon={Icons.Plus} />} disabled />
+  </div>
+</div>
+          </Section>
+          <Section title="Toggle" align="block" props={{"Toggle.size":["xs","sm","md"],"Toggle.pressed":"boolean","Toggle.disabled":"boolean","IconToggle.variant":["secondary","ghost"],"IconToggle.size":["xs","sm","md"],"IconToggle.pressed":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Toggle label="Assigned to me" defaultPressed />
+    <QUI.Toggle label="High priority" startIcon={<QUI.Icon icon={Icons.Flag} />} />
+    <QUI.Toggle label="A very long filter label that truncates" />
+    <QUI.Toggle label="Disabled" disabled />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Toggle size="xs" label="xs" />
+    <QUI.Toggle size="sm" label="sm" />
+    <QUI.Toggle size="md" label="md" />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.IconToggle aria-label="Star" icon={<QUI.Icon icon={Icons.Star} />} defaultPressed />
+    <QUI.IconToggle aria-label="Pin" icon={<QUI.Icon icon={Icons.Pin} />} />
+    <QUI.IconToggle variant="ghost" aria-label="Bold" icon={<QUI.Icon icon={Icons.Bold} />} defaultPressed />
+    <QUI.IconToggle variant="ghost" aria-label="Italic" icon={<QUI.Icon icon={Icons.Italic} />} />
+    <QUI.IconToggle size="sm" aria-label="Bell" icon={<QUI.Icon icon={Icons.Bell} />} />
+    <QUI.IconToggle size="xs" aria-label="Eye" icon={<QUI.Icon icon={Icons.Eye} />} />
+    <QUI.IconToggle aria-label="Lock" icon={<QUI.Icon icon={Icons.Lock} />} disabled />
+  </div>
+</div>
+          </Section>
           <Section title="Tooltip" align="row" props={{"side":["top","bottom","left","right"],"sideOffset":["number"],"disabled":"boolean"}}>
 <QUI.Tooltip label="Save changes">
   <QUI.Button label="Hover me" />
@@ -380,6 +436,19 @@ export function ComponentsPage() {
       Documents
     </QUI.BreadcrumbItem>
   </QUI.Breadcrumb>
+</div>
+          </Section>
+          <Section title="ButtonGroup" align="block" props={{"ButtonGroup.size":["sm","md"],"ButtonGroupButton.size":["sm","md"],"ButtonGroupButton.iconPosition":["start","end"],"ButtonGroupButton.disabled":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <QUI.ButtonGroup aria-label="Issue actions">
+    <QUI.ButtonGroupButton label="Copy link" icon={<QUI.Icon icon={Icons.Link} />} />
+    <QUI.ButtonGroupButton label="Archive" icon={<QUI.Icon icon={Icons.Archive} />} />
+    <QUI.ButtonGroupButton label="Delete" icon={<QUI.Icon icon={Icons.Trash2} />} disabled />
+  </QUI.ButtonGroup>
+  <QUI.ButtonGroup size="md" aria-label="Pagination">
+    <QUI.ButtonGroupButton label="Previous" icon={<QUI.Icon icon={Icons.ChevronLeft} />} />
+    <QUI.ButtonGroupButton label="Next" icon={<QUI.Icon icon={Icons.ChevronRight} />} iconPosition="end" />
+  </QUI.ButtonGroup>
 </div>
           </Section>
           <Section title="Combobox" align="block" props={{"size":["md","lg","xl","2xl"],"clearable":"boolean","disabled":"boolean","multiple":"boolean","autoHighlight":"boolean"}}>
@@ -474,6 +543,35 @@ export function ComponentsPage() {
   </QUI.Field>
 </div>
           </Section>
+          <Section title="IconSplitButton" align="block" props={{"variant":["primary","secondary"],"size":["sm","md","lg"],"loading":"boolean","disabled":"boolean"}}>
+<div className="flex flex-wrap items-center gap-3 p-4">
+  <QUI.Menu>
+    <QUI.IconSplitButton aria-label="Create" icon={<QUI.Icon icon={Icons.Plus} />} />
+    <QUI.MenuContent align="end">
+      <QUI.MenuItem>Create from template</QUI.MenuItem>
+      <QUI.MenuItem>Import</QUI.MenuItem>
+    </QUI.MenuContent>
+  </QUI.Menu>
+  <QUI.Menu>
+    <QUI.IconSplitButton variant="secondary" aria-label="Filter" icon={<QUI.Icon icon={Icons.Filter} />} />
+    <QUI.MenuContent align="end">
+      <QUI.MenuItem>Saved filters</QUI.MenuItem>
+    </QUI.MenuContent>
+  </QUI.Menu>
+  <QUI.Menu>
+    <QUI.IconSplitButton size="sm" aria-label="Create" icon={<QUI.Icon icon={Icons.Plus} />} />
+    <QUI.MenuContent>
+      <QUI.MenuItem>Option</QUI.MenuItem>
+    </QUI.MenuContent>
+  </QUI.Menu>
+  <QUI.Menu>
+    <QUI.IconSplitButton size="lg" variant="secondary" aria-label="Create" icon={<QUI.Icon icon={Icons.Plus} />} disabled />
+    <QUI.MenuContent>
+      <QUI.MenuItem>Option</QUI.MenuItem>
+    </QUI.MenuContent>
+  </QUI.Menu>
+</div>
+          </Section>
           <Section title="Menu" align="block" props={{"MenuItem.variant":["neutral","accent","danger"],"MenuItem.selected":"boolean","MenuCheckboxItem.variant":["neutral","accent","danger"],"MenuRadioItem.variant":["neutral","accent","danger"],"MenuRadioItem.marker":["check","radio"]}}>
 <div className="flex flex-wrap items-start gap-6 p-4">
   <QUI.Menu>
@@ -547,6 +645,52 @@ export function ComponentsPage() {
       <QUI.SelectItem value="a">Option A</QUI.SelectItem>
     </QUI.SelectContent>
   </QUI.Select>
+</div>
+          </Section>
+          <Section title="SplitButton" align="block" props={{"variant":["primary","secondary"],"size":["sm","md","lg"],"iconPosition":["start","end"],"loading":"boolean","disabled":"boolean"}}>
+<div className="flex flex-col gap-4 p-4">
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Menu>
+      <QUI.SplitButton label="Save" icon={<QUI.Icon icon={Icons.Save} />} />
+      <QUI.MenuContent align="end">
+        <QUI.MenuItem>Save as draft</QUI.MenuItem>
+        <QUI.MenuItem>Save and close</QUI.MenuItem>
+      </QUI.MenuContent>
+    </QUI.Menu>
+    <QUI.Menu>
+      <QUI.SplitButton variant="secondary" label="Export" />
+      <QUI.MenuContent align="end">
+        <QUI.MenuItem>Export as CSV</QUI.MenuItem>
+        <QUI.MenuItem>Export as PDF</QUI.MenuItem>
+      </QUI.MenuContent>
+    </QUI.Menu>
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Menu>
+      <QUI.SplitButton size="sm" label="Small" />
+      <QUI.MenuContent>
+        <QUI.MenuItem>Option</QUI.MenuItem>
+      </QUI.MenuContent>
+    </QUI.Menu>
+    <QUI.Menu>
+      <QUI.SplitButton size="lg" variant="secondary" label="Large" />
+      <QUI.MenuContent>
+        <QUI.MenuItem>Option</QUI.MenuItem>
+      </QUI.MenuContent>
+    </QUI.Menu>
+    <QUI.Menu>
+      <QUI.SplitButton label="Saving" loading />
+      <QUI.MenuContent>
+        <QUI.MenuItem>Option</QUI.MenuItem>
+      </QUI.MenuContent>
+    </QUI.Menu>
+    <QUI.Menu>
+      <QUI.SplitButton variant="secondary" label="Disabled" disabled />
+      <QUI.MenuContent>
+        <QUI.MenuItem>Option</QUI.MenuItem>
+      </QUI.MenuContent>
+    </QUI.Menu>
+  </div>
 </div>
           </Section>
           <Section title="Tabs" align="block" props={{"variant":["contained","underline"],"stretch":["auto","full"],"disabled":"boolean"}}>
