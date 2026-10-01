@@ -37,7 +37,7 @@ qui/
 
 ## Status
 
-**Phases 1 and 2 are complete**, and Phase 3 has begun — 37 components total. A components gallery (`apps/playground`,
+**Phases 1–3 are complete** — 42 components total. A components gallery (`apps/playground`,
 auto-generated from `__DOC` comments in each component's source — see below) renders all of them,
 each with a props panel listing its options (from a matching `__PROPS` comment).
 
@@ -48,7 +48,8 @@ Propel ships ~60 components; the rest are being ported incrementally, phased rou
    CircularProgress, LinearProgress
 2. **Molecules** — done ✅: Field, Breadcrumb, Pagination, Tabs, Accordion, Popover, Menu,
    ContextMenu, Select, Combobox, Autocomplete, Dialog, AlertDialog, Drawer, Toast
-3. **Organisms** (in progress — Table, Banner done ✅): NavigationMenu, Toolbar, Calendar, Charts, virtualized List
+3. **Organisms** — done ✅: Table, Banner, Toolbar, NavigationMenu, Calendar (react-day-picker),
+   VirtualList (@tanstack/react-virtual), Charts (recharts: Bar, Line, Area, Pie, Donut)
 
 ## Refreshing tokens from a newer propel release
 
@@ -98,14 +99,20 @@ Not yet pushed — no GitHub remote configured. To push to `https://github.com/R
   hostnames aren't blocked by Vite's host check.
 - Each demo can also show a props panel: add a `__PROPS {...} PROPS__` comment next to the
   `__DOC` block, a JSON object mapping prop name → either an array of accepted literal values or
-  the string `"boolean"`. The generator renders it as a table beside the demo. All 35 current
+  the string `"boolean"`. The generator renders it as a table beside the demo. All current
   components have one; add one to every new component going forward. A file defining several
   components (e.g. `Menu.tsx`) can key its block with `"ComponentName.propName"` when one flat
   namespace would be ambiguous — see `Menu.tsx`'s `__PROPS` block for the pattern.
 
 **Known not yet done**:
-- Phases 1 and 2 (atoms + molecules) are complete. Next up is Phase 3 (organisms): Table,
-  NavigationMenu, Toolbar, Calendar, Charts, virtualized List, Banner.
+- Phases 1–3 are complete. Remaining propel components (e.g. its non-virtualized sidebar `List`,
+  Calendar month/year picker views) aren't ported yet. Phase 3's Toolbar, NavigationMenu,
+  Calendar, VirtualList and Charts were built by 5 parallel subagents in git worktrees and
+  merged; all tests pass but none has been visually checked in a browser yet.
+- Fresh checkout gotcha: run `pnpm --filter @qui/tokens build` before the playground build —
+  `packages/tokens/dist` isn't committed.
+- Charts' palette uses Tailwind arbitrary-property classes, so consuming apps must have Tailwind
+  scan `@qui/ui`'s source.
 - The 15 molecules (`Field`, `Breadcrumb`, `Pagination`, `Tabs`, `Accordion`, `Popover`, `Menu`,
   `ContextMenu`, `Select`, `Combobox`, `Autocomplete`, `Dialog`, `AlertDialog`, `Drawer`, `Toast`)
   were built via 5 parallel subagents plus `Popover` built directly — each is solid (typechecked,
