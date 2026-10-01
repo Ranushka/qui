@@ -595,6 +595,49 @@ export function ComponentsPage() {
   <QUI.Banner layout="page" icon={null}>Scheduled maintenance tonight at 22:00 UTC.</QUI.Banner>
 </div>
           </Section>
+          <Section title="NavigationMenu" align="block" props={{"NavigationMenuLink.appearance":["item","card"],"NavigationMenuLink.active":"boolean","NavigationMenuPanel.side":["top","bottom","left","right"],"NavigationMenuPanel.align":["start","center","end"]}}>
+<div className="flex w-full p-4">
+  <QUI.NavigationMenu>
+    <QUI.NavigationMenuList>
+      <QUI.NavigationMenuItem>
+        <QUI.NavigationMenuTrigger label="Product" />
+        <QUI.NavigationMenuContent>
+          <QUI.NavigationMenuContentList>
+            <QUI.NavigationMenuLink appearance="card" href="#">
+              <QUI.NavigationMenuLinkTitle>Work items</QUI.NavigationMenuLinkTitle>
+              <QUI.NavigationMenuLinkDescription>Track every task, bug, and feature in one place.</QUI.NavigationMenuLinkDescription>
+            </QUI.NavigationMenuLink>
+            <QUI.NavigationMenuLink appearance="card" href="#">
+              <QUI.NavigationMenuLinkTitle>Cycles</QUI.NavigationMenuLinkTitle>
+              <QUI.NavigationMenuLinkDescription>Plan time-boxed sprints and ship on schedule.</QUI.NavigationMenuLinkDescription>
+            </QUI.NavigationMenuLink>
+          </QUI.NavigationMenuContentList>
+        </QUI.NavigationMenuContent>
+      </QUI.NavigationMenuItem>
+      <QUI.NavigationMenuItem>
+        <QUI.NavigationMenuTrigger label="Resources" />
+        <QUI.NavigationMenuContent>
+          <QUI.NavigationMenuContentList>
+            <QUI.NavigationMenuLink appearance="card" href="#">
+              <QUI.NavigationMenuLinkTitle>Docs</QUI.NavigationMenuLinkTitle>
+              <QUI.NavigationMenuLinkDescription>Guides and API reference.</QUI.NavigationMenuLinkDescription>
+            </QUI.NavigationMenuLink>
+            <QUI.NavigationMenuLink appearance="card" href="#">
+              <QUI.NavigationMenuLinkTitle>Changelog</QUI.NavigationMenuLinkTitle>
+            </QUI.NavigationMenuLink>
+          </QUI.NavigationMenuContentList>
+        </QUI.NavigationMenuContent>
+      </QUI.NavigationMenuItem>
+      <QUI.NavigationMenuItem>
+        <QUI.NavigationMenuLink href="#">Pricing</QUI.NavigationMenuLink>
+      </QUI.NavigationMenuItem>
+    </QUI.NavigationMenuList>
+    <QUI.NavigationMenuPanel>
+      <QUI.NavigationMenuViewport />
+    </QUI.NavigationMenuPanel>
+  </QUI.NavigationMenu>
+</div>
+          </Section>
           <Section title="Table" align="block" props={{"density":["comfortable","compact"]}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Table>
