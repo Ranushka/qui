@@ -37,7 +37,7 @@ qui/
 
 ## Status
 
-**Phases 1 and 2 are complete**, and Phase 3 has begun — 36 components total. A components gallery (`apps/playground`,
+**Phases 1 and 2 are complete**, and Phase 3 has begun — 37 components total. A components gallery (`apps/playground`,
 auto-generated from `__DOC` comments in each component's source — see below) renders all of them,
 each with a props panel listing its options (from a matching `__PROPS` comment).
 
@@ -48,7 +48,7 @@ Propel ships ~60 components; the rest are being ported incrementally, phased rou
    CircularProgress, LinearProgress
 2. **Molecules** — done ✅: Field, Breadcrumb, Pagination, Tabs, Accordion, Popover, Menu,
    ContextMenu, Select, Combobox, Autocomplete, Dialog, AlertDialog, Drawer, Toast
-3. **Organisms** (in progress — Table done ✅): NavigationMenu, Toolbar, Calendar, Charts, virtualized List, Banner
+3. **Organisms** (in progress — Table, Banner done ✅): NavigationMenu, Toolbar, Calendar, Charts, virtualized List
 
 ## Refreshing tokens from a newer propel release
 

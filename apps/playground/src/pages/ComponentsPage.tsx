@@ -584,6 +584,17 @@ export function ComponentsPage() {
       <div>
         <h1 className="mb-3 text-base font-semibold">Organisms</h1>
         <div className="flex flex-col gap-6">
+          <Section title="Banner" align="block" props={{"variant":["info","success","warning","danger"],"layout":["inline","page"]}}>
+<div className="flex w-full flex-col gap-3 p-4">
+  <QUI.Banner title="Heads up">Cycles now roll over unfinished work automatically.</QUI.Banner>
+  <QUI.Banner variant="success" onDismiss={() => {}}>Project published.</QUI.Banner>
+  <QUI.Banner variant="warning" title="Storage almost full" actions={<QUI.Button size="sm" variant="secondary" label="Upgrade" />}>
+    You've used 92% of your workspace storage.
+  </QUI.Banner>
+  <QUI.Banner variant="danger" title="Sync failed" onDismiss={() => {}}>Couldn't reach the GitHub integration.</QUI.Banner>
+  <QUI.Banner layout="page" icon={null}>Scheduled maintenance tonight at 22:00 UTC.</QUI.Banner>
+</div>
+          </Section>
           <Section title="Table" align="block" props={{"density":["comfortable","compact"]}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Table>
