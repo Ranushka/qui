@@ -595,6 +595,12 @@ export function ComponentsPage() {
   <QUI.Banner layout="page" icon={null}>Scheduled maintenance tonight at 22:00 UTC.</QUI.Banner>
 </div>
           </Section>
+          <Section title="Calendar" align="block" props={{"mode":["single","multiple","range"],"weekStartsOn":[0,1,2,3,4,5,6],"showOutsideDays":"boolean","fixedWeeks":"boolean","required":"boolean","disableNavigation":"boolean"}}>
+<div className="flex flex-wrap gap-10 p-4">
+  <QUI.Calendar mode="single" defaultMonth={new Date(2026, 9, 1)} selected={new Date(2026, 9, 14)} today={new Date(2026, 9, 1)} disabled={{ before: new Date(2026, 9, 5) }} />
+  <QUI.Calendar mode="range" defaultMonth={new Date(2026, 9, 1)} selected={{ from: new Date(2026, 9, 12), to: new Date(2026, 9, 18) }} today={new Date(2026, 9, 1)} />
+</div>
+          </Section>
           <Section title="Table" align="block" props={{"density":["comfortable","compact"]}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Table>
