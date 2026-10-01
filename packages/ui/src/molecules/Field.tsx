@@ -2,54 +2,52 @@ import * as React from "react";
 import { Field as BaseField } from "@base-ui/react/field";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import { FieldHelperText, FieldRequiredMarker, fieldDescriptionVariants, fieldLabelVariants, type FieldSize } from "../lib/field-parts";
 
-/** Field-level geometry: the gap between label group, control, and helper/error text. */
-const fieldRootVariants = cva("flex flex-col", {
+export type { FieldSize } from "../lib/field-parts";
+
+/**
+ * Field-level geometry. Vertical stacks the label group above the control column, with a gap that
+ * grows a step at `xl`; horizontal puts the label group beside the control column.
+ */
+const fieldRootVariants = cva("flex", {
   variants: {
-    size: {
-      md: "gap-1.5",
-      lg: "gap-1.5",
-      xl: "gap-2",
-      "2xl": "gap-2",
+    orientation: {
+      vertical: "flex-col",
+      horizontal: "flex-row items-start gap-2",
     },
+    size: { md: "", lg: "", xl: "", "2xl": "" },
   },
-  defaultVariants: { size: "lg" },
+  compoundVariants: [
+    { orientation: "vertical", size: ["md", "lg"], class: "gap-1.5" },
+    { orientation: "vertical", size: ["xl", "2xl"], class: "gap-2" },
+  ],
+  defaultVariants: { orientation: "vertical", size: "lg" },
 });
 
-/** Label text: sized to match the control it names, one step down from the control's own type scale. */
-const fieldLabelVariants = cva("inline-flex items-center gap-0.5 text-primary", {
+/** The label + description column. */
+const fieldLabelGroupVariants = cva("flex flex-col gap-0.5", {
   variants: {
-    size: {
-      md: "text-body-xs-medium",
-      lg: "text-body-xs-medium",
-      xl: "text-body-sm-medium",
-      "2xl": "text-body-sm-medium",
-    },
-  },
-});
-
-/** Helper/hint text under the control. */
-const fieldDescriptionVariants = cva("text-tertiary", {
-  variants: {
-    size: {
-      md: "text-body-2xs-regular",
-      lg: "text-body-2xs-regular",
-      xl: "text-body-xs-regular",
-      "2xl": "text-body-xs-regular",
+    orientation: {
+      vertical: "w-full",
+      horizontal: "min-w-0 flex-1",
     },
   },
 });
 
-/** Error text under the control — swaps in for the description whenever `error` is set. */
-const fieldErrorVariants = cva("text-danger-primary", {
+/** The control + hint/error column. */
+const fieldControlContentVariants = cva("flex flex-col", {
   variants: {
-    size: {
-      md: "text-body-2xs-regular",
-      lg: "text-body-2xs-regular",
-      xl: "text-body-xs-regular",
-      "2xl": "text-body-xs-regular",
+    orientation: {
+      vertical: "w-full",
+      horizontal: "min-w-0 flex-1 gap-2",
     },
+    size: { md: "", lg: "", xl: "", "2xl": "" },
   },
+  compoundVariants: [
+    { orientation: "vertical", size: ["md", "lg"], class: "gap-1.5" },
+    { orientation: "vertical", size: ["xl", "2xl"], class: "gap-2" },
+  ],
 });
 
 export interface FieldProps
@@ -59,63 +57,73 @@ export interface FieldProps
   label?: React.ReactNode;
   /** Shows a required marker after the label. Purely visual — set `required` on the control itself too. */
   required?: boolean;
+  /** Supporting text shown directly below the label. Always shown, alongside `hint`/`error`. */
+  description?: React.ReactNode;
   /** The control this field wraps, e.g. `<Input />`, `<TextArea />`, `<Checkbox />`. */
   children: React.ReactNode;
   /** Hint text shown under the control. Hidden while `error` is set. */
   hint?: React.ReactNode;
   /**
-   * Error text shown under the control instead of `hint`. With no explicit error, Base UI's own
-   * validation channel stays live — a failed `validate`/`required` still renders its message here.
+   * Error text shown under the control instead of `hint`; also marks the field invalid (danger
+   * chrome on the control) unless `invalid` is passed explicitly. With no explicit error, Base UI's
+   * own validation channel stays live — a failed `validate`/`required` still renders its message.
    */
   error?: React.ReactNode;
   className?: string;
 }
 
 /**
- * A field wrapper: label, the control, and a hint-or-error line beneath it, laid out as a stack.
- * Wraps Base UI's `Field.Root` for label association and `data-invalid`/`data-disabled` state, so
- * any bordered qui control (Input, TextArea, Checkbox, ...) dropped in as `children` picks up that
- * state automatically. `error` wins over `hint` when both are given.
+ * A field wrapper: a label group (label + optional description), the control, and a hint-or-error
+ * line beneath it. Wraps Base UI's `Field.Root` for label/description association and
+ * `data-invalid`/`data-disabled` state, so any bordered qui control (Input, Checkbox, ...) dropped
+ * in as `children` picks up that state automatically. `error` wins over `hint` when both are given.
+ * `orientation="horizontal"` puts the label group beside the control instead of above it.
+ *
+ * The ready-made wrappers (`InputField`, `SelectField`, `CheckboxField`, ...) compose this with
+ * their control and are the usual entry point.
  */
-export const Field = React.forwardRef<HTMLDivElement, FieldProps>(({ size = "lg", label, required, children, hint, error, className, ...props }, ref) => {
-  return (
-    <BaseField.Root ref={ref} className={cn(fieldRootVariants({ size }), className)} {...props}>
-      {label != null ? (
-        <BaseField.Label className={fieldLabelVariants({ size })}>
-          {label}
-          {required ? (
-            <span aria-hidden className="text-body-sm-regular text-danger-primary">
-              *
-            </span>
-          ) : null}
-        </BaseField.Label>
-      ) : null}
-      {children}
-      {error != null ? (
-        <BaseField.Error match className={fieldErrorVariants({ size })}>
-          {error}
-        </BaseField.Error>
-      ) : (
-        <>
-          <BaseField.Error className={fieldErrorVariants({ size })} />
-          {hint != null ? <BaseField.Description className={fieldDescriptionVariants({ size })}>{hint}</BaseField.Description> : null}
-        </>
-      )}
-    </BaseField.Root>
-  );
-});
+export const Field = React.forwardRef<HTMLDivElement, FieldProps>(
+  ({ size, orientation, label, required, description, children, hint, error, invalid, className, ...props }, ref) => {
+    const fieldSize: FieldSize = size ?? "lg";
+    const layout = orientation ?? "vertical";
+    return (
+      <BaseField.Root
+        ref={ref}
+        invalid={invalid ?? (error != null ? true : undefined)}
+        className={cn(fieldRootVariants({ size: fieldSize, orientation: layout }), className)}
+        {...props}
+      >
+        {label != null || description != null ? (
+          <div className={fieldLabelGroupVariants({ orientation: layout })}>
+            {label != null ? (
+              <BaseField.Label className={fieldLabelVariants({ size: fieldSize, inset: layout === "horizontal" && description == null })}>
+                {label}
+                {required ? <FieldRequiredMarker /> : null}
+              </BaseField.Label>
+            ) : null}
+            {description != null ? <BaseField.Description className={fieldDescriptionVariants({ size: fieldSize })}>{description}</BaseField.Description> : null}
+          </div>
+        ) : null}
+        <div className={fieldControlContentVariants({ orientation: layout, size: fieldSize })}>
+          {children}
+          <FieldHelperText size={fieldSize} hint={hint} error={error} />
+        </div>
+      </BaseField.Root>
+    );
+  }
+);
 Field.displayName = "Field";
 
 /* __DOC_BLOCK
-<div className="flex max-w-xs flex-col gap-6 p-4">
+<div className="flex max-w-md flex-col gap-6 p-4">
   <QUI.Field label="Workspace name" hint="Shown on your team's billing page.">
-    <QUI.Input placeholder="Acme Inc." />
+    <QUI.Input placeholder="Acme Inc." size="lg" />
   </QUI.Field>
   <QUI.Field label="Slug" required error="This slug is already taken.">
-    <QUI.Input defaultValue="acme-inc" />
+    <QUI.Input defaultValue="acme-inc" size="lg" />
   </QUI.Field>
-  <QUI.Field label="Description" size="xl" hint="Optional, up to 200 characters.">
-    <QUI.TextArea placeholder="What does your team do?" size="xl" />
+  <QUI.Field label="Timezone" description="Used for due dates." orientation="horizontal">
+    <QUI.Input defaultValue="UTC+04:00" size="lg" />
   </QUI.Field>
   <QUI.Field>
     <QUI.Checkbox label="Send me product updates" />
@@ -124,5 +132,5 @@ Field.displayName = "Field";
 DOC__ */
 
 /* __PROPS
-{ "size": ["md", "lg", "xl", "2xl"], "required": "boolean" }
+{ "size": ["md", "lg", "xl", "2xl"], "orientation": ["vertical", "horizontal"], "required": "boolean", "disabled": "boolean" }
 PROPS__ */
