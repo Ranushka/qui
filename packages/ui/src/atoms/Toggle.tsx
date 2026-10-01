@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Toggle as BaseToggle } from "@base-ui/react/toggle";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn, cnTypography } from "../lib/cn";
+import { cn } from "../lib/cn";
 
 /**
  * Behavior base shared by both toggle looks. The pressed look is gated on not-disabled so a
@@ -80,7 +80,7 @@ export interface ToggleProps extends BaseToggleProps, VariantProps<typeof toggle
  * `ToggleGroup`. The selected look is the pressed state; inside a `Toolbar` use `ToolbarToggle`.
  */
 export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(({ size, label, startIcon, endIcon, className, ...props }, ref) => (
-  <BaseToggle ref={ref} className={cnTypography(toggleVariants({ size }), className)} {...props}>
+  <BaseToggle ref={ref} className={cn(toggleVariants({ size }), className)} {...props}>
     {startIcon}
     <span className="min-w-0 truncate" title={label}>
       {label}
@@ -100,7 +100,7 @@ export interface IconToggleProps extends BaseToggleProps, VariantProps<typeof ic
 
 /** The icon-only `Toggle`: a square raised (`secondary`) or transparent (`ghost`) box holding a single glyph. */
 export const IconToggle = React.forwardRef<HTMLButtonElement, IconToggleProps>(({ variant, size, icon, className, ...props }, ref) => (
-  <BaseToggle ref={ref} className={cnTypography(iconToggleVariants({ variant, size }), className)} {...props}>
+  <BaseToggle ref={ref} className={cn(iconToggleVariants({ variant, size }), className)} {...props}>
     {icon}
   </BaseToggle>
 ));

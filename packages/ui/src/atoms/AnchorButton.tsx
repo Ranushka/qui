@@ -2,7 +2,7 @@ import * as React from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ExternalLink } from "lucide-react";
-import { cn, cnTypography } from "../lib/cn";
+import { cn } from "../lib/cn";
 import { textLinkBaseClass, textLinkPalette } from "../lib/text-link-chrome";
 import { Icon } from "./Icon";
 
@@ -105,7 +105,7 @@ export const AnchorButton = React.forwardRef<HTMLAnchorElement, AnchorButtonProp
       ref,
       props: {
         ...props,
-        className: cnTypography(anchorButtonVariants({ variant, size }), className),
+        className: cn(anchorButtonVariants({ variant, size }), className),
         href: disabled ? undefined : href,
         target: target ?? (external ? "_blank" : undefined),
         rel: rel ?? (external ? "noreferrer noopener" : undefined),

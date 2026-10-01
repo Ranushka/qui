@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn, cnTypography } from "../lib/cn";
+import { cn } from "../lib/cn";
 
 /**
  * The connected frame: one raised surface, one outer border, hairline dividers between segments,
@@ -73,7 +73,7 @@ export const ButtonGroupButton = React.forwardRef<HTMLButtonElement, ButtonGroup
   ({ label, icon, iconPosition = "start", size, type = "button", className, ...props }, ref) => {
     const groupSize = React.useContext(ButtonGroupSizeContext);
     return (
-      <BaseButton ref={ref} type={type} className={cnTypography(buttonGroupButtonVariants({ size: size ?? groupSize }), className)} {...props}>
+      <BaseButton ref={ref} type={type} className={cn(buttonGroupButtonVariants({ size: size ?? groupSize }), className)} {...props}>
         {iconPosition === "start" ? icon : null}
         {label}
         {iconPosition === "end" ? icon : null}

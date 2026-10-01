@@ -1,29 +1,23 @@
 import { clsx, type ClassValue } from "clsx";
-import { extendTailwindMerge, twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { extendTailwindMerge } from "tailwind-merge";
 
 /**
- * tailwind-merge configured to know qui's composite typography tokens (`text-body-xs-medium`,
- * `text-caption-md-regular`, `text-h3-semibold`, …) are font sizes, not text colors. Stock
- * `twMerge` treats them as colors, so a token and a `text-<color>` in one class list evict each
- * other.
+ * qui's composite typography tokens (`text-body-xs-medium`, `text-caption-md-regular`,
+ * `text-h3-semibold`, …) and its numeric scale (`text-13`). Stock tailwind-merge can't tell these
+ * apart from `text-<color>` utilities, so a token and a color in one class list evict each other.
  */
-const twMergeTypography = extendTailwindMerge({
+const isTypographyToken = (value: string) =>
+  /^(?:(?:body|caption)-[a-z0-9]+-|h[1-6]-)(?:regular|medium|semibold|bold)$/.test(value) || /^\d+$/.test(value);
+
+const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      "font-size": [{ text: [(value: string) => /^(body|caption|h[1-6])-[a-z0-9]+-(regular|medium|semibold|bold)$/.test(value)] }],
+      "font-size": [{ text: [isTypographyToken] }],
     },
   },
 });
 
-/**
- * `cn` for class lists that pair a typography token with a text color (e.g. `text-body-xs-medium
- * text-tertiary`) — both survive, while a later token/color still overrides an earlier one of the
- * same kind. `cn` keeps stock behavior for existing components.
- */
-export function cnTypography(...inputs: ClassValue[]) {
-  return twMergeTypography(clsx(inputs));
+/** Joins class lists and resolves Tailwind conflicts; a typography token and a text color both survive. */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

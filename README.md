@@ -117,10 +117,10 @@ Not yet pushed — no GitHub remote configured. To push to `https://github.com/R
   Toolbar, VirtualList, and Charts' bar/line/area. NOT yet visually checked: Pie/Donut charts
   (rendered empty in a hidden Chrome tab — likely paused animation, unconfirmed) and every
   Phase 4 component.
-- Known bug: `cn` (stock twMerge) treats typography tokens like `text-body-xs-regular` as text
-  colors, so combining one with `text-primary` in one `cn()` call drops one of them. New Phase 4
-  components use `cnTypography` (lib/cn.ts) instead; existing ones (e.g. Menu rows) are likely
-  affected until `cn` itself is configured the same way.
+- `cn` (lib/cn.ts) uses a tailwind-merge config that knows qui's typography tokens
+  (`text-body-*`, `text-caption-*`, `text-h1..6-*`, `text-<number>`) are font sizes, so a token
+  and a text color in one class list both survive. Fixed 2026-10-01; before that, stock twMerge
+  silently dropped one of them in ~30 components (Badge, Tabs, Table, Field, Select, …).
 - Simplified vs propel: ComboboxField (no select-all / virtualized list / +N overflow),
   AutocompleteField, SelectField (no pill variant/header/footer); Calendar lacks month/year views.
 - `Field` now applies invalid styling + `aria-invalid` whenever `error` is set.

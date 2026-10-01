@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn, cnTypography } from "../lib/cn";
+import { cn } from "../lib/cn";
 import { textLinkBaseClass, textLinkPalette } from "../lib/text-link-chrome";
 
 /** Text-only action chrome: the shared text-link look on a `<button>`, with a native-disabled treatment. */
@@ -40,7 +40,7 @@ export interface TextButtonProps
  */
 export const TextButton = React.forwardRef<HTMLButtonElement, TextButtonProps>(
   ({ variant, size, label, icon, iconPosition = "start", type = "button", className, ...props }, ref) => (
-    <BaseButton ref={ref} type={type} className={cnTypography(textButtonVariants({ variant, size }), className)} {...props}>
+    <BaseButton ref={ref} type={type} className={cn(textButtonVariants({ variant, size }), className)} {...props}>
       {iconPosition === "start" ? icon : null}
       <span>{label}</span>
       {iconPosition === "end" ? icon : null}
