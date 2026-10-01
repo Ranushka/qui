@@ -487,6 +487,12 @@ export function ComponentsPage() {
   </QUI.Autocomplete>
 </div>
           </Section>
+          <Section title="AutocompleteField" align="block" props={{"size":["md","lg","xl","2xl"],"required":"boolean","disabled":"boolean","openOnInputClick":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.AutocompleteField label="Country" placeholder="Start typing…" hint="Pick a suggestion or type your own." items={["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia"]} />
+  <QUI.AutocompleteField label="City" required description="Where the office is." placeholder="e.g. Sharjah" items={["Sharjah", "Dubai", "Abu Dhabi"]} error="Enter a city." />
+</div>
+          </Section>
           <Section title="Breadcrumb" align="block" props={{"current":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <QUI.Breadcrumb>
@@ -518,6 +524,28 @@ export function ComponentsPage() {
     <QUI.ButtonGroupButton label="Previous" icon={<QUI.Icon icon={Icons.ChevronLeft} />} />
     <QUI.ButtonGroupButton label="Next" icon={<QUI.Icon icon={Icons.ChevronRight} />} iconPosition="end" />
   </QUI.ButtonGroup>
+</div>
+          </Section>
+          <Section title="CheckboxField" align="block" props={{"size":["md","lg","xl","2xl"],"indeterminate":"boolean","required":"boolean","disabled":"boolean","defaultChecked":"boolean"}}>
+<div className="flex max-w-md flex-col gap-4 p-4">
+  <QUI.CheckboxField label="Email me about mentions" description="Only when someone @-mentions you." defaultChecked />
+  <QUI.CheckboxField label="I accept the terms" required error="You must accept the terms to continue." />
+  <QUI.CheckboxField label="Archived projects" hint="Read-only." disabled />
+</div>
+          </Section>
+          <Section title="CheckboxGroupField" align="block" props={{"size":["md","lg","xl","2xl"],"density":["comfortable","compact"],"required":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.CheckboxGroupField label="Notify me about" description="Email notifications for this project." hint="You can change this any time." defaultValue={["mentions", "assigned"]}>
+    <QUI.CheckboxGroupFieldOption value="mentions" label="Mentions" description="When someone @-mentions you." />
+    <QUI.CheckboxGroupFieldOption value="assigned" label="Assigned issues" />
+    <QUI.CheckboxGroupFieldOption value="comments" label="All comments" />
+    <QUI.CheckboxGroupFieldOption value="digest" label="Weekly digest (coming soon)" disabled />
+  </QUI.CheckboxGroupField>
+  <QUI.CheckboxGroupField label="Platforms" required density="compact" error="Pick at least one platform.">
+    <QUI.CheckboxGroupFieldOption value="web" label="Web" />
+    <QUI.CheckboxGroupFieldOption value="ios" label="iOS" />
+    <QUI.CheckboxGroupFieldOption value="android" label="Android" />
+  </QUI.CheckboxGroupField>
 </div>
           </Section>
           <Section title="Collapsible" align="block" props={{"placement":["inline","sidebar"],"indicator":"boolean","hug":"boolean","defaultOpen":"boolean","disabled":"boolean","keepMounted":"boolean"}}>
@@ -552,6 +580,13 @@ export function ComponentsPage() {
       {(item) => <QUI.ComboboxItem key={item} value={item}>{item}</QUI.ComboboxItem>}
     </QUI.ComboboxContent>
   </QUI.Combobox>
+</div>
+          </Section>
+          <Section title="ComboboxField" align="block" props={{"size":["md","lg","xl","2xl"],"multiple":"boolean","clearable":"boolean","required":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.ComboboxField label="Label" placeholder="Search labels…" hint="Type to filter." items={["Bug", "Feature", "Improvement", "Documentation", "Design"]} defaultValue="Feature" />
+  <QUI.ComboboxField label="Watchers" multiple description="Everyone here is notified of changes." placeholder="Add people…" items={["Ava", "Ben", "Chloe", "Dev", "Eli"]} defaultValue={["Ava", "Dev"]} />
+  <QUI.ComboboxField label="Cycle" required placeholder="Pick a cycle…" items={["Cycle 12", "Cycle 13"]} error="A cycle is required." />
 </div>
           </Section>
           <Section title="ContextMenu" align="block" props={{"ContextMenuItem.variant":["neutral","accent","danger"],"ContextMenuItem.selected":"boolean"}}>
@@ -625,21 +660,46 @@ export function ComponentsPage() {
   </QUI.ExpandableSearch>
 </div>
           </Section>
-          <Section title="Field" align="block" props={{"size":["md","lg","xl","2xl"],"required":"boolean"}}>
-<div className="flex max-w-xs flex-col gap-6 p-4">
+          <Section title="Field" align="block" props={{"size":["md","lg","xl","2xl"],"orientation":["vertical","horizontal"],"required":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
   <QUI.Field label="Workspace name" hint="Shown on your team's billing page.">
-    <QUI.Input placeholder="Acme Inc." />
+    <QUI.Input placeholder="Acme Inc." size="lg" />
   </QUI.Field>
   <QUI.Field label="Slug" required error="This slug is already taken.">
-    <QUI.Input defaultValue="acme-inc" />
+    <QUI.Input defaultValue="acme-inc" size="lg" />
   </QUI.Field>
-  <QUI.Field label="Description" size="xl" hint="Optional, up to 200 characters.">
-    <QUI.TextArea placeholder="What does your team do?" size="xl" />
+  <QUI.Field label="Timezone" description="Used for due dates." orientation="horizontal">
+    <QUI.Input defaultValue="UTC+04:00" size="lg" />
   </QUI.Field>
   <QUI.Field>
     <QUI.Checkbox label="Send me product updates" />
   </QUI.Field>
 </div>
+          </Section>
+          <Section title="Fieldset" align="block" props={{"legendSize":["md","lg","xl","2xl"],"bordered":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.Fieldset legend="Billing address" description="Printed on every invoice." bordered>
+    <QUI.InputField label="Street" placeholder="221B Baker Street" />
+    <QUI.InputField label="City" placeholder="London" />
+  </QUI.Fieldset>
+  <QUI.Fieldset legend="Danger zone (disabled)" disabled>
+    <QUI.InputField label="Workspace slug" defaultValue="acme" />
+    <QUI.SwitchField label="Allow guests" />
+  </QUI.Fieldset>
+</div>
+          </Section>
+          <Section title="Form" align="block" props={{"validationMode":["onSubmit","onBlur","onChange"],"FormBody.layout":["single","multi"],"FormActions.layout":["inline","stretch"]}}>
+<QUI.Form className="max-w-md p-4" errors={{ email: "This email is already registered." }}>
+  <QUI.FormBody>
+    <QUI.InputField name="name" label="Full name" placeholder="Jane Doe" />
+    <QUI.InputField name="email" label="Email" placeholder="you@company.com" />
+    <QUI.SelectField name="role" label="Role" placeholder="Pick a role" options={[{ value: "admin", label: "Admin" }, { value: "member", label: "Member" }]} />
+  </QUI.FormBody>
+  <QUI.FormActions>
+    <QUI.Button variant="secondary" type="reset" label="Cancel" />
+    <QUI.Button type="submit" label="Invite" />
+  </QUI.FormActions>
+</QUI.Form>
           </Section>
           <Section title="IconSplitButton" align="block" props={{"variant":["primary","secondary"],"size":["sm","md","lg"],"loading":"boolean","disabled":"boolean"}}>
 <div className="flex flex-wrap items-center gap-3 p-4">
@@ -668,6 +728,14 @@ export function ComponentsPage() {
       <QUI.MenuItem>Option</QUI.MenuItem>
     </QUI.MenuContent>
   </QUI.Menu>
+</div>
+          </Section>
+          <Section title="InputField" align="block" props={{"size":["md","lg","xl","2xl"],"orientation":["vertical","horizontal"],"required":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.InputField label="Email" placeholder="you@company.com" hint="We'll never share it." startIcon={<QUI.Icon icon={Icons.Mail} tint="placeholder" />} />
+  <QUI.InputField label="Workspace URL" required description="Lowercase letters and dashes only." defaultValue="Acme Inc" error="Use lowercase letters and dashes." />
+  <QUI.InputField label="Display name" orientation="horizontal" placeholder="Jane Doe" />
+  <QUI.InputField label="API key" disabled defaultValue="sk-••••••••" size="xl" />
 </div>
           </Section>
           <Section title="List" align="block" props={{"List.gap":["px","0.5"],"List.loopFocus":"boolean","ListItem.level":["1","2","3","4","5"],"ListItem.density":["comfortable","compact"],"ListSection.indicator":"boolean"}}>
@@ -812,6 +880,19 @@ export function ComponentsPage() {
   .
 </p>
           </Section>
+          <Section title="RadioGroupField" align="block" props={{"size":["md","lg","xl","2xl"],"density":["comfortable","compact"],"required":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.RadioGroupField label="Issue visibility" description="Who can see new issues in this project." hint="Admins always have access." defaultValue="members">
+    <QUI.RadioGroupFieldOption value="public" label="Public" description="Anyone in the workspace." />
+    <QUI.RadioGroupFieldOption value="members" label="Project members" />
+    <QUI.RadioGroupFieldOption value="private" label="Only me (disabled)" disabled />
+  </QUI.RadioGroupField>
+  <QUI.RadioGroupField label="Estimate scale" required density="compact" error="Choose a scale.">
+    <QUI.RadioGroupFieldOption value="points" label="Points" />
+    <QUI.RadioGroupFieldOption value="tshirt" label="T-shirt sizes" />
+  </QUI.RadioGroupField>
+</div>
+          </Section>
           <Section title="ScrollArea" align="block" props={{"orientation":["vertical","horizontal","both"],"visibility":["auto","always"],"size":["sm","md","lg"]}}>
 <div className="flex flex-wrap gap-6 p-4">
   <div className="flex h-48 w-64 flex-col rounded-lg border border-subtle bg-layer-1">
@@ -857,6 +938,13 @@ export function ComponentsPage() {
       <QUI.SelectItem value="a">Option A</QUI.SelectItem>
     </QUI.SelectContent>
   </QUI.Select>
+</div>
+          </Section>
+          <Section title="SelectField" align="block" props={{"size":["md","lg","xl","2xl"],"required":"boolean","disabled":"boolean","multiple":"boolean","readOnly":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.SelectField label="Status" placeholder="Pick a status" hint="Moves the issue across the board." defaultValue="todo" options={[{ value: "backlog", label: "Backlog" }, { value: "todo", label: "Todo" }, "separator", { key: "active", label: "Active", options: [{ value: "in-progress", label: "In Progress" }, { value: "review", label: "In Review" }] }, { value: "done", label: "Done" }]} />
+  <QUI.SelectField label="Priority" required placeholder="Select priority" error="Pick a priority." options={[{ value: "urgent", label: "Urgent" }, { value: "high", label: "High" }, { value: "low", label: "Low" }]} />
+  <QUI.SelectField label="Assignee" disabled placeholder="Unassigned" options={[{ value: "me", label: "Me" }]} />
 </div>
           </Section>
           <Section title="SplitButton" align="block" props={{"variant":["primary","secondary"],"size":["sm","md","lg"],"iconPosition":["start","end"],"loading":"boolean","disabled":"boolean"}}>
@@ -918,6 +1006,13 @@ export function ComponentsPage() {
   </QUI.SuggestionMenuGroup>
 </QUI.SuggestionMenu>
           </Section>
+          <Section title="SwitchField" align="block" props={{"size":["md","lg","xl","2xl"],"switchSize":["sm","md","lg"],"disabled":"boolean","readOnly":"boolean","defaultChecked":"boolean"}}>
+<div className="flex max-w-md flex-col gap-4 p-4">
+  <QUI.SwitchField label="Auto-archive closed issues" description="After 3 months in Done or Cancelled." defaultChecked />
+  <QUI.SwitchField label="Public workspace" hint="Anyone with the link can view." switchSize="lg" />
+  <QUI.SwitchField label="Single sign-on" disabled hint="Available on the Business plan." />
+</div>
+          </Section>
           <Section title="Tabs" align="block" props={{"variant":["contained","underline"],"stretch":["auto","full"],"disabled":"boolean"}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Tabs defaultValue="board">
@@ -940,6 +1035,13 @@ export function ComponentsPage() {
     <QUI.TabsPanel value="activity">Activity content.</QUI.TabsPanel>
     <QUI.TabsPanel value="settings">Settings content.</QUI.TabsPanel>
   </QUI.Tabs>
+</div>
+          </Section>
+          <Section title="TextAreaField" align="block" props={{"size":["md","lg","xl","2xl"],"resize":["none","vertical","both"],"autoResize":"boolean","required":"boolean","disabled":"boolean"}}>
+<div className="flex max-w-md flex-col gap-6 p-4">
+  <QUI.TextAreaField label="Description" placeholder="What is this project about?" hint="Markdown is supported." />
+  <QUI.TextAreaField label="Release notes" required description="Shown in the changelog." autoResize maxRows={6} error="Release notes can't be empty." />
+  <QUI.TextAreaField label="Archived note" disabled defaultValue="Read-only history." size="xl" />
 </div>
           </Section>
           <Section title="Toast" align="block" props={{"timeout":["number"],"limit":["number"]}}>
