@@ -10,10 +10,9 @@ describe("Swatch", () => {
     expect(swatch.style.getPropertyValue("--swatch-fill")).toBe("#ff0000");
   });
 
-  it("merges a consumer style without dropping the fill", () => {
-    const { container } = render(<Swatch fill="red" style={{ marginLeft: 4 }} />);
+  it("sets the fill through its own CSS variable", () => {
+    const { container } = render(<Swatch fill="red" />);
     const swatch = container.firstElementChild as HTMLElement;
-    expect(swatch.style.marginLeft).toBe("4px");
     expect(swatch.style.getPropertyValue("--swatch-fill")).toBe("red");
   });
 });

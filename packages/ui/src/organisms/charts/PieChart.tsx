@@ -1,3 +1,4 @@
+import type { NoClass } from "../../lib/no-class";
 import * as React from "react";
 import { Cell, Pie, PieChart as RPieChart, Tooltip } from "recharts";
 import { ChartFrame, chartColor, defaultFormatter, makeTooltipRenderer, type ChartBaseProps, type ChartDatum } from "./shared";
@@ -34,7 +35,7 @@ export function PieChart({
   height = 240,
   width,
   animate = true,
-  className,
+  
   "aria-label": ariaLabel,
 }: PieChartProps) {
   const slices = data.map((row, i) => {
@@ -50,7 +51,7 @@ export function PieChart({
       height={height}
       width={width}
       ariaLabel={ariaLabel}
-      className={className}
+
       legend={legendVisible ? slices.map((s) => ({ label: s.name, color: s.color })) : undefined}
       overlay={inner > 0 ? centerContent : undefined}
     >
@@ -77,7 +78,7 @@ export function PieChart({
   );
 }
 
-export interface DonutChartProps extends Omit<PieChartProps, "innerRadius"> {
+export interface DonutChartProps extends NoClass<Omit<PieChartProps, "innerRadius">> {
   /** Inner radius as a fraction of the outer radius. @default 0.65 */
   innerRadius?: number;
 }

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
 const OPTION_SELECTOR = '[role="option"]';
@@ -94,7 +95,7 @@ export interface SuggestionMenuActions {
   handleKeyDown: (event: Pick<KeyboardEvent, "key">) => boolean;
 }
 
-export interface SuggestionMenuProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "role"> {
+export interface SuggestionMenuProps extends NoClass<Omit<React.HTMLAttributes<HTMLDivElement>, "role">> {
   /** Receives the menu's {@link SuggestionMenuActions}; forward the input's key presses to it. */
   actionsRef?: React.Ref<SuggestionMenuActions>;
   /** Whether the highlight wraps at the ends of the list. @default true */
@@ -116,7 +117,7 @@ export interface SuggestionMenuProps extends Omit<React.HTMLAttributes<HTMLDivEl
  * mirror `onHighlightChange` into its `aria-activedescendant`.
  */
 export const SuggestionMenu = React.forwardRef<HTMLDivElement, SuggestionMenuProps>(
-  ({ actionsRef, loopFocus = true, onHighlightChange, width = "fixed", className, onMouseDown, ...props }, ref) => {
+  ({ actionsRef, loopFocus = true, onHighlightChange, width = "fixed", onMouseDown, ...props }, ref) => {
     const listRef = React.useRef<HTMLDivElement | null>(null);
     const [store] = React.useState(createHighlightStore);
     const { getSnapshot, subscribe, highlight } = store;
@@ -194,7 +195,7 @@ export const SuggestionMenu = React.forwardRef<HTMLDivElement, SuggestionMenuPro
         <div
           ref={setList}
           role="listbox"
-          className={cn(suggestionMenuVariants({ width }), className)}
+          className={cn(suggestionMenuVariants({ width }))}
           onMouseDown={(event) => {
             // A press on a row must never steal focus from the input.
             if (event.target !== event.currentTarget) event.preventDefault();
@@ -208,17 +209,17 @@ export const SuggestionMenu = React.forwardRef<HTMLDivElement, SuggestionMenuPro
 );
 SuggestionMenu.displayName = "SuggestionMenu";
 
-export interface SuggestionMenuGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "role"> {
+export interface SuggestionMenuGroupProps extends NoClass<Omit<React.HTMLAttributes<HTMLDivElement>, "role">> {
   /** Optional section heading. */
   label?: React.ReactNode;
 }
 
 /** A section of rows with an optional caption heading; sections are divided by a hairline (the last draws none). */
-export const SuggestionMenuGroup = React.forwardRef<HTMLDivElement, SuggestionMenuGroupProps>(({ label, className, children, ...props }, ref) => {
+export const SuggestionMenuGroup = React.forwardRef<HTMLDivElement, SuggestionMenuGroupProps>(({ label, children, ...props }, ref) => {
   const labelId = React.useId();
   const hasLabel = label != null;
   return (
-    <div ref={ref} role="group" aria-labelledby={hasLabel ? labelId : undefined} className={cn("border-b-sm border-subtle p-1 last:border-b-0", className)} {...props}>
+    <div ref={ref} role="group" aria-labelledby={hasLabel ? labelId : undefined} className={cn("border-b-sm border-subtle p-1 last:border-b-0")} {...props}>
       {hasLabel ? (
         <div id={labelId} className="truncate px-2 py-1.5 text-caption-md-regular text-tertiary">
           {label}
@@ -230,7 +231,7 @@ export const SuggestionMenuGroup = React.forwardRef<HTMLDivElement, SuggestionMe
 });
 SuggestionMenuGroup.displayName = "SuggestionMenuGroup";
 
-export interface SuggestionMenuItemProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "role" | "children"> {
+export interface SuggestionMenuItemProps extends NoClass<Omit<React.HTMLAttributes<HTMLDivElement>, "role" | "children">> {
   /** Leading glyph, tinted `icon-secondary`. */
   icon?: React.ReactNode;
   /** The row label; truncates. */
@@ -244,7 +245,7 @@ export interface SuggestionMenuItemProps extends Omit<React.HTMLAttributes<HTMLD
  * `Enter`/`Tab` forwarded through the menu's `actionsRef`. Pointer movement highlights it.
  */
 export const SuggestionMenuItem = React.forwardRef<HTMLDivElement, SuggestionMenuItemProps>(
-  ({ icon, label, trailing, id, className, onMouseMove, ...props }, ref) => {
+  ({ icon, label, trailing, id, onMouseMove, ...props }, ref) => {
     const store = React.useContext(SuggestionMenuContext);
     if (!store) throw new Error("SuggestionMenuItem must be rendered inside a SuggestionMenu.");
     const generatedId = React.useId();
@@ -257,7 +258,7 @@ export const SuggestionMenuItem = React.forwardRef<HTMLDivElement, SuggestionMen
         role="option"
         aria-selected={highlighted}
         data-highlighted={highlighted ? "" : undefined}
-        className={cn(suggestionMenuItemClass, className)}
+        className={cn(suggestionMenuItemClass)}
         onMouseMove={(event) => {
           if (!highlighted) store.highlight(rowId);
           onMouseMove?.(event);

@@ -1,3 +1,4 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { CheckboxGroup as BaseCheckboxGroup } from "@base-ui/react/checkbox-group";
 import { Field as BaseField } from "@base-ui/react/field";
@@ -15,8 +16,7 @@ import {
   type FieldSize,
 } from "../lib/field-parts";
 
-export interface CheckboxGroupFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseCheckboxGroup>, "children" | "className" | "render" | "style"> {
+export interface CheckboxGroupFieldProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCheckboxGroup>, "children" | "className" | "render" | "style">> {
   /** The option rows, usually `CheckboxGroupFieldOption`s. */
   children: React.ReactNode;
   /** Visible legend naming the group. */
@@ -35,8 +35,6 @@ export interface CheckboxGroupFieldProps
   density?: "comfortable" | "compact";
   /** Legend, option and helper text size. Option rows inherit it. @default "lg" */
   size?: FieldSize;
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 }
 
 /**
@@ -46,8 +44,8 @@ export interface CheckboxGroupFieldProps
  * `CheckboxGroupFieldOption` rows.
  */
 export const CheckboxGroupField = React.forwardRef<HTMLDivElement, CheckboxGroupFieldProps>(
-  ({ children, label, name, description, hint, error, required, density = "comfortable", size = "lg", disabled, className, ...groupProps }, ref) => (
-    <Field name={name} disabled={disabled} size={size} hint={hint} error={error} className={className}>
+  ({ children, label, name, description, hint, error, required, density = "comfortable", size = "lg", disabled, ...groupProps }, ref) => (
+    <Field name={name} disabled={disabled} size={size} hint={hint} error={error}>
       <BaseFieldset.Root
         ref={ref}
         disabled={disabled}
@@ -65,7 +63,7 @@ export const CheckboxGroupField = React.forwardRef<HTMLDivElement, CheckboxGroup
 );
 CheckboxGroupField.displayName = "CheckboxGroupField";
 
-export interface CheckboxGroupFieldOptionProps extends Omit<CheckboxProps, "label" | "icon" | "stretch" | "className" | "children" | "value"> {
+export interface CheckboxGroupFieldOptionProps extends NoClass<Omit<CheckboxProps, "label" | "icon" | "stretch" | "className" | "children" | "value">> {
   /** The value this option adds to the group's checked values. */
   value: string;
   /** Visible label beside the checkbox. */

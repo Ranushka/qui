@@ -2,6 +2,7 @@ import * as React from "react";
 import { Form as BaseForm } from "@base-ui/react/form";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /** The form frame: a column of regions (`FormBody`, `FormActions`) on one vertical rhythm. */
 const formVariants = cva("flex flex-col gap-6");
@@ -28,11 +29,9 @@ const formActionsVariants = cva("flex gap-3", {
   defaultVariants: { layout: "inline" },
 });
 
-export type FormProps<FormValues extends Record<string, unknown> = Record<string, unknown>> = Omit<
-  React.ComponentPropsWithoutRef<typeof BaseForm<FormValues>>,
-  "className"
+export type FormProps<FormValues extends Record<string, unknown> = Record<string, unknown>> = NoClass<
+  React.ComponentPropsWithoutRef<typeof BaseForm<FormValues>>
 > & {
-  className?: string;
   ref?: React.Ref<HTMLFormElement>;
 };
 
@@ -42,28 +41,29 @@ export type FormProps<FormValues extends Record<string, unknown> = Record<string
  * by `name`, and `onFormSubmit` receives the collected values. Lay it out with `FormBody` and
  * `FormActions`.
  */
-export function Form<FormValues extends Record<string, unknown> = Record<string, unknown>>({ className, ...props }: FormProps<FormValues>) {
-  return <BaseForm<FormValues> className={cn(formVariants(), className)} {...props} />;
+export function Form<FormValues extends Record<string, unknown> = Record<string, unknown>>({ ...props }: FormProps<FormValues>) {
+  return <BaseForm<FormValues> className={cn(formVariants())} {...props} />;
 }
 
-export interface FormBodyProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof formBodyVariants> {}
+export interface FormBodyProps extends NoClass<React.HTMLAttributes<HTMLDivElement>>, VariantProps<typeof formBodyVariants> {}
 
 /** The fields region of a `Form`: `single` stacks fields, `multi` flows them side by side. */
-export const FormBody = React.forwardRef<HTMLDivElement, FormBodyProps>(({ layout, className, ...props }, ref) => (
-  <div ref={ref} className={cn(formBodyVariants({ layout }), className)} {...props} />
+export const FormBody = React.forwardRef<HTMLDivElement, FormBodyProps>(({ layout, ...props }, ref) => (
+  <div ref={ref} className={cn(formBodyVariants({ layout }))} {...props} />
 ));
 FormBody.displayName = "FormBody";
 
-export interface FormActionsProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof formActionsVariants> {}
+export interface FormActionsProps extends NoClass<React.HTMLAttributes<HTMLDivElement>>, VariantProps<typeof formActionsVariants> {}
 
 /** The actions bar at the bottom of a `Form`: `inline` right-aligns the buttons, `stretch` makes them full-width. */
-export const FormActions = React.forwardRef<HTMLDivElement, FormActionsProps>(({ layout, className, ...props }, ref) => (
-  <div ref={ref} className={cn(formActionsVariants({ layout }), className)} {...props} />
+export const FormActions = React.forwardRef<HTMLDivElement, FormActionsProps>(({ layout, ...props }, ref) => (
+  <div ref={ref} className={cn(formActionsVariants({ layout }))} {...props} />
 ));
 FormActions.displayName = "FormActions";
 
 /* __DOC_BLOCK
-<QUI.Form className="max-w-md p-4" errors={{ email: "This email is already registered." }}>
+<div className="max-w-md p-4">
+<QUI.Form errors={{ email: "This email is already registered." }}>
   <QUI.FormBody>
     <QUI.InputField name="name" label="Full name" placeholder="Jane Doe" />
     <QUI.InputField name="email" label="Email" placeholder="you@company.com" />
@@ -74,6 +74,7 @@ FormActions.displayName = "FormActions";
     <QUI.Button type="submit" label="Invite" />
   </QUI.FormActions>
 </QUI.Form>
+</div>
 DOC__ */
 
 /* __PROPS

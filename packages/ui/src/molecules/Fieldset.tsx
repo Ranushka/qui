@@ -2,6 +2,7 @@ import * as React from "react";
 import { Fieldset as BaseFieldset } from "@base-ui/react/fieldset";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { fieldDescriptionVariants, fieldsetLegendVariants, type FieldSize } from "../lib/field-parts";
 
 /** The group frame: a column of legend block + body, optionally boxed in a subtle border. */
@@ -18,9 +19,7 @@ const fieldsetVariants = cva("flex min-w-0 flex-col gap-3", {
 /** The grouped controls, spaced like the fields of a form. */
 const fieldsetBodyVariants = cva("flex min-w-0 flex-col gap-4");
 
-export interface FieldsetProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseFieldset.Root>, "className" | "children">,
-    VariantProps<typeof fieldsetVariants> {
+export interface FieldsetProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseFieldset.Root>, "className" | "children">>, VariantProps<typeof fieldsetVariants> {
   /** The legend text naming the group. */
   legend: React.ReactNode;
   /** Supporting text shown below the legend. */
@@ -29,7 +28,6 @@ export interface FieldsetProps
   legendSize?: FieldSize;
   /** The grouped controls — typically several `InputField`s / `SelectField`s. */
   children: React.ReactNode;
-  className?: string;
 }
 
 /**
@@ -37,8 +35,8 @@ export interface FieldsetProps
  * Base UI-backed control inside it. `bordered` boxes the group for use in a longer form.
  */
 export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(
-  ({ legend, description, legendSize = "lg", bordered, className, children, ...props }, ref) => (
-    <BaseFieldset.Root ref={ref} className={cn(fieldsetVariants({ bordered }), className)} {...props}>
+  ({ legend, description, legendSize = "lg", bordered, children, ...props }, ref) => (
+    <BaseFieldset.Root ref={ref} className={cn(fieldsetVariants({ bordered }))} {...props}>
       <BaseFieldset.Legend className={fieldsetLegendVariants({ size: legendSize })}>{legend}</BaseFieldset.Legend>
       {description != null ? <p className={fieldDescriptionVariants({ size: legendSize })}>{description}</p> : null}
       <div className={fieldsetBodyVariants()}>{children}</div>

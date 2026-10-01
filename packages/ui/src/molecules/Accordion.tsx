@@ -2,25 +2,26 @@ import * as React from "react";
 import { Accordion as BaseAccordion } from "@base-ui/react/accordion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { Icon } from "../atoms/Icon";
 
-export interface AccordionProps extends React.ComponentPropsWithoutRef<typeof BaseAccordion.Root> {}
+export interface AccordionProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseAccordion.Root>> {}
 
 /** Groups `AccordionItem`s on Base UI's `Accordion.Root` state machine. Pass `multiple` to allow more than one item open at once. */
-export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(({ className, ...props }, ref) => (
-  <BaseAccordion.Root ref={ref} className={cn("flex w-full flex-col", className)} {...props} />
+export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(({ ...props }, ref) => (
+  <BaseAccordion.Root ref={ref} className={cn("flex w-full flex-col")} {...props} />
 ));
 Accordion.displayName = "Accordion";
 
-export interface AccordionItemProps extends React.ComponentPropsWithoutRef<typeof BaseAccordion.Item> {}
+export interface AccordionItemProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseAccordion.Item>> {}
 
 /** A single collapsible section: pairs one `AccordionTrigger` with one `AccordionPanel`. */
-export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(({ className, ...props }, ref) => (
-  <BaseAccordion.Item ref={ref} className={cn("border-b border-subtle", className)} {...props} />
+export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(({ ...props }, ref) => (
+  <BaseAccordion.Item ref={ref} className={cn("border-b border-subtle")} {...props} />
 ));
 AccordionItem.displayName = "AccordionItem";
 
-export interface AccordionTriggerProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAccordion.Trigger>, "children"> {
+export interface AccordionTriggerProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAccordion.Trigger>, "children">> {
   /** Visible trigger label. */
   label: string;
   /** Icon rendered before the label. */
@@ -29,34 +30,34 @@ export interface AccordionTriggerProps extends Omit<React.ComponentPropsWithoutR
 
 /** The header row for an `AccordionItem`: label plus a chevron that rotates open, wrapped in Base UI's `Accordion.Header`. */
 export const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerProps>(
-  ({ label, icon, className, ...props }, ref) => (
+  ({ label, icon, ...props }, ref) => (
     <BaseAccordion.Header className="flex">
       <BaseAccordion.Trigger
         ref={ref}
         className={cn(
-          "group/trigger flex flex-1 cursor-pointer items-center gap-2 bg-layer-transparent p-3 text-start text-body-sm-medium text-primary outline-none transition-colors hover:bg-layer-transparent-hover focus-visible:ring-2 focus-visible:ring-accent-strong disabled:cursor-not-allowed disabled:opacity-60 data-disabled:cursor-not-allowed data-disabled:opacity-60 [--node-size:var(--control-glyph-lg)]",
-          className
+          "group/trigger flex flex-1 cursor-pointer items-center gap-2 bg-layer-transparent p-3 text-start text-body-sm-medium text-primary outline-none transition-colors hover:bg-layer-transparent-hover focus-visible:ring-2 focus-visible:ring-accent-strong disabled:cursor-not-allowed disabled:opacity-60 data-disabled:cursor-not-allowed data-disabled:opacity-60 [--node-size:var(--control-glyph-lg)]"
         )}
         {...props}
       >
         {icon}
         <span className="min-w-0 flex-1 text-start">{label}</span>
-        <Icon icon={ChevronDown} tint="secondary" className="shrink-0 transition-transform duration-200 group-data-panel-open/trigger:rotate-180" />
+        <span className="flex shrink-0 transition-transform duration-200 group-data-panel-open/trigger:rotate-180">
+          <Icon icon={ChevronDown} tint="secondary" />
+        </span>
       </BaseAccordion.Trigger>
     </BaseAccordion.Header>
   )
 );
 AccordionTrigger.displayName = "AccordionTrigger";
 
-export interface AccordionPanelProps extends React.ComponentPropsWithoutRef<typeof BaseAccordion.Panel> {}
+export interface AccordionPanelProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseAccordion.Panel>> {}
 
 /** The collapsible content for an `AccordionItem`. Height-animates via Base UI's `--accordion-panel-height` var. */
-export const AccordionPanel = React.forwardRef<HTMLDivElement, AccordionPanelProps>(({ className, children, ...props }, ref) => (
+export const AccordionPanel = React.forwardRef<HTMLDivElement, AccordionPanelProps>(({ children, ...props }, ref) => (
   <BaseAccordion.Panel
     ref={ref}
     className={cn(
-      "h-(--accordion-panel-height) overflow-hidden text-body-sm-regular text-secondary transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0",
-      className
+      "h-(--accordion-panel-height) overflow-hidden text-body-sm-regular text-secondary transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0"
     )}
     {...props}
   >

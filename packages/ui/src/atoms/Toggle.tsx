@@ -62,7 +62,7 @@ const iconToggleVariants = cva(toggleBaseClass, {
   defaultVariants: { variant: "secondary", size: "md" },
 });
 
-type BaseToggleProps = Omit<React.ComponentPropsWithoutRef<typeof BaseToggle>, "children" | "className" | "render">;
+type BaseToggleProps = Omit<React.ComponentPropsWithoutRef<typeof BaseToggle>, "children" | "className" | "style" | "render">;
 
 export interface ToggleProps extends BaseToggleProps, VariantProps<typeof toggleVariants> {
   /** Visible label. Truncates past the 120px cap; the full text is kept in a native `title`. */
@@ -71,7 +71,6 @@ export interface ToggleProps extends BaseToggleProps, VariantProps<typeof toggle
   startIcon?: React.ReactNode;
   /** Element after the label, e.g. `<Icon icon={X} />`. */
   endIcon?: React.ReactNode;
-  className?: string;
 }
 
 /**
@@ -79,8 +78,8 @@ export interface ToggleProps extends BaseToggleProps, VariantProps<typeof toggle
  * `pressed`/`defaultPressed` + `onPressedChange`, and a `value` for use inside a Base UI
  * `ToggleGroup`. The selected look is the pressed state; inside a `Toolbar` use `ToolbarToggle`.
  */
-export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(({ size, label, startIcon, endIcon, className, ...props }, ref) => (
-  <BaseToggle ref={ref} className={cn(toggleVariants({ size }), className)} {...props}>
+export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(({ size, label, startIcon, endIcon, ...props }, ref) => (
+  <BaseToggle ref={ref} className={cn(toggleVariants({ size }))} {...props}>
     {startIcon}
     <span className="min-w-0 truncate" title={label}>
       {label}
@@ -95,12 +94,11 @@ export interface IconToggleProps extends BaseToggleProps, VariantProps<typeof ic
   icon: React.ReactNode;
   /** Required accessible name — an icon-only toggle has no visible text. */
   "aria-label": string;
-  className?: string;
 }
 
 /** The icon-only `Toggle`: a square raised (`secondary`) or transparent (`ghost`) box holding a single glyph. */
-export const IconToggle = React.forwardRef<HTMLButtonElement, IconToggleProps>(({ variant, size, icon, className, ...props }, ref) => (
-  <BaseToggle ref={ref} className={cn(iconToggleVariants({ variant, size }), className)} {...props}>
+export const IconToggle = React.forwardRef<HTMLButtonElement, IconToggleProps>(({ variant, size, icon, ...props }, ref) => (
+  <BaseToggle ref={ref} className={cn(iconToggleVariants({ variant, size }))} {...props}>
     {icon}
   </BaseToggle>
 ));

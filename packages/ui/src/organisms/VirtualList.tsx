@@ -2,6 +2,7 @@ import * as React from "react";
 import { defaultRangeExtractor, useVirtualizer, type Range } from "@tanstack/react-virtual";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 type VirtualListDensity = "comfortable" | "compact";
 type VirtualListRole = "listbox" | "list";
@@ -47,7 +48,7 @@ export interface VirtualListItemState {
   selected: boolean;
 }
 
-export interface VirtualListProps<T> extends Omit<React.ComponentPropsWithoutRef<"div">, "children" | "role" | "onSelect"> {
+export interface VirtualListProps<T> extends NoClass<Omit<React.ComponentPropsWithoutRef<"div">, "children" | "role" | "onSelect">> {
   /** The full data set. Only the visible window (plus `overscan`) is ever mounted. */
   items: readonly T[];
   /** Renders one row's content. The row element itself (positioning, chrome, ARIA) is provided. */
@@ -111,8 +112,8 @@ function VirtualListInner<T>(
     onActiveIndexChange,
     emptyState,
     id: idProp,
-    className,
-    style,
+    
+    
     onKeyDown,
     onFocus,
     ...props
@@ -241,8 +242,8 @@ function VirtualListInner<T>(
       aria-activedescendant={interactive && activeIndex >= 0 ? optionId(activeIndex) : undefined}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
-      className={cn(virtualListFrameClass, className)}
-      style={{ height, ...style }}
+      className={cn(virtualListFrameClass)}
+      style={{ height }}
       {...props}
     >
       {count === 0 ? (

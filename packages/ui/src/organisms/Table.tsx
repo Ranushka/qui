@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 type TableDensity = "comfortable" | "compact";
 type SortDirection = "ascending" | "descending";
@@ -8,48 +9,48 @@ type SortDirection = "ascending" | "descending";
 /** Shares the table's `density` with its cells so rows size consistently without repeating the prop. */
 const TableDensityContext = React.createContext<TableDensity>("comfortable");
 
-export interface TableProps extends React.ComponentPropsWithoutRef<"table"> {
+export interface TableProps extends NoClass<React.ComponentPropsWithoutRef<"table">> {
   /** Row height: roomy default or a tighter data-dense layout. @default "comfortable" */
   density?: TableDensity;
 }
 
 /** A semantic `<table>` in a horizontally scrollable, bordered frame. `density` flows down to every cell. */
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", className, ...props }, ref) => (
+export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", ...props }, ref) => (
   <TableDensityContext.Provider value={density}>
     <div className="w-full overflow-x-auto rounded-lg border-sm border-subtle bg-layer-2">
-      <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary", className)} {...props} />
+      <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
     </div>
   </TableDensityContext.Provider>
 ));
 Table.displayName = "Table";
 
-export const TableHeader = React.forwardRef<HTMLTableSectionElement, React.ComponentPropsWithoutRef<"thead">>(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("bg-layer-1", className)} {...props} />
+export const TableHeader = React.forwardRef<HTMLTableSectionElement, NoClass<React.ComponentPropsWithoutRef<"thead">>>(({ ...props }, ref) => (
+  <thead ref={ref} className={cn("bg-layer-1")} {...props} />
 ));
 TableHeader.displayName = "TableHeader";
 
-export const TableBody = React.forwardRef<HTMLTableSectionElement, React.ComponentPropsWithoutRef<"tbody">>(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={cn("[&>tr:last-child]:border-b-0", className)} {...props} />
+export const TableBody = React.forwardRef<HTMLTableSectionElement, NoClass<React.ComponentPropsWithoutRef<"tbody">>>(({ ...props }, ref) => (
+  <tbody ref={ref} className={cn("[&>tr:last-child]:border-b-0")} {...props} />
 ));
 TableBody.displayName = "TableBody";
 
-export interface TableRowProps extends React.ComponentPropsWithoutRef<"tr"> {
+export interface TableRowProps extends NoClass<React.ComponentPropsWithoutRef<"tr">> {
   /** Highlights the row as selected. */
   selected?: boolean;
 }
 
-export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(({ selected, className, ...props }, ref) => (
+export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(({ selected, ...props }, ref) => (
   <tr
     ref={ref}
     data-selected={selected ? "" : undefined}
     aria-selected={selected || undefined}
-    className={cn("border-b-sm border-subtle transition-colors hover:bg-layer-transparent-hover data-selected:bg-layer-transparent-selected", className)}
+    className={cn("border-b-sm border-subtle transition-colors hover:bg-layer-transparent-hover data-selected:bg-layer-transparent-selected")}
     {...props}
   />
 ));
 TableRow.displayName = "TableRow";
 
-export interface TableHeadProps extends Omit<React.ComponentPropsWithoutRef<"th">, "aria-sort"> {
+export interface TableHeadProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"th">, "aria-sort">> {
   /** Current sort state of this column. Omit for a non-sortable column. */
   sortDirection?: SortDirection | "none";
   /** Makes the header a button; called when the user activates it. */
@@ -57,7 +58,7 @@ export interface TableHeadProps extends Omit<React.ComponentPropsWithoutRef<"th"
 }
 
 /** A column header. With `onSort` it renders a keyboard-operable button and reports `aria-sort`. */
-export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(({ sortDirection, onSort, className, children, ...props }, ref) => {
+export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(({ sortDirection, onSort, children, ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
   const sortable = onSort != null;
   const SortIcon = sortDirection === "ascending" ? ArrowUp : sortDirection === "descending" ? ArrowDown : ChevronsUpDown;
@@ -66,7 +67,7 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       ref={ref}
       scope="col"
       aria-sort={sortable ? (sortDirection ?? "none") : undefined}
-      className={cn("px-3 text-body-xs-medium text-tertiary whitespace-nowrap", density === "compact" ? "h-7" : "h-9", className)}
+      className={cn("px-3 text-body-xs-medium text-tertiary whitespace-nowrap", density === "compact" ? "h-7" : "h-9")}
       {...props}
     >
       {sortable ? (
@@ -86,14 +87,14 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
 });
 TableHead.displayName = "TableHead";
 
-export const TableCell = React.forwardRef<HTMLTableCellElement, React.ComponentPropsWithoutRef<"td">>(({ className, ...props }, ref) => {
+export const TableCell = React.forwardRef<HTMLTableCellElement, NoClass<React.ComponentPropsWithoutRef<"td">>>(({ ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
-  return <td ref={ref} className={cn("px-3", density === "compact" ? "h-8" : "h-11", className)} {...props} />;
+  return <td ref={ref} className={cn("px-3", density === "compact" ? "h-8" : "h-11")} {...props} />;
 });
 TableCell.displayName = "TableCell";
 
-export const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.ComponentPropsWithoutRef<"caption">>(({ className, ...props }, ref) => (
-  <caption ref={ref} className={cn("px-3 py-2 text-left text-body-xs-regular text-tertiary", className)} {...props} />
+export const TableCaption = React.forwardRef<HTMLTableCaptionElement, NoClass<React.ComponentPropsWithoutRef<"caption">>>(({ ...props }, ref) => (
+  <caption ref={ref} className={cn("px-3 py-2 text-left text-body-xs-regular text-tertiary")} {...props} />
 ));
 TableCaption.displayName = "TableCaption";
 

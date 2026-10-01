@@ -1,11 +1,14 @@
 import * as React from "react";
 import { CheckboxGroup as BaseCheckboxGroup } from "@base-ui/react/checkbox-group";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { optionGroupVariants } from "../lib/option-group";
 
-export interface CheckboxGroupProps extends React.ComponentPropsWithoutRef<typeof BaseCheckboxGroup> {
+export interface CheckboxGroupProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseCheckboxGroup>> {
   /** Row spacing: `comfortable` gaps the rows, `compact` stacks them flush. */
   density?: "comfortable" | "compact";
+  /** Stack options in a column, or lay them out in a wrapping row. @default "vertical" */
+  orientation?: "vertical" | "horizontal";
 }
 
 /**
@@ -16,8 +19,8 @@ export interface CheckboxGroupProps extends React.ComponentPropsWithoutRef<typeo
  * `parent`: it checks/unchecks every child, and shows `indeterminate` while only some are checked.
  * Name the group with `aria-label`/`aria-labelledby` — it renders `role="group"`.
  */
-export const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(({ density = "comfortable", className, ...props }, ref) => (
-  <BaseCheckboxGroup ref={ref} className={cn(optionGroupVariants({ density }), className)} {...props} />
+export const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps>(({ density = "comfortable", orientation = "vertical", ...props }, ref) => (
+  <BaseCheckboxGroup ref={ref} className={cn(optionGroupVariants({ density, orientation }))} {...props} />
 ));
 CheckboxGroup.displayName = "CheckboxGroup";
 
@@ -40,5 +43,5 @@ CheckboxGroup.displayName = "CheckboxGroup";
 DOC__ */
 
 /* __PROPS
-{ "density": ["comfortable", "compact"], "disabled": "boolean" }
+{ "density": ["comfortable", "compact"], "orientation": ["vertical", "horizontal"], "disabled": "boolean" }
 PROPS__ */

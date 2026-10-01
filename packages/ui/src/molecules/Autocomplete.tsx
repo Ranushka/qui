@@ -2,6 +2,7 @@ import * as React from "react";
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlGroupClass, controlSize } from "../lib/control-group";
 import { controlInputClass } from "../lib/control-input";
 
@@ -54,17 +55,16 @@ const autocompleteItemVariants = cva(
 
 const autocompleteEmptyVariants = cva("text-body-xs-regular text-tertiary not-empty:px-2 not-empty:py-1.5");
 
-export interface AutocompleteInputGroupProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.InputGroup>, "className"> {
+export interface AutocompleteInputGroupProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.InputGroup>, "className">> {
   size?: "md" | "lg" | "xl" | "2xl";
-  className?: string;
   placeholder?: string;
 }
 
 /** The bordered free-text field: `Input` inside the `Input` frame. */
 export const AutocompleteInputGroup = React.forwardRef<HTMLDivElement, AutocompleteInputGroupProps>(
-  ({ size = "md", placeholder, className, ...props }, ref) => {
+  ({ size = "md", placeholder, ...props }, ref) => {
     return (
-      <BaseAutocomplete.InputGroup ref={ref} className={cn(autocompleteInputGroupVariants({ size }), className)} {...props}>
+      <BaseAutocomplete.InputGroup ref={ref} className={cn(autocompleteInputGroupVariants({ size }))} {...props}>
         <BaseAutocomplete.Input placeholder={placeholder} className={autocompleteInputVariants()} />
       </BaseAutocomplete.InputGroup>
     );
@@ -72,8 +72,7 @@ export const AutocompleteInputGroup = React.forwardRef<HTMLDivElement, Autocompl
 );
 AutocompleteInputGroup.displayName = "AutocompleteInputGroup";
 
-export interface AutocompleteContentProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Positioner>, "className" | "children"> {
-  className?: string;
+export interface AutocompleteContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Positioner>, "className" | "children">> {
   popupClassName?: string;
   /** Message shown when nothing matches the current text. */
   emptyMessage?: React.ReactNode;
@@ -83,10 +82,10 @@ export interface AutocompleteContentProps extends Omit<React.ComponentPropsWitho
 
 /** `Portal` → `Positioner` → styled popup surface, wrapping the suggestion `List` plus an `Empty` state. */
 export const AutocompleteContent = React.forwardRef<HTMLDivElement, AutocompleteContentProps>(
-  ({ sideOffset = 4, className, popupClassName, emptyMessage = "No matches.", children, ...props }, ref) => {
+  ({ sideOffset = 4, popupClassName, emptyMessage = "No matches.", children, ...props }, ref) => {
     return (
       <BaseAutocomplete.Portal>
-        <BaseAutocomplete.Positioner ref={ref} sideOffset={sideOffset} className={cn("z-50 outline-none", className)} {...props}>
+        <BaseAutocomplete.Positioner ref={ref} sideOffset={sideOffset} className={cn("z-50 outline-none")} {...props}>
           <BaseAutocomplete.Popup className={cn(autocompletePopupVariants(), popupClassName)}>
             <BaseAutocomplete.Empty className={autocompleteEmptyVariants()}>{emptyMessage}</BaseAutocomplete.Empty>
             <BaseAutocomplete.List className="p-1 outline-none">{children}</BaseAutocomplete.List>
@@ -98,20 +97,19 @@ export const AutocompleteContent = React.forwardRef<HTMLDivElement, Autocomplete
 );
 AutocompleteContent.displayName = "AutocompleteContent";
 
-export interface AutocompleteItemProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Item>, "className"> {
+export interface AutocompleteItemProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Item>, "className">> {
   size?: "md" | "lg" | "xl" | "2xl";
-  className?: string;
 }
 
 /** A single suggestion row — plain text, no selection marker (a pick fills the input, it isn't toggled). */
-export const AutocompleteItem = React.forwardRef<HTMLDivElement, AutocompleteItemProps>(({ size = "md", className, ...props }, ref) => {
-  return <BaseAutocomplete.Item ref={ref} className={cn(autocompleteItemVariants({ size }), className)} {...props} />;
+export const AutocompleteItem = React.forwardRef<HTMLDivElement, AutocompleteItemProps>(({ size = "md", ...props }, ref) => {
+  return <BaseAutocomplete.Item ref={ref} className={cn(autocompleteItemVariants({ size }))} {...props} />;
 });
 AutocompleteItem.displayName = "AutocompleteItem";
 
 /** A horizontal divider between suggestion groups. */
-export function AutocompleteSeparator({ className, ...props }: React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Separator>) {
-  return <BaseAutocomplete.Separator className={cn("-mx-1 my-1 border-t border-subtle", className)} {...props} />;
+export function AutocompleteSeparator({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Separator>>) {
+  return <BaseAutocomplete.Separator className={cn("-mx-1 my-1 border-t border-subtle")} {...props} />;
 }
 
 /**
@@ -124,7 +122,7 @@ export const Autocomplete = BaseAutocomplete.Root;
 /* __DOC_BLOCK
 <div className="flex flex-col gap-4 p-4">
   <QUI.Autocomplete items={["Afghanistan", "Albania", "Algeria", "Andorra", "Angola"]}>
-    <QUI.AutocompleteInputGroup placeholder="Search countries…" className="w-64" />
+    <div className="w-64"><QUI.AutocompleteInputGroup placeholder="Search countries…" /></div>
     <QUI.AutocompleteContent>
       {(item) => <QUI.AutocompleteItem key={item} value={item}>{item}</QUI.AutocompleteItem>}
     </QUI.AutocompleteContent>

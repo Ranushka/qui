@@ -3,6 +3,7 @@ import { Toast as BaseToast, type ToastManagerAddOptions } from "@base-ui/react/
 import { CircleCheck, CircleX, Info, TriangleAlert, CircleAlert, X } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { Icon } from "../atoms/Icon";
 import { IconButton } from "../atoms/IconButton";
 import { Button, type ButtonProps } from "../atoms/Button";
@@ -60,7 +61,7 @@ const toastIconVariants = cva("mt-0.5 size-4 shrink-0 [--node-size:var(--control
   },
 });
 
-export interface ToastProviderProps extends React.ComponentPropsWithoutRef<typeof BaseToast.Provider> {}
+export interface ToastProviderProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseToast.Provider>> {}
 
 /**
  * Mounts the toast stack. Wrap the app (or a subtree) once near the root, then queue toasts from
@@ -97,7 +98,9 @@ function ToastCard({ toast }: { toast: React.ComponentProps<typeof BaseToast.Roo
   const variant: ToastVariant = toast.data?.variant ?? "neutral";
   return (
     <BaseToast.Root toast={toast} className={toastCardClass}>
-      <Icon icon={STATUS_ICON[variant]} className={toastIconVariants({ variant })} />
+      <span className={cn("flex", toastIconVariants({ variant }))}>
+        <Icon icon={STATUS_ICON[variant]} />
+      </span>
       <BaseToast.Content className="flex min-w-0 flex-1 flex-col gap-1 pe-4">
         <BaseToast.Title className="text-body-sm-medium text-primary" />
         <BaseToast.Description className="text-body-xs-regular text-tertiary" />
@@ -115,7 +118,7 @@ function ToastCard({ toast }: { toast: React.ComponentProps<typeof BaseToast.Roo
 export const useToastManager = BaseToast.useToastManager;
 export type { ToastManagerAddOptions };
 
-export interface ToastLauncherProps extends Omit<ButtonProps, "label" | "onClick"> {
+export interface ToastLauncherProps extends NoClass<Omit<ButtonProps, "label" | "onClick">> {
   /** Button label. @default "Show toast" */
   label?: string;
   /** The toast queued on click. @default a "Changes saved" success toast. */

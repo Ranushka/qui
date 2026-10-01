@@ -1,9 +1,10 @@
 import * as React from "react";
 import { LoaderCircle } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
-export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
+export interface SpinnerProps extends NoClass<React.HTMLAttributes<HTMLSpanElement>> {
   /**
    * Whether the spinner is showing. Keep it mounted with `active={loading}` inside a control whose
    * box should widen/narrow smoothly as loading starts/stops (Button, IconButton) — it stays
@@ -23,7 +24,7 @@ const CONCEAL_TIMEOUT_MS = 250;
  * `--animate-spinner-conceal`) instead of snapping, so a control's box widens/narrows smoothly as
  * it enters/leaves its loading state.
  */
-export function Spinner({ active = true, children, className, ...props }: SpinnerProps) {
+export function Spinner({ active = true, children, ...props }: SpinnerProps) {
   const [mounted, setMounted] = React.useState(active);
   if (active && !mounted) setMounted(true);
 
@@ -38,7 +39,7 @@ export function Spinner({ active = true, children, className, ...props }: Spinne
   return (
     <span
       aria-hidden="true"
-      className={cn(nodeSlotClass, "overflow-hidden [&>svg]:animate-spin", active ? "animate-spinner-reveal motion-reduce:animate-none" : "animate-spinner-conceal motion-reduce:animate-none", className)}
+      className={cn(nodeSlotClass, "overflow-hidden [&>svg]:animate-spin", active ? "animate-spinner-reveal motion-reduce:animate-none" : "animate-spinner-conceal motion-reduce:animate-none")}
       onAnimationEnd={(e) => {
         if (!active && e.target === e.currentTarget) setMounted(false);
       }}

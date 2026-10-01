@@ -3,6 +3,7 @@ import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass, NoStyle } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
 /**
@@ -69,7 +70,7 @@ const menuSeparatorClass = "-mx-1 my-1 border-t border-subtle";
 /** Section heading row above a `MenuGroup`'s items. */
 const menuGroupLabelClass = "flex min-h-6 items-center gap-1.5 px-2 text-caption-md-medium text-tertiary";
 
-export interface MenuProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.Root> {}
+export interface MenuProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseMenu.Root>> {}
 
 /**
  * The dropdown menu root — Base UI's `Menu.Root` passthrough, providing open state and context to
@@ -80,7 +81,7 @@ export function Menu(props: MenuProps) {
   return <BaseMenu.Root {...props} />;
 }
 
-export interface MenuTriggerProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.Trigger> {}
+export interface MenuTriggerProps extends NoStyle<React.ComponentPropsWithoutRef<typeof BaseMenu.Trigger>> {}
 
 /**
  * The element that opens the menu. qui ships no trigger chrome of its own — graft the open/close
@@ -91,55 +92,54 @@ export const MenuTrigger = React.forwardRef<HTMLButtonElement, MenuTriggerProps>
 ));
 MenuTrigger.displayName = "MenuTrigger";
 
-export interface MenuPositionerProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.Positioner> {}
+export interface MenuPositionerProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseMenu.Positioner>> {}
 
 /** Positions the popup against the trigger, portaled to `<body>`. Wraps `MenuPopup` as a child. */
 export const MenuPositioner = React.forwardRef<HTMLDivElement, MenuPositionerProps>(
-  ({ sideOffset = 6, align = "start", className, ...props }, ref) => (
+  ({ sideOffset = 6, align = "start", ...props }, ref) => (
     <BaseMenu.Portal>
-      <BaseMenu.Positioner ref={ref} sideOffset={sideOffset} align={align} className={cn("z-50 outline-none", className)} {...props} />
+      <BaseMenu.Positioner ref={ref} sideOffset={sideOffset} align={align} className={cn("z-50 outline-none")} {...props} />
     </BaseMenu.Portal>
   )
 );
 MenuPositioner.displayName = "MenuPositioner";
 
-export interface MenuPopupProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.Popup> {}
+export interface MenuPopupProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseMenu.Popup>> {}
 
 /** The raised, elevated panel holding the menu's rows. */
-export const MenuPopup = React.forwardRef<HTMLDivElement, MenuPopupProps>(({ className, ...props }, ref) => (
-  <BaseMenu.Popup ref={ref} className={cn(menuPopupSurfaceClass, className)} {...props} />
+export const MenuPopup = React.forwardRef<HTMLDivElement, MenuPopupProps>(({ ...props }, ref) => (
+  <BaseMenu.Popup ref={ref} className={cn(menuPopupSurfaceClass)} {...props} />
 ));
 MenuPopup.displayName = "MenuPopup";
 
-export interface MenuContentProps extends Omit<MenuPositionerProps, "className">, Pick<MenuPopupProps, "className"> {}
+export interface MenuContentProps extends NoClass<MenuPositionerProps> {}
 
 /** Convenience bundle: `MenuPortal` + `MenuPositioner` + `MenuPopup` in one — the common case when the popup needs no extra chrome around it. */
-export const MenuContent = React.forwardRef<HTMLDivElement, MenuContentProps>(({ children, className, ...positionerProps }, ref) => (
+export const MenuContent = React.forwardRef<HTMLDivElement, MenuContentProps>(({ children, ...positionerProps }, ref) => (
   <MenuPositioner {...positionerProps}>
-    <MenuPopup ref={ref} className={className}>
+    <MenuPopup ref={ref}>
       {children}
     </MenuPopup>
   </MenuPositioner>
 ));
 MenuContent.displayName = "MenuContent";
 
-export interface MenuItemProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.Item>, "className">, VariantProps<typeof menuRowVariants> {
+export interface MenuItemProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.Item>, "className">>, VariantProps<typeof menuRowVariants> {
   /** Leading icon, e.g. `<Icon icon={Trash} />`. */
   icon?: React.ReactNode;
   /** Trailing content — a shortcut hint, a badge. */
   trailing?: React.ReactNode;
   /** Marks the row as the current single-select choice; renders the trailing check when `true`/`false` is given. */
   selected?: boolean;
-  className?: string;
 }
 
 /** A selectable menu row: icon, label, optional trailing content, and a single-select check gutter. */
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  ({ variant, icon, trailing, selected, className, children, ...props }, ref) => (
+  ({ variant, icon, trailing, selected, children, ...props }, ref) => (
     <BaseMenu.Item
       ref={ref}
       {...(selected !== undefined ? { role: "menuitemradio", "aria-checked": selected } : {})}
-      className={cn(menuRowVariants({ variant }), className)}
+      className={cn(menuRowVariants({ variant }))}
       {...props}
     >
       {icon}
@@ -155,40 +155,37 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
 );
 MenuItem.displayName = "MenuItem";
 
-export interface MenuSeparatorProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.Separator> {}
+export interface MenuSeparatorProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseMenu.Separator>> {}
 
 /** A divider between groups of rows. */
-export const MenuSeparator = React.forwardRef<HTMLDivElement, MenuSeparatorProps>(({ className, ...props }, ref) => (
-  <BaseMenu.Separator ref={ref} className={cn(menuSeparatorClass, className)} {...props} />
+export const MenuSeparator = React.forwardRef<HTMLDivElement, MenuSeparatorProps>(({ ...props }, ref) => (
+  <BaseMenu.Separator ref={ref} className={cn(menuSeparatorClass)} {...props} />
 ));
 MenuSeparator.displayName = "MenuSeparator";
 
-export interface MenuGroupProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.Group> {}
+export interface MenuGroupProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseMenu.Group>> {}
 
 /** Groups related rows with their `MenuGroupLabel` heading. Structural only — no styling of its own. */
 export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>((props, ref) => <BaseMenu.Group ref={ref} {...props} />);
 MenuGroup.displayName = "MenuGroup";
 
-export interface MenuGroupLabelProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.GroupLabel> {}
+export interface MenuGroupLabelProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseMenu.GroupLabel>> {}
 
 /** The non-interactive heading above a `MenuGroup`'s rows. */
-export const MenuGroupLabel = React.forwardRef<HTMLDivElement, MenuGroupLabelProps>(({ className, ...props }, ref) => (
-  <BaseMenu.GroupLabel ref={ref} className={cn(menuGroupLabelClass, className)} {...props} />
+export const MenuGroupLabel = React.forwardRef<HTMLDivElement, MenuGroupLabelProps>(({ ...props }, ref) => (
+  <BaseMenu.GroupLabel ref={ref} className={cn(menuGroupLabelClass)} {...props} />
 ));
 MenuGroupLabel.displayName = "MenuGroupLabel";
 
-export interface MenuCheckboxItemProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.CheckboxItem>, "className">,
-    VariantProps<typeof menuRowVariants> {
+export interface MenuCheckboxItemProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.CheckboxItem>, "className">>, VariantProps<typeof menuRowVariants> {
   icon?: React.ReactNode;
   trailing?: React.ReactNode;
-  className?: string;
 }
 
 /** A toggleable multi-select row: leading checkbox box (kept mounted, empty while unchecked) + label. */
 export const MenuCheckboxItem = React.forwardRef<HTMLDivElement, MenuCheckboxItemProps>(
-  ({ variant, icon, trailing, className, children, ...props }, ref) => (
-    <BaseMenu.CheckboxItem ref={ref} className={cn(menuRowVariants({ variant }), className)} {...props}>
+  ({ variant, icon, trailing, children, ...props }, ref) => (
+    <BaseMenu.CheckboxItem ref={ref} className={cn(menuRowVariants({ variant }))} {...props}>
       <span className={menuItemControlClass}>
         <BaseMenu.CheckboxItemIndicator keepMounted className={menuCheckboxBoxClass}>
           <Check aria-hidden />
@@ -202,7 +199,7 @@ export const MenuCheckboxItem = React.forwardRef<HTMLDivElement, MenuCheckboxIte
 );
 MenuCheckboxItem.displayName = "MenuCheckboxItem";
 
-export interface MenuRadioGroupProps extends React.ComponentPropsWithoutRef<typeof BaseMenu.RadioGroup> {}
+export interface MenuRadioGroupProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseMenu.RadioGroup>> {}
 
 /** Wraps a set of `MenuRadioItem` rows, tracking which `value` is currently selected. */
 export const MenuRadioGroup = React.forwardRef<HTMLDivElement, MenuRadioGroupProps>((props, ref) => (
@@ -210,20 +207,17 @@ export const MenuRadioGroup = React.forwardRef<HTMLDivElement, MenuRadioGroupPro
 ));
 MenuRadioGroup.displayName = "MenuRadioGroup";
 
-export interface MenuRadioItemProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.RadioItem>, "className">,
-    VariantProps<typeof menuRowVariants> {
+export interface MenuRadioItemProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseMenu.RadioItem>, "className">>, VariantProps<typeof menuRowVariants> {
   icon?: React.ReactNode;
   trailing?: React.ReactNode;
   /** `check` (default) marks the selected row with the same trailing tick every single-select row uses; `radio` draws a leading ring instead — use it only when the popup also mixes in a checkbox group and the two kinds of choice need telling apart. */
   marker?: "check" | "radio";
-  className?: string;
 }
 
 /** A single-select row within a `MenuRadioGroup`: marks the current choice with a trailing check (default) or a leading ring. */
 export const MenuRadioItem = React.forwardRef<HTMLDivElement, MenuRadioItemProps>(
-  ({ variant, icon, trailing, marker = "check", className, children, ...props }, ref) => (
-    <BaseMenu.RadioItem ref={ref} className={cn(menuRowVariants({ variant }), className)} {...props}>
+  ({ variant, icon, trailing, marker = "check", children, ...props }, ref) => (
+    <BaseMenu.RadioItem ref={ref} className={cn(menuRowVariants({ variant }))} {...props}>
       {marker === "radio" ? (
         <span className={menuItemControlClass}>
           <BaseMenu.RadioItemIndicator keepMounted className={menuRadioRingClass}>

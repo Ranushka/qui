@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { Spinner } from "./Spinner";
 
 const pillVariants = cva(
@@ -25,9 +26,7 @@ const pillVariants = cva(
   }
 );
 
-export interface PillProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">,
-    VariantProps<typeof pillVariants> {
+export interface PillProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">>, VariantProps<typeof pillVariants> {
   label?: React.ReactNode;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
@@ -41,7 +40,7 @@ export interface PillProps
  * skipped entirely so the pill doesn't render lopsided from an empty flex child.
  */
 export const Pill = React.forwardRef<HTMLButtonElement, PillProps>(
-  ({ size = "md", variant = "outline", label, startIcon, endIcon, loading = false, placeholder, disabled, className, ...props }, ref) => {
+  ({ size = "md", variant = "outline", label, startIcon, endIcon, loading = false, placeholder, disabled, ...props }, ref) => {
     return (
       <BaseButton
         ref={ref}
@@ -49,7 +48,7 @@ export const Pill = React.forwardRef<HTMLButtonElement, PillProps>(
         disabled={disabled || loading}
         focusableWhenDisabled={loading || undefined}
         aria-busy={loading || undefined}
-        className={cn(pillVariants({ size, variant }), className)}
+        className={cn(pillVariants({ size, variant }))}
         {...props}
       >
         {!loading ? startIcon : null}

@@ -1,3 +1,4 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { Field as BaseField } from "@base-ui/react/field";
 import { mergeProps } from "@base-ui/react/merge-props";
@@ -5,7 +6,7 @@ import { TextArea, type TextAreaProps } from "../atoms/TextArea";
 import { Field } from "./Field";
 import type { FieldSize } from "../lib/field-parts";
 
-export interface TextAreaFieldProps extends Omit<TextAreaProps, "size" | "className" | "groupClassName" | "required" | "value" | "defaultValue"> {
+export interface TextAreaFieldProps extends NoClass<Omit<TextAreaProps, "size" | "className" | "groupClassName" | "required" | "value" | "defaultValue">> {
   /** Size of the control and its label/helper text. @default "lg" */
   size?: FieldSize;
   /** Label naming the text area. */
@@ -24,8 +25,6 @@ export interface TextAreaFieldProps extends Omit<TextAreaProps, "size" | "classN
   defaultValue?: string;
   /** Called with the new text on every edit. */
   onValueChange?: (value: string) => void;
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 }
 
 /**
@@ -36,10 +35,10 @@ export interface TextAreaFieldProps extends Omit<TextAreaProps, "size" | "classN
  */
 export const TextAreaField = React.forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
   (
-    { size = "lg", name, label, required, description, hint, error, disabled, resize, autoResize = false, maxRows, value, defaultValue, onValueChange, className, ...textAreaProps },
+    { size = "lg", name, label, required, description, hint, error, disabled, resize, autoResize = false, maxRows, value, defaultValue, onValueChange, ...textAreaProps },
     ref
   ) => (
-    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error} className={className}>
+    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error}>
       <BaseField.Control
         ref={ref as React.Ref<HTMLElement>}
         value={value}

@@ -3,6 +3,7 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass, NoStyle } from "../lib/no-class";
 import { IconButton } from "../atoms/IconButton";
 import { Icon } from "../atoms/Icon";
 
@@ -40,14 +41,16 @@ const dialogPopupVariants = cva(
 export const Dialog = BaseDialog.Root;
 
 /** A button that opens the dialog. Pass `render` to graft the trigger behavior onto e.g. `QUI.Button`. */
-export const DialogTrigger = BaseDialog.Trigger;
+export const DialogTrigger = BaseDialog.Trigger as React.ForwardRefExoticComponent<
+  NoStyle<React.ComponentPropsWithoutRef<typeof BaseDialog.Trigger>> & React.RefAttributes<HTMLButtonElement>
+>;
 
 /** A button that closes the dialog, e.g. a footer "Cancel" via `render={<QUI.Button .../>}`. */
-export const DialogClose = BaseDialog.Close;
+export const DialogClose = BaseDialog.Close as React.ForwardRefExoticComponent<
+  NoStyle<React.ComponentPropsWithoutRef<typeof BaseDialog.Close>> & React.RefAttributes<HTMLButtonElement>
+>;
 
-export interface DialogContentProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>, "render">,
-    VariantProps<typeof dialogPopupVariants> {
+export interface DialogContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>, "render">>, VariantProps<typeof dialogPopupVariants> {
   /** Hides the built-in top-right close (X) button. @default false */
   hideClose?: boolean;
   /** Accessible label for the built-in close button. @default "Close" */
@@ -58,12 +61,12 @@ export interface DialogContentProps
  * The dialog's portaled surface: backdrop + centering viewport + the styled popup card, with a
  * top-right close (X) button baked in (opt out with `hideClose`). Wrap in `<Dialog>`/`<DialogTrigger>`.
  */
-export function DialogContent({ size, hideClose = false, closeLabel = "Close", className, children, ...props }: DialogContentProps) {
+export function DialogContent({ size, hideClose = false, closeLabel = "Close", children, ...props }: DialogContentProps) {
   return (
     <BaseDialog.Portal>
       <BaseDialog.Backdrop className={dialogBackdropClass} />
       <BaseDialog.Viewport className={dialogViewportClass}>
-        <BaseDialog.Popup className={cn(dialogPopupVariants({ size }), className)} {...props}>
+        <BaseDialog.Popup className={cn(dialogPopupVariants({ size }))} {...props}>
           {children}
           {hideClose ? null : (
             <BaseDialog.Close
@@ -78,13 +81,13 @@ export function DialogContent({ size, hideClose = false, closeLabel = "Close", c
 }
 
 /** The dialog's accessible heading. */
-export function DialogTitle({ className, ...props }: React.ComponentPropsWithoutRef<typeof BaseDialog.Title>) {
-  return <BaseDialog.Title className={cn("text-h5-medium text-primary", className)} {...props} />;
+export function DialogTitle({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseDialog.Title>>) {
+  return <BaseDialog.Title className={cn("text-h5-medium text-primary")} {...props} />;
 }
 
 /** Supporting copy under the title. */
-export function DialogDescription({ className, ...props }: React.ComponentPropsWithoutRef<typeof BaseDialog.Description>) {
-  return <BaseDialog.Description className={cn("text-body-xs-regular text-tertiary", className)} {...props} />;
+export function DialogDescription({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseDialog.Description>>) {
+  return <BaseDialog.Description className={cn("text-body-xs-regular text-tertiary")} {...props} />;
 }
 
 /* __DOC_BLOCK

@@ -44,8 +44,6 @@ export type SelectFieldProps<Value = string, Multiple extends boolean | undefine
    * for long or searchable lists.
    */
   options: readonly SelectFieldEntry<Value>[];
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 };
 
 function isGroup<Value>(entry: SelectFieldOption<Value> | SelectFieldGroup<Value>): entry is SelectFieldGroup<Value> {
@@ -81,7 +79,7 @@ export function SelectField<Value = string, Multiple extends boolean | undefined
   name,
   disabled,
   required,
-  className,
+  
   ...selectProps
 }: SelectFieldProps<Value, Multiple>) {
   const entries = React.useMemo(() => tidyEntries(options), [options]);
@@ -97,7 +95,7 @@ export function SelectField<Value = string, Multiple extends boolean | undefined
   );
 
   return (
-    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error} className={className}>
+    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error}>
       <Select<Value, Multiple> items={items} disabled={disabled} required={required} {...selectProps}>
         <SelectTrigger size={size} placeholder={placeholder} />
         <SelectContent>

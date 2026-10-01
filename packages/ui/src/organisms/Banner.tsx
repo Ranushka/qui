@@ -2,6 +2,7 @@ import * as React from "react";
 import { cva } from "class-variance-authority";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { IconButton } from "../atoms/IconButton";
 import { Icon } from "../atoms/Icon";
 
@@ -38,7 +39,7 @@ const iconColor: Record<BannerVariant, string> = {
   danger: "text-icon-danger-primary",
 };
 
-export interface BannerProps extends Omit<React.ComponentPropsWithoutRef<"div">, "title"> {
+export interface BannerProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"div">, "title">> {
   /** Status tone; also picks the default icon and ARIA role. @default "info" */
   variant?: BannerVariant;
   /** Rounded inline callout, or a full-width page strip. @default "inline" */
@@ -58,18 +59,22 @@ export interface BannerProps extends Omit<React.ComponentPropsWithoutRef<"div">,
  * `role="status"`. Body text goes in `children`, below the optional `title`.
  */
 export const Banner = React.forwardRef<HTMLDivElement, BannerProps>(
-  ({ variant = "info", layout = "inline", title, icon, actions, onDismiss, className, children, ...props }, ref) => {
+  ({ variant = "info", layout = "inline", title, icon, actions, onDismiss, children, ...props }, ref) => {
     const DefaultIcon = defaultIcons[variant];
     const role = variant === "warning" || variant === "danger" ? "alert" : "status";
     return (
-      <div ref={ref} role={role} className={cn(bannerVariants({ variant, layout }), className)} {...props}>
+      <div ref={ref} role={role} className={cn(bannerVariants({ variant, layout }))} {...props}>
         {icon !== null && <span className={cn("mt-0.5 flex shrink-0", iconColor[variant])}>{icon ?? <Icon icon={DefaultIcon} />}</span>}
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           {title != null && <p className="text-body-sm-medium text-primary">{title}</p>}
           {children != null && <div>{children}</div>}
         </div>
         {actions != null && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
-        {onDismiss && <IconButton variant="ghost" size="sm" aria-label="Dismiss" showTooltip={false} icon={<Icon icon={X} />} onClick={onDismiss} className="-my-0.5 shrink-0" />}
+        {onDismiss && (
+          <span className="-my-0.5 flex shrink-0">
+            <IconButton variant="ghost" size="sm" aria-label="Dismiss" showTooltip={false} icon={<Icon icon={X} />} onClick={onDismiss} />
+          </span>
+        )}
       </div>
     );
   }

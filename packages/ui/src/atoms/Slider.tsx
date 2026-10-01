@@ -2,6 +2,7 @@ import * as React from "react";
 import { Slider as BaseSlider } from "@base-ui/react/slider";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /** Root: stacks the optional label/value header over the control row. */
 const sliderRootClass = "flex w-full flex-col gap-2";
@@ -51,9 +52,7 @@ const sliderThumbVariants = cva(
 
 type SliderValue = number | readonly number[];
 
-export interface SliderProps<Value extends SliderValue = SliderValue>
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseSlider.Root<Value>>, "children" | "render">,
-    VariantProps<typeof sliderThumbVariants> {
+export interface SliderProps<Value extends SliderValue = SliderValue> extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseSlider.Root<Value>>, "children" | "render">>, VariantProps<typeof sliderThumbVariants> {
   /**
    * Visible label above the track (e.g. "Volume"). Names every thumb. Without it, pass
    * `aria-label` (one thumb) or `getAriaLabel` (a range) so the thumbs are still named.
@@ -87,7 +86,7 @@ export function Slider<Value extends SliderValue>({
   showValue = true,
   "aria-label": ariaLabel,
   getAriaLabel,
-  className,
+  
   value,
   defaultValue,
   ...props
@@ -95,7 +94,7 @@ export function Slider<Value extends SliderValue>({
   const count = thumbCount(value ?? defaultValue);
   const showHeader = label != null || showValue;
   return (
-    <BaseSlider.Root<Value> value={value} defaultValue={defaultValue} className={cn(sliderRootClass, className)} {...props}>
+    <BaseSlider.Root<Value> value={value} defaultValue={defaultValue} className={cn(sliderRootClass)} {...props}>
       {showHeader ? (
         <div className={sliderHeaderClass}>
           {label != null ? <BaseSlider.Label className={sliderLabelClass}>{label}</BaseSlider.Label> : <span />}

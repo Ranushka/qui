@@ -2,6 +2,7 @@ import * as React from "react";
 import { ScrollArea as BaseScrollArea } from "@base-ui/react/scroll-area";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /**
  * The track. Stays transparent; the gutter is stable across states and rides the
@@ -48,7 +49,7 @@ export type ScrollAreaOrientation = "vertical" | "horizontal" | "both";
 export type ScrollAreaScrollbarVisibility = "auto" | "always";
 export type ScrollAreaScrollbarSize = "sm" | "md" | "lg";
 
-export interface ScrollAreaProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseScrollArea.Root>, "children"> {
+export interface ScrollAreaProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseScrollArea.Root>, "children">> {
   /**
    * Which axes scroll (required — no silent default). `vertical`/`horizontal` render one
    * scrollbar; `both` renders both plus the corner. Render only the axes the content can overflow.
@@ -70,10 +71,10 @@ export interface ScrollAreaProps extends Omit<React.ComponentPropsWithoutRef<typ
  * fill the column and its viewport scrolls when the content overflows.
  */
 export const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
-  ({ orientation, visibility = "auto", size = "sm", viewportRef, className, children, ...props }, ref) => {
+  ({ orientation, visibility = "auto", size = "sm", viewportRef, children, ...props }, ref) => {
     const scrollbarClass = scrollbarVariants({ visibility, size });
     return (
-      <BaseScrollArea.Root ref={ref} className={cn("relative flex min-h-0 flex-1 flex-col", className)} {...props}>
+      <BaseScrollArea.Root ref={ref} className={cn("relative flex min-h-0 flex-1 flex-col")} {...props}>
         <BaseScrollArea.Viewport ref={viewportRef} className="min-h-0 flex-1 overscroll-contain rounded-[inherit] outline-none">
           {children}
         </BaseScrollArea.Viewport>

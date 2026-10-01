@@ -2,6 +2,7 @@ import * as React from "react";
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass, NoStyle } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
 /**
@@ -49,20 +50,24 @@ const alertDialogActionsVariants = cva("flex shrink-0 flex-wrap items-center gap
 export const AlertDialog = BaseAlertDialog.Root;
 
 /** A button that opens the alert dialog. Pass `render` to graft the trigger onto e.g. `QUI.Button`. */
-export const AlertDialogTrigger = BaseAlertDialog.Trigger;
+export const AlertDialogTrigger = BaseAlertDialog.Trigger as React.ForwardRefExoticComponent<
+  NoStyle<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Trigger>> & React.RefAttributes<HTMLButtonElement>
+>;
 
 /** A button that answers the confirmation, e.g. `render={<QUI.Button variant="secondary" label="Cancel" />}`. */
-export const AlertDialogClose = BaseAlertDialog.Close;
+export const AlertDialogClose = BaseAlertDialog.Close as React.ForwardRefExoticComponent<
+  NoStyle<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Close>> & React.RefAttributes<HTMLButtonElement>
+>;
 
-export interface AlertDialogContentProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Popup>, "render"> {}
+export interface AlertDialogContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Popup>, "render">> {}
 
 /** The alert dialog's portaled surface: backdrop + centering viewport + the styled popup card. */
-export function AlertDialogContent({ className, children, ...props }: AlertDialogContentProps) {
+export function AlertDialogContent({ children, ...props }: AlertDialogContentProps) {
   return (
     <BaseAlertDialog.Portal>
       <BaseAlertDialog.Backdrop className={alertDialogBackdropClass} />
       <BaseAlertDialog.Viewport className={alertDialogViewportClass}>
-        <BaseAlertDialog.Popup className={cn(alertDialogPopupClass, className)} {...props}>
+        <BaseAlertDialog.Popup className={cn(alertDialogPopupClass)} {...props}>
           {children}
         </BaseAlertDialog.Popup>
       </BaseAlertDialog.Viewport>
@@ -71,27 +76,27 @@ export function AlertDialogContent({ className, children, ...props }: AlertDialo
 }
 
 /** The alert dialog's accessible heading. */
-export function AlertDialogTitle({ className, ...props }: React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Title>) {
-  return <BaseAlertDialog.Title className={cn("text-h6-semibold text-primary", className)} {...props} />;
+export function AlertDialogTitle({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Title>>) {
+  return <BaseAlertDialog.Title className={cn("text-h6-semibold text-primary")} {...props} />;
 }
 
 /** Supporting copy under the title. */
-export function AlertDialogDescription({ className, ...props }: React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Description>) {
-  return <BaseAlertDialog.Description className={cn("text-body-sm-regular text-secondary", className)} {...props} />;
+export function AlertDialogDescription({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseAlertDialog.Description>>) {
+  return <BaseAlertDialog.Description className={cn("text-body-sm-regular text-secondary")} {...props} />;
 }
 
-export interface AlertDialogIconProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof alertDialogIconVariants> {}
+export interface AlertDialogIconProps extends NoClass<React.HTMLAttributes<HTMLSpanElement>>, VariantProps<typeof alertDialogIconVariants> {}
 
 /** The leading intent badge above the title. Decorative — the title carries the accessible name. */
-export function AlertDialogIcon({ variant, className, ...props }: AlertDialogIconProps) {
-  return <span aria-hidden className={cn(alertDialogIconVariants({ variant }), className)} {...props} />;
+export function AlertDialogIcon({ variant, ...props }: AlertDialogIconProps) {
+  return <span aria-hidden className={cn(alertDialogIconVariants({ variant }))} {...props} />;
 }
 
-export interface AlertDialogActionsProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof alertDialogActionsVariants> {}
+export interface AlertDialogActionsProps extends NoClass<React.HTMLAttributes<HTMLDivElement>>, VariantProps<typeof alertDialogActionsVariants> {}
 
 /** The footer button row. `layout="split"` pushes the first and last children apart; `"inline"` (default) trails them right. */
-export function AlertDialogActions({ layout, className, ...props }: AlertDialogActionsProps) {
-  return <div className={cn(alertDialogActionsVariants({ layout }), className)} {...props} />;
+export function AlertDialogActions({ layout, ...props }: AlertDialogActionsProps) {
+  return <div className={cn(alertDialogActionsVariants({ layout }))} {...props} />;
 }
 
 /* __DOC_BLOCK

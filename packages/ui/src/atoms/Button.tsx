@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlChromeVariants } from "../lib/control-chrome";
 import { Spinner } from "./Spinner";
 
@@ -22,10 +23,7 @@ const buttonGeometryVariants = cva("whitespace-nowrap", {
   defaultVariants: { size: "md", stretch: "auto" },
 });
 
-export interface ButtonProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">,
-    VariantProps<typeof controlChromeVariants>,
-    VariantProps<typeof buttonGeometryVariants> {
+export interface ButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">>, VariantProps<typeof controlChromeVariants>, VariantProps<typeof buttonGeometryVariants> {
   /** Visible button label. */
   label: string;
   /** Icon rendered beside the label (inline-start by default), e.g. `<Icon icon={Plus} />`. */
@@ -45,7 +43,7 @@ export interface ButtonProps
  * `label` — icon-only buttons are `IconButton`, not this with an empty label.
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "primary", size = "md", stretch, label, icon, iconPosition = "start", loading = false, disabled, className, ...props }, ref) => {
+  ({ variant = "primary", size = "md", stretch, label, icon, iconPosition = "start", loading = false, disabled, ...props }, ref) => {
     const iconSlot = icon != null && loading ? <Spinner /> : (icon ?? <Spinner active={loading} />);
 
     return (
@@ -54,7 +52,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         focusableWhenDisabled={loading || undefined}
         aria-busy={loading || undefined}
-        className={cn(controlChromeVariants({ variant }), buttonGeometryVariants({ size, stretch }), className)}
+        className={cn(controlChromeVariants({ variant }), buttonGeometryVariants({ size, stretch }))}
         {...props}
       >
         {iconPosition === "start" ? iconSlot : null}

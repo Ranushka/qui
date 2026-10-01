@@ -2,6 +2,7 @@ import * as React from "react";
 import { Progress } from "@base-ui/react/progress";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 const trackVariants = cva("relative min-w-0 flex-1 overflow-hidden rounded-full bg-layer-3-selected", {
   variants: { size: { sm: "h-[5px]", md: "h-2" } },
@@ -23,10 +24,7 @@ const indicatorVariants = cva(
   }
 );
 
-export interface LinearProgressProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Progress.Root>, "render" | "children" | "value">,
-    VariantProps<typeof trackVariants>,
-    VariantProps<typeof indicatorVariants> {
+export interface LinearProgressProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof Progress.Root>, "render" | "children" | "value">>, VariantProps<typeof trackVariants>, VariantProps<typeof indicatorVariants> {
   /** Current value (0–`max`). Omit (or pass `indeterminate`) for an unknown-duration fill. */
   value?: number | null;
   /** Shows an animated fill and ignores `value`. @default false */
@@ -43,14 +41,14 @@ export interface LinearProgressProps
  * with an unknown duration (the trailing `%` hides by default in that mode). For a small ring, use
  * `CircularProgress`.
  */
-export function LinearProgress({ value, size = "md", variant = "brand", showValue, indeterminate = false, label, className, ...props }: LinearProgressProps) {
+export function LinearProgress({ value, size = "md", variant = "brand", showValue, indeterminate = false, label, ...props }: LinearProgressProps) {
   const max = props.max ?? 100;
   const min = props.min ?? 0;
   const clampedValue = indeterminate ? null : value != null ? Math.min(Math.max(value, min), max) : null;
   const showTrailingValue = showValue ?? !indeterminate;
 
   return (
-    <Progress.Root value={clampedValue} {...props} className={cn("flex w-full items-center gap-2", className)}>
+    <Progress.Root value={clampedValue} {...props} className={cn("flex w-full items-center gap-2")}>
       {label != null ? <Progress.Label className="text-body-xs-medium text-secondary">{label}</Progress.Label> : null}
       <Progress.Track className={trackVariants({ size })}>
         <Progress.Indicator className={indicatorVariants({ variant })} />

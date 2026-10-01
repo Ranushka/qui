@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlChromeVariants } from "../lib/control-chrome";
 import { Spinner } from "./Spinner";
 import { Tooltip } from "./Tooltip";
@@ -19,10 +20,7 @@ const iconButtonGeometryVariants = cva("", {
   defaultVariants: { size: "md" },
 });
 
-export interface IconButtonProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">,
-    VariantProps<typeof controlChromeVariants>,
-    VariantProps<typeof iconButtonGeometryVariants> {
+export interface IconButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">>, VariantProps<typeof controlChromeVariants>, VariantProps<typeof iconButtonGeometryVariants> {
   /** Icon element filling the button, e.g. `<Icon icon={Plus} />`. Swapped for a spinner while `loading`. */
   icon: React.ReactNode;
   /** Required accessible name — there's no visible label, so this is also what the tooltip shows. */
@@ -38,7 +36,7 @@ export interface IconButtonProps
  * required via `aria-label` and doubles as the default tooltip.
  */
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ variant = "primary", size = "md", icon, loading = false, disabled, showTooltip = true, className, "aria-label": ariaLabel, ...props }, ref) => {
+  ({ variant = "primary", size = "md", icon, loading = false, disabled, showTooltip = true, "aria-label": ariaLabel, ...props }, ref) => {
     const button = (
       <BaseButton
         ref={ref}
@@ -46,7 +44,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         disabled={disabled || loading}
         focusableWhenDisabled={loading || undefined}
         aria-busy={loading || undefined}
-        className={cn(controlChromeVariants({ variant }), iconButtonGeometryVariants({ size }), className)}
+        className={cn(controlChromeVariants({ variant }), iconButtonGeometryVariants({ size }))}
         {...props}
       >
         {loading ? <Spinner /> : icon}

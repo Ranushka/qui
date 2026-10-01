@@ -3,6 +3,7 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass, NoStyle } from "../lib/no-class";
 import { IconButton } from "../atoms/IconButton";
 import { Icon } from "../atoms/Icon";
 
@@ -40,14 +41,16 @@ const drawerPopupVariants = cva(
 export const Drawer = BaseDialog.Root;
 
 /** A button that opens the drawer. Pass `render` to graft the trigger onto e.g. `QUI.Button`. */
-export const DrawerTrigger = BaseDialog.Trigger;
+export const DrawerTrigger = BaseDialog.Trigger as React.ForwardRefExoticComponent<
+  NoStyle<React.ComponentPropsWithoutRef<typeof BaseDialog.Trigger>> & React.RefAttributes<HTMLButtonElement>
+>;
 
 /** A button that closes the drawer, e.g. a footer "Cancel" via `render={<QUI.Button .../>}`. */
-export const DrawerClose = BaseDialog.Close;
+export const DrawerClose = BaseDialog.Close as React.ForwardRefExoticComponent<
+  NoStyle<React.ComponentPropsWithoutRef<typeof BaseDialog.Close>> & React.RefAttributes<HTMLButtonElement>
+>;
 
-export interface DrawerContentProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>, "render">,
-    VariantProps<typeof drawerPopupVariants> {
+export interface DrawerContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseDialog.Popup>, "render">>, VariantProps<typeof drawerPopupVariants> {
   /** Hides the built-in top-right close (X) button. @default false */
   hideClose?: boolean;
   /** Accessible label for the built-in close button. @default "Close" */
@@ -58,11 +61,11 @@ export interface DrawerContentProps
  * The drawer's portaled surface: backdrop + the styled edge-anchored panel, with a top-right close
  * (X) button baked in (opt out with `hideClose`). Wrap in `<Drawer>`/`<DrawerTrigger>`.
  */
-export function DrawerContent({ side, size, hideClose = false, closeLabel = "Close", className, children, ...props }: DrawerContentProps) {
+export function DrawerContent({ side, size, hideClose = false, closeLabel = "Close", children, ...props }: DrawerContentProps) {
   return (
     <BaseDialog.Portal>
       <BaseDialog.Backdrop className={drawerBackdropClass} />
-      <BaseDialog.Popup className={cn(drawerPopupVariants({ side, size }), className)} {...props}>
+      <BaseDialog.Popup className={cn(drawerPopupVariants({ side, size }))} {...props}>
         {children}
         {hideClose ? null : (
           <BaseDialog.Close
@@ -76,13 +79,13 @@ export function DrawerContent({ side, size, hideClose = false, closeLabel = "Clo
 }
 
 /** The drawer's accessible heading. */
-export function DrawerTitle({ className, ...props }: React.ComponentPropsWithoutRef<typeof BaseDialog.Title>) {
-  return <BaseDialog.Title className={cn("text-h5-medium text-primary", className)} {...props} />;
+export function DrawerTitle({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseDialog.Title>>) {
+  return <BaseDialog.Title className={cn("text-h5-medium text-primary")} {...props} />;
 }
 
 /** Supporting copy under the title. */
-export function DrawerDescription({ className, ...props }: React.ComponentPropsWithoutRef<typeof BaseDialog.Description>) {
-  return <BaseDialog.Description className={cn("text-body-xs-regular text-tertiary", className)} {...props} />;
+export function DrawerDescription({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseDialog.Description>>) {
+  return <BaseDialog.Description className={cn("text-body-xs-regular text-tertiary")} {...props} />;
 }
 
 /* __DOC_BLOCK

@@ -3,6 +3,7 @@ import { OTPField as BaseOTPField } from "@base-ui/react/otp-field";
 import { Minus } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlSize } from "../lib/control-group";
 import { fieldControlSurfaceVariants } from "../lib/field-control-surface";
 import { nodeSlotClass } from "../lib/node-slot";
@@ -41,7 +42,7 @@ const otpFieldSeparatorClass = cn(nodeSlotClass, "size-4 text-tertiary [--node-s
 
 export type OTPFieldSize = "lg" | "xl" | "2xl";
 
-export interface OTPFieldProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseOTPField.Root>, "children" | "render"> {
+export interface OTPFieldProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseOTPField.Root>, "children" | "render">> {
   /** Number of character slots. */
   length: number;
   /** Box size of every slot. @default "lg" */
@@ -75,7 +76,7 @@ const defaultSlotLabel = (index: number) => `Character ${index + 1}`;
  * entered characters. `hint` shows helper text below and `error` swaps it for an error message
  * while turning every slot to the danger state.
  */
-export function OTPField({ length, size = "lg", hint, error, groups, getSlotLabel = defaultSlotLabel, className, ...props }: OTPFieldProps) {
+export function OTPField({ length, size = "lg", hint, error, groups, getSlotLabel = defaultSlotLabel, ...props }: OTPFieldProps) {
   if (groups != null && groups.reduce((sum, count) => sum + count, 0) !== length) {
     throw new Error(`qui OTPField: groups [${groups.join(", ")}] must sum to length ${length}.`);
   }
@@ -92,7 +93,7 @@ export function OTPField({ length, size = "lg", hint, error, groups, getSlotLabe
 
   return (
     <Field size={size} invalid={error != null || undefined} hint={hint} error={error}>
-      <BaseOTPField.Root length={length} className={cn(otpFieldRootClass, className)} {...props}>
+      <BaseOTPField.Root length={length} className={cn(otpFieldRootClass)} {...props}>
         {/* Base UI names the first slot from `aria-labelledby` only (it ignores `aria-label` there). */}
         <span id={firstSlotLabelId} className="sr-only">
           {getSlotLabel(0)}

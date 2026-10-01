@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { textLinkBaseClass, textLinkPalette } from "../lib/text-link-chrome";
 
 /** Text-only action chrome: the shared text-link look on a `<button>`, with a native-disabled treatment. */
@@ -19,9 +20,7 @@ const textButtonVariants = cva(
   }
 );
 
-export interface TextButtonProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render" | "nativeButton" | "type">,
-    VariantProps<typeof textButtonVariants> {
+export interface TextButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render" | "nativeButton" | "type">>, VariantProps<typeof textButtonVariants> {
   /** Visible action label. */
   label: string;
   /** Icon rendered beside the label (inline-start by default), e.g. `<Icon icon={Plus} />`. */
@@ -39,8 +38,8 @@ export interface TextButtonProps
  * non-focusable disabled state.
  */
 export const TextButton = React.forwardRef<HTMLButtonElement, TextButtonProps>(
-  ({ variant, size, label, icon, iconPosition = "start", type = "button", className, ...props }, ref) => (
-    <BaseButton ref={ref} type={type} className={cn(textButtonVariants({ variant, size }), className)} {...props}>
+  ({ variant, size, label, icon, iconPosition = "start", type = "button", ...props }, ref) => (
+    <BaseButton ref={ref} type={type} className={cn(textButtonVariants({ variant, size }))} {...props}>
       {iconPosition === "start" ? icon : null}
       <span>{label}</span>
       {iconPosition === "end" ? icon : null}

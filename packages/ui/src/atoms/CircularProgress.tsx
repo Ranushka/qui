@@ -2,6 +2,7 @@ import * as React from "react";
 import { Progress } from "@base-ui/react/progress";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 const RING_GEOMETRY = {
   sm: { box: 16, radius: 6 },
@@ -26,10 +27,7 @@ const indicatorVariants = cva("origin-center -rotate-90 transition-[stroke-dasho
   defaultVariants: { variant: "brand" },
 });
 
-export interface CircularProgressProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Progress.Root>, "render" | "children" | "value">,
-    VariantProps<typeof ringVariants>,
-    VariantProps<typeof indicatorVariants> {
+export interface CircularProgressProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof Progress.Root>, "render" | "children" | "value">>, VariantProps<typeof ringVariants>, VariantProps<typeof indicatorVariants> {
   /** Current value (0–`max`). Omit (or pass `indeterminate`) for an unknown-duration ring. */
   value?: number | null;
   /** Spins a fixed quarter arc and ignores `value`. @default false */
@@ -41,7 +39,7 @@ export interface CircularProgressProps
  * and `aria-valuenow` follow. Pass `indeterminate` to spin a fixed quarter arc instead. For a bar
  * with an optional label, use `LinearProgress`.
  */
-export function CircularProgress({ value, size = "md", variant = "brand", indeterminate = false, className, ...props }: CircularProgressProps) {
+export function CircularProgress({ value, size = "md", variant = "brand", indeterminate = false, ...props }: CircularProgressProps) {
   const { box, radius } = RING_GEOMETRY[size ?? "md"];
   const circumference = 2 * Math.PI * radius;
   const max = props.max ?? 100;
@@ -52,7 +50,7 @@ export function CircularProgress({ value, size = "md", variant = "brand", indete
   const center = box / 2;
 
   return (
-    <Progress.Root value={clampedValue} {...props} className={cn(ringVariants({ size }), className)}>
+    <Progress.Root value={clampedValue} {...props} className={cn(ringVariants({ size }))}>
       <svg aria-hidden="true" fill="none" viewBox={`0 0 ${box} ${box}`} className="block size-full group-data-indeterminate/ring:animate-spin">
         <circle cx={center} cy={center} r={radius} strokeWidth={RING_STROKE} className="[stroke:var(--bg-layer-3-selected)]" />
         <circle

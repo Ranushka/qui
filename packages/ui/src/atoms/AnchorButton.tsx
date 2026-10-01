@@ -3,6 +3,7 @@ import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ExternalLink } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { textLinkBaseClass, textLinkPalette } from "../lib/text-link-chrome";
 import { Icon } from "./Icon";
 
@@ -20,12 +21,14 @@ const anchorButtonVariants = cva(cn(textLinkBaseClass, "group gap-1 aria-disable
   defaultVariants: { variant: "primary", size: "md" },
 });
 
-type AnchorButtonRender = NonNullable<useRender.RenderProp>;
+/**
+ * Where the link goes. `linkComponent` swaps the `<a>` for a router/framework link component (e.g.
+ * Next.js `Link`) — a component type, not an element, so the caller can't attach its own classes.
+ */
+type AnchorButtonDestination = { href: string; linkComponent?: React.ElementType };
 
-/** Where the link goes: a plain `href`, or a router/framework link element via `render` (or both). */
-type AnchorButtonDestination = { href: string; render?: AnchorButtonRender } | { href?: undefined; render: AnchorButtonRender };
-
-export type AnchorButtonProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> &
+export type AnchorButtonProps = NoClass<
+Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> &
   VariantProps<typeof anchorButtonVariants> &
   AnchorButtonDestination & {
     /** Visible link label — the only underlined part, so flanking icons stay clean. */
@@ -40,9 +43,10 @@ export type AnchorButtonProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElemen
      * @default false
      */
     external?: boolean;
-    /** Drops the destination (and `render`), leaves an inert, unfocusable, `aria-disabled` anchor. */
+    /** Drops the destination (and `linkComponent`), leaves an inert, unfocusable, `aria-disabled` anchor. */
     disabled?: boolean;
-  };
+  }
+>;
 
 /** Swallows navigation (click/aux-click) on a disabled link. */
 function blockNavigation(disabled: boolean | undefined, handler: React.MouseEventHandler<HTMLAnchorElement> | undefined): React.MouseEventHandler<HTMLAnchorElement> {
@@ -65,9 +69,8 @@ function skipWhenDisabled<E extends React.SyntheticEvent>(disabled: boolean | un
 
 /**
  * A semantic link wearing inline text-link chrome: a native `<a>` (underlined label, optional icon)
- * by default, or project its props onto a router link via `render`. `external` opens a new tab
- * with a trailing arrow. For a text-only *action* use `TextButton`; for a link with button chrome
- * graft `Button` onto an `<a>` via `render`.
+ * by default, or render a router link via `linkComponent` (e.g. `linkComponent={Link}`). `external` opens a new tab
+ * with a trailing arrow. For a text-only *action* use `TextButton`.
  */
 export const AnchorButton = React.forwardRef<HTMLAnchorElement, AnchorButtonProps>(
   (
@@ -80,11 +83,10 @@ export const AnchorButton = React.forwardRef<HTMLAnchorElement, AnchorButtonProp
       external = false,
       disabled,
       href,
-      render,
+      linkComponent: LinkComponent,
       target,
       rel,
       tabIndex,
-      className,
       onClick,
       onAuxClick,
       onKeyDown,
@@ -101,11 +103,11 @@ export const AnchorButton = React.forwardRef<HTMLAnchorElement, AnchorButtonProp
 
     return useRender({
       defaultTagName: "a",
-      render: disabled ? undefined : render,
+      render: disabled || !LinkComponent ? undefined : <LinkComponent />,
       ref,
       props: {
         ...props,
-        className: cn(anchorButtonVariants({ variant, size }), className),
+        className: cn(anchorButtonVariants({ variant, size })),
         href: disabled ? undefined : href,
         target: target ?? (external ? "_blank" : undefined),
         rel: rel ?? (external ? "noreferrer noopener" : undefined),

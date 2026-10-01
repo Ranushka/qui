@@ -2,6 +2,7 @@ import * as React from "react";
 import { Switch as BaseSwitch } from "@base-ui/react/switch";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 const switchVariants = cva(
   cn(
@@ -30,15 +31,15 @@ const switchThumbClass = cn(
   "rtl:data-checked:-translate-x-(--switch-thumb-travel)"
 );
 
-export interface SwitchProps extends React.ComponentPropsWithoutRef<typeof BaseSwitch.Root>, VariantProps<typeof switchVariants> {}
+export interface SwitchProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseSwitch.Root>>, VariantProps<typeof switchVariants> {}
 
 /**
  * On/off toggle. Base UI supplies `role="switch"` and full keyboard/form support; `checked`/
  * `defaultChecked`, `disabled`, and `readOnly` are control state, not variants — only `size` is
  * visual.
  */
-export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(({ size = "md", className, ...props }, ref) => (
-  <BaseSwitch.Root ref={ref} className={cn(switchVariants({ size }), className)} {...props}>
+export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(({ size = "md", ...props }, ref) => (
+  <BaseSwitch.Root ref={ref} className={cn(switchVariants({ size }))} {...props}>
     <BaseSwitch.Thumb className={switchThumbClass} />
   </BaseSwitch.Root>
 ));

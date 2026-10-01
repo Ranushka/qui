@@ -1,10 +1,12 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete";
 import { Autocomplete, AutocompleteContent, AutocompleteInputGroup, AutocompleteItem } from "./Autocomplete";
 import { Field } from "./Field";
 import type { FieldSize } from "../lib/field-parts";
 
-export type AutocompleteFieldProps<Value> = Omit<BaseAutocomplete.Root.Props<Value>, "children" | "items"> & {
+export type AutocompleteFieldProps<Value> = NoClass<
+Omit<BaseAutocomplete.Root.Props<Value>, "children" | "items"> & {
   /** The suggestions to filter as the user types. */
   items: readonly Value[];
   /** Visible field label. */
@@ -21,9 +23,8 @@ export type AutocompleteFieldProps<Value> = Omit<BaseAutocomplete.Root.Props<Val
   emptyMessage?: React.ReactNode;
   /** Size of the input, its suggestion rows, and its label/helper text. @default "lg" */
   size?: FieldSize;
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
-};
+}
+>;
 
 /**
  * A ready-made autocomplete: `Field` (label, description, hint/error) around a free-text input that
@@ -42,13 +43,13 @@ export function AutocompleteField<Value>({
   name,
   disabled,
   required,
-  className,
+  
   items,
   ...autocompleteProps
 }: AutocompleteFieldProps<Value>) {
   const toText = autocompleteProps.itemToStringValue ?? ((item: Value) => String(item));
   return (
-    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error} className={className}>
+    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error}>
       <Autocomplete<Value> items={items} disabled={disabled} required={required} {...autocompleteProps}>
         <AutocompleteInputGroup size={size} placeholder={placeholder} />
         <AutocompleteContent emptyMessage={emptyMessage}>

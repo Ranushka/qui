@@ -48,7 +48,7 @@ export function BarChart({
   height = 240,
   width,
   animate = true,
-  className,
+  
   "aria-label": ariaLabel,
 }: BarChartProps) {
   const resolved = resolveSeries(series);
@@ -78,7 +78,7 @@ export function BarChart({
       height={height}
       width={width}
       ariaLabel={ariaLabel}
-      className={className}
+
       legend={legendVisible ? resolved.map((s) => ({ label: s.label, color: s.color })) : undefined}
     >
       <RBarChart

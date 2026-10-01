@@ -2,6 +2,7 @@ import * as React from "react";
 import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
 import { Check, Minus } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
 /**
@@ -33,7 +34,7 @@ const checkboxLabelClass = cn(
   "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:text-disabled has-[[data-disabled]]:[&>span[aria-hidden]]:text-disabled"
 );
 
-export interface CheckboxProps extends React.ComponentPropsWithoutRef<typeof BaseCheckbox.Root> {
+export interface CheckboxProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseCheckbox.Root>> {
   /** Row label. With none, this renders as the bare box. */
   label?: React.ReactNode;
   /** Icon shown between the box and the label. */
@@ -45,12 +46,12 @@ export interface CheckboxProps extends React.ComponentPropsWithoutRef<typeof Bas
  * A tri-state checkbox (`checked` / `unchecked` / `indeterminate`), optionally wrapped in a
  * clickable labeled row.
  */
-export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(({ label, stretch = "auto", icon, id, className, ...props }, ref) => {
+export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(({ label, stretch = "auto", icon, id, ...props }, ref) => {
   const generatedId = React.useId();
   const checkboxId = id ?? generatedId;
 
   const box = (
-    <BaseCheckbox.Root ref={ref} id={label != null ? checkboxId : id} className={cn(checkboxBoxClass, className)} {...props}>
+    <BaseCheckbox.Root ref={ref} id={label != null ? checkboxId : id} className={cn(checkboxBoxClass)} {...props}>
       <BaseCheckbox.Indicator className={cn(nodeSlotClass, "text-current data-indeterminate:hidden")}>
         <Check aria-hidden />
       </BaseCheckbox.Indicator>

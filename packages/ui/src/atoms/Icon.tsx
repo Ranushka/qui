@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
 const iconVariants = cva(nodeSlotClass, {
@@ -26,14 +27,14 @@ const iconVariants = cva(nodeSlotClass, {
   defaultVariants: { tint: "inherit", size: "inherit" },
 });
 
-export interface IconProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof iconVariants> {
+export interface IconProps extends NoClass<React.HTMLAttributes<HTMLSpanElement>>, VariantProps<typeof iconVariants> {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
 /** Sizes and tints a glyph to match the control it sits in via the shared `--node-size` slot. */
-export function Icon({ icon: IconComponent, tint, size, className, ...props }: IconProps) {
+export function Icon({ icon: IconComponent, tint, size, ...props }: IconProps) {
   return (
-    <span aria-hidden="true" className={cn(iconVariants({ tint, size }), className)} {...props}>
+    <span aria-hidden="true" className={cn(iconVariants({ tint, size }))} {...props}>
       <IconComponent />
     </span>
   );

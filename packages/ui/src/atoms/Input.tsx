@@ -2,6 +2,7 @@ import * as React from "react";
 import { Input as BaseInput } from "@base-ui/react/input";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlGroupClass, controlSize } from "../lib/control-group";
 import { controlInputClass } from "../lib/control-input";
 
@@ -28,14 +29,11 @@ const inputGroupVariants = cva(cn(controlGroupClass, "w-full items-center"), {
   defaultVariants: { size: "md" },
 });
 
-export interface InputProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseInput>, "size">,
-    VariantProps<typeof inputVariants> {
+export interface InputProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseInput>, "size">>, VariantProps<typeof inputVariants> {
   /** Leading content inside the bordered frame, e.g. `<Icon icon={Search} />`. */
   startSlot?: React.ReactNode;
   /** Trailing content inside the bordered frame. */
   endSlot?: React.ReactNode;
-  className?: string;
   /** Classes for the bordered frame around the input, when `startSlot`/`endSlot` are used. */
   groupClassName?: string;
 }
@@ -46,11 +44,11 @@ export interface InputProps
  * same frame without being part of the focusable control.
  */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ size = "md", startSlot, endSlot, className, groupClassName, ...props }, ref) => {
+  ({ size = "md", startSlot, endSlot, groupClassName, ...props }, ref) => {
     return (
       <div className={cn(inputGroupVariants({ size }), groupClassName)}>
         {startSlot}
-        <BaseInput ref={ref} className={cn(inputVariants({ size }), className)} {...props} />
+        <BaseInput ref={ref} className={cn(inputVariants({ size }))} {...props} />
         {endSlot}
       </div>
     );

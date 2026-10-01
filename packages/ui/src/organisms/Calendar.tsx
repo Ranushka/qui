@@ -1,3 +1,4 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { DayPicker, useDayPicker, type ChevronProps, type ClassNames, type DayPickerProps, type NavProps } from "react-day-picker";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -38,7 +39,11 @@ const calendarClassNames: Partial<ClassNames> = {
 };
 
 function CalendarChevron({ orientation }: ChevronProps) {
-  return <Icon icon={orientation === "left" ? ChevronLeft : ChevronRight} className="rtl:-scale-x-100" />;
+  return (
+    <span className="inline-flex rtl:-scale-x-100">
+      <Icon icon={orientation === "left" ? ChevronLeft : ChevronRight} />
+    </span>
+  );
 }
 
 /** Previous/next month buttons on qui's ghost `IconButton`. Disabled at `startMonth`/`endMonth` or with `disableNavigation`. */
@@ -68,9 +73,11 @@ function CalendarNav({ onPreviousClick, onNextClick, previousMonth, nextMonth, c
   );
 }
 
-export type CalendarProps = DistributiveOmit<
+export type CalendarProps = NoClass<
+DistributiveOmit<
   DayPickerProps,
   "classNames" | "numberOfMonths" | "captionLayout" | "navLayout" | "showWeekNumber"
+>
 >;
 
 /**
@@ -82,12 +89,12 @@ export type CalendarProps = DistributiveOmit<
  * Weeks start on Monday by default; pass `weekStartsOn` to override. A popover, dialog, or card
  * supplies the surrounding surface and padding.
  */
-export function Calendar({ className, components, weekStartsOn = 1, ...props }: CalendarProps) {
+export function Calendar({ components, weekStartsOn = 1, ...props }: CalendarProps) {
   return (
     <DayPicker
       {...(props as DayPickerProps)}
       weekStartsOn={weekStartsOn}
-      className={className}
+
       classNames={calendarClassNames}
       components={{ Nav: CalendarNav, Chevron: CalendarChevron, ...components }}
     />

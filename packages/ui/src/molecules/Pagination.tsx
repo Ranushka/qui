@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 import { Icon } from "../atoms/Icon";
 import { IconButton } from "../atoms/IconButton";
@@ -8,13 +9,13 @@ import { IconButton } from "../atoms/IconButton";
 /** Shared geometry for a page-number slot: 24px tall, auto-width, min 24px square. */
 const pageSlotClass = "inline-flex h-6 w-auto min-w-6 shrink-0 items-center justify-center rounded-sm px-1 text-body-xs-regular text-primary outline-none transition-colors";
 
-export interface PaginationPageButtonProps extends React.ComponentPropsWithoutRef<"button"> {
+export interface PaginationPageButtonProps extends NoClass<React.ComponentPropsWithoutRef<"button">> {
   /** Marks this as the active page (`aria-current="page"`), filling its background. */
   current?: boolean;
 }
 
 /** A single page-number button. The active page is marked `aria-current="page"`. */
-export const PaginationPageButton = React.forwardRef<HTMLButtonElement, PaginationPageButtonProps>(({ current = false, className, ...props }, ref) => (
+export const PaginationPageButton = React.forwardRef<HTMLButtonElement, PaginationPageButtonProps>(({ current = false, ...props }, ref) => (
   <button
     ref={ref}
     type="button"
@@ -24,19 +25,18 @@ export const PaginationPageButton = React.forwardRef<HTMLButtonElement, Paginati
       "cursor-pointer bg-layer-transparent hover:bg-layer-transparent-hover",
       "focus-visible:ring-2 focus-visible:ring-accent-strong",
       "disabled:cursor-not-allowed disabled:text-disabled",
-      current && "bg-layer-transparent-active disabled:text-primary",
-      className
+      current && "bg-layer-transparent-active disabled:text-primary"
     )}
     {...props}
   />
 ));
 PaginationPageButton.displayName = "PaginationPageButton";
 
-export interface PaginationEllipsisProps extends React.ComponentPropsWithoutRef<"span"> {}
+export interface PaginationEllipsisProps extends NoClass<React.ComponentPropsWithoutRef<"span">> {}
 
 /** Non-interactive gap marker between distant page numbers. */
-export const PaginationEllipsis = React.forwardRef<HTMLSpanElement, PaginationEllipsisProps>(({ className, children, ...props }, ref) => (
-  <span ref={ref} aria-hidden className={cn(pageSlotClass, nodeSlotClass, "text-icon-placeholder [--node-size:var(--control-glyph-sm)]", className)} {...props}>
+export const PaginationEllipsis = React.forwardRef<HTMLSpanElement, PaginationEllipsisProps>(({ children, ...props }, ref) => (
+  <span ref={ref} aria-hidden className={cn(pageSlotClass, nodeSlotClass, "text-icon-placeholder [--node-size:var(--control-glyph-sm)]")} {...props}>
     {children ?? <MoreHorizontal />}
   </span>
 ));
@@ -45,7 +45,7 @@ PaginationEllipsis.displayName = "PaginationEllipsis";
 /** One page item, or a gap marker: a number, `"ellipsis"`, to render in order. */
 export type PaginationItemValue = number | "ellipsis";
 
-export interface PaginationProps extends Omit<React.ComponentPropsWithoutRef<"nav">, "onChange"> {
+export interface PaginationProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"nav">, "onChange">> {
   /** 1-indexed current page. */
   page: number;
   /** Total number of pages. */
@@ -79,11 +79,11 @@ function buildPageList(page: number, pageCount: number, siblingCount: number): P
  * are controlled by the caller, who drives `onPageChange`.
  */
 export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
-  ({ page, pageCount, onPageChange, siblingCount = 1, className, "aria-label": ariaLabel = "Pagination", ...props }, ref) => {
+  ({ page, pageCount, onPageChange, siblingCount = 1, "aria-label": ariaLabel = "Pagination", ...props }, ref) => {
     const items = React.useMemo(() => buildPageList(page, pageCount, siblingCount), [page, pageCount, siblingCount]);
 
     return (
-      <nav ref={ref} aria-label={ariaLabel} className={cn("flex items-center gap-1.5", className)} {...props}>
+      <nav ref={ref} aria-label={ariaLabel} className={cn("flex items-center gap-1.5")} {...props}>
         <IconButton
           variant="ghost"
           size="sm"

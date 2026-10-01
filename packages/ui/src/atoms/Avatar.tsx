@@ -3,6 +3,7 @@ import { Avatar as BaseAvatar } from "@base-ui/react/avatar";
 import { User } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { Icon } from "./Icon";
 import { Tooltip } from "./Tooltip";
 import {
@@ -36,7 +37,7 @@ const avatarVariants = cva("relative inline-flex shrink-0 items-center justify-c
 
 const fallbackVariantClass = avatarFallbackVariantClass;
 
-export interface AvatarProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Root>, "children"> {
+export interface AvatarProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Root>, "children">> {
   size?: AvatarSize;
   /** Photo URL. Falls back to initials (derived from `alt`), then an anonymous person icon. */
   src?: string;
@@ -55,7 +56,7 @@ export interface AvatarProps extends Omit<React.ComponentPropsWithoutRef<typeof 
  * `Avatar.Root` + `Image` + `Fallback`. Pass `src` for the photo and `alt` for the name; the
  * initials color is chosen deterministically from the name and isn't a consumer prop.
  */
-export function Avatar({ size, src, alt, fallback, delay, tooltip, tabIndex, className, ...props }: AvatarProps) {
+export function Avatar({ size, src, alt, fallback, delay, tooltip, tabIndex, ...props }: AvatarProps) {
   const groupSize = React.useContext(AvatarGroupContext);
   const effectiveSize = size ?? groupSize ?? "md";
   const derivedInitials = React.useMemo(() => getAvatarInitials(alt), [alt]);
@@ -68,7 +69,7 @@ export function Avatar({ size, src, alt, fallback, delay, tooltip, tabIndex, cla
   const a11y = accessibleName != null ? { role: "img" as const, "aria-label": accessibleName } : { "aria-hidden": true as const };
 
   const avatar = (
-    <BaseAvatar.Root className={cn(avatarVariants({ size: effectiveSize }), className)} tabIndex={tabIndex} {...a11y} {...props}>
+    <BaseAvatar.Root className={cn(avatarVariants({ size: effectiveSize }))} tabIndex={tabIndex} {...a11y} {...props}>
       {src ? <BaseAvatar.Image className="size-full object-cover" src={src} alt="" /> : null}
       {hasInitials ? (
         <BaseAvatar.Fallback

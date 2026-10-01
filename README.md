@@ -58,6 +58,20 @@ Propel ships ~60 components; the rest are being ported incrementally, phased rou
    - Display & overlays: Shortcut, LogoSpinner (brand-neutral), WorkspaceAvatar, Collapsible,
      ScrollArea, PreviewCard, SuggestionMenu, List (sidebar, non-virtualized)
 
+## Core rule: no custom class options
+
+Apps style qui **only through typed props** — no public component accepts `className`, `style`, or
+a `render` element swap (`NoClass<T>` in `packages/ui/src/lib/no-class.ts`). Class names are the
+single point of failure for drifting off the design, so qui provides a component or prop for
+every legitimate need instead (e.g. `Text`/`Heading` for typography, `orientation` on option
+groups). Behavior-only triggers (`MenuTrigger`, `PopoverTrigger`, `DialogTrigger`, …) keep
+`render` so they can wrap a qui control; `AnchorButton` takes a router link via `linkComponent`
+(a component type, not an element).
+
+This is enforced: `test/no-class.test.ts` is typechecked by `pnpm --filter @qui/ui typecheck` and
+fails if any exported component lets `className`/`style` back in. Gallery demos may still use
+raw `<div className>` wrappers for page layout until the layout atoms land.
+
 ## Refreshing tokens from a newer propel release
 
 ```bash

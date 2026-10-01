@@ -3,6 +3,7 @@ import { Avatar as BaseAvatar } from "@base-ui/react/avatar";
 import { Building2 } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { Icon } from "./Icon";
 import { Tooltip } from "./Tooltip";
 import {
@@ -35,7 +36,7 @@ const workspaceAvatarVariants = cva("relative inline-flex shrink-0 items-center 
   defaultVariants: { size: "md" },
 });
 
-export interface WorkspaceAvatarProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Root>, "children"> {
+export interface WorkspaceAvatarProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAvatar.Root>, "children">> {
   /** @default "md" */
   size?: AvatarSize;
   /** Workspace logo URL. Falls back to initials while absent, loading, or failed. */
@@ -55,7 +56,7 @@ export interface WorkspaceAvatarProps extends Omit<React.ComponentPropsWithoutRe
  * icon) — Base UI's `Avatar.Root` + `Image` + `Fallback`, sharing the person `Avatar`'s size ladder,
  * initials derivation and deterministic color. Pass `src` for the logo and `alt` for the name.
  */
-export function WorkspaceAvatar({ size = "md", src, alt, fallback, delay, tooltip, tabIndex, className, ...props }: WorkspaceAvatarProps) {
+export function WorkspaceAvatar({ size = "md", src, alt, fallback, delay, tooltip, tabIndex, ...props }: WorkspaceAvatarProps) {
   const derivedInitials = React.useMemo(() => getAvatarInitials(alt), [alt]);
   const resolvedFallback = fallback ?? derivedInitials;
   const displayFallback = size === "2xs" && typeof resolvedFallback === "string" ? getFirstAvatarInitial(resolvedFallback) : resolvedFallback;
@@ -66,7 +67,7 @@ export function WorkspaceAvatar({ size = "md", src, alt, fallback, delay, toolti
   const a11y = accessibleName != null ? { role: "img" as const, "aria-label": accessibleName } : { "aria-hidden": true as const };
 
   const avatar = (
-    <BaseAvatar.Root className={cn(workspaceAvatarVariants({ size }), className)} tabIndex={tabIndex} {...a11y} {...props}>
+    <BaseAvatar.Root className={cn(workspaceAvatarVariants({ size }))} tabIndex={tabIndex} {...a11y} {...props}>
       {src ? <BaseAvatar.Image className="size-full object-cover" src={src} alt="" /> : null}
       {hasInitials ? (
         <BaseAvatar.Fallback

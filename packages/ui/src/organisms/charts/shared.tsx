@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ResponsiveContainer, type TooltipContentProps } from "recharts";
 import { cn } from "../../lib/cn";
+import type { NoClass } from "../../lib/no-class";
 
 /**
  * Categorical palette, as CSS custom properties set on every chart root.
@@ -84,7 +85,7 @@ export interface ChartTooltipItem {
   color: string;
 }
 
-export interface ChartTooltipContentProps extends React.ComponentPropsWithoutRef<"div"> {
+export interface ChartTooltipContentProps extends NoClass<React.ComponentPropsWithoutRef<"div">> {
   /** Heading, usually the hovered category. */
   label?: React.ReactNode;
   /** One row per series. */
@@ -97,12 +98,11 @@ export interface ChartTooltipContentProps extends React.ComponentPropsWithoutRef
  * compositions can match.
  */
 export const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltipContentProps>(
-  ({ label, items, className, ...props }, ref) => (
+  ({ label, items, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "flex min-w-32 flex-col gap-1.5 rounded-lg border-sm border-subtle-1 bg-layer-2 px-3 py-2 shadow-overlay-200",
-        className
+        "flex min-w-32 flex-col gap-1.5 rounded-lg border-sm border-subtle-1 bg-layer-2 px-3 py-2 shadow-overlay-200"
       )}
       {...props}
     >
@@ -158,13 +158,13 @@ export interface ChartLegendItem {
   color: string;
 }
 
-export interface ChartLegendProps extends React.ComponentPropsWithoutRef<"ul"> {
+export interface ChartLegendProps extends NoClass<React.ComponentPropsWithoutRef<"ul">> {
   items: ReadonlyArray<ChartLegendItem>;
 }
 
 /** A row of swatch + label pairs. Plain HTML (not SVG) so it wraps and inherits text tokens. */
-export const ChartLegend = React.forwardRef<HTMLUListElement, ChartLegendProps>(({ items, className, ...props }, ref) => (
-  <ul ref={ref} className={cn("flex flex-wrap items-center gap-x-4 gap-y-1", className)} {...props}>
+export const ChartLegend = React.forwardRef<HTMLUListElement, ChartLegendProps>(({ items, ...props }, ref) => (
+  <ul ref={ref} className={cn("flex flex-wrap items-center gap-x-4 gap-y-1")} {...props}>
     {items.map((item, i) => (
       <li key={i} className="flex items-center gap-1.5 text-caption-md-regular text-secondary">
         <span aria-hidden className="size-2 shrink-0 rounded-xs" style={{ background: item.color }} />
@@ -195,7 +195,6 @@ export interface ChartBaseProps {
   "aria-label"?: string;
   /** Animate marks on mount/update. @default true */
   animate?: boolean;
-  className?: string;
 }
 
 interface ChartFrameProps {
@@ -203,19 +202,18 @@ interface ChartFrameProps {
   width?: number;
   legend?: ReadonlyArray<ChartLegendItem>;
   ariaLabel?: string;
-  className?: string;
   /** Overlay rendered centred over the plot (donut centre label). */
   overlay?: React.ReactNode;
   children: React.ReactElement;
 }
 
 /** Shared chrome: palette vars, legend row above the plot, and the responsive sizing wrapper. */
-export function ChartFrame({ height, width, legend, ariaLabel, className, overlay, children }: ChartFrameProps) {
+export function ChartFrame({ height, width, legend, ariaLabel, overlay, children }: ChartFrameProps) {
   return (
     <div
       role="figure"
       aria-label={ariaLabel}
-      className={cn("flex w-full min-w-0 flex-col gap-3 text-caption-md-regular text-tertiary", chartPaletteClasses, className)}
+      className={cn("flex w-full min-w-0 flex-col gap-3 text-caption-md-regular text-tertiary", chartPaletteClasses)}
     >
       {legend && legend.length > 0 && <ChartLegend items={legend} />}
       <div className="relative w-full min-w-0" style={{ height, width }}>

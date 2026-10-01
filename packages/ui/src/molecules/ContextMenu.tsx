@@ -3,6 +3,7 @@ import { ContextMenu as BaseContextMenu } from "@base-ui/react/context-menu";
 import type { VariantProps } from "class-variance-authority";
 import { Check } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass, NoStyle } from "../lib/no-class";
 import { menuPopupSurfaceClass, menuRowVariants } from "./Menu";
 
 /**
@@ -20,7 +21,7 @@ const contextMenuItemIndicatorClass = cn(
   "not-data-selected:invisible"
 );
 
-export interface ContextMenuProps extends React.ComponentPropsWithoutRef<typeof BaseContextMenu.Root> {}
+export interface ContextMenuProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Root>> {}
 
 /**
  * The context-menu root: holds the open state and the pointer position the popup anchors to.
@@ -32,7 +33,7 @@ export function ContextMenu(props: ContextMenuProps) {
   return <BaseContextMenu.Root {...props} />;
 }
 
-export interface ContextMenuTriggerProps extends React.ComponentPropsWithoutRef<typeof BaseContextMenu.Trigger> {}
+export interface ContextMenuTriggerProps extends NoStyle<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Trigger>> {}
 
 /** The area that opens the menu on right click or long press. Renders a `<div>` around `children`. */
 export const ContextMenuTrigger = React.forwardRef<HTMLDivElement, ContextMenuTriggerProps>((props, ref) => (
@@ -40,53 +41,50 @@ export const ContextMenuTrigger = React.forwardRef<HTMLDivElement, ContextMenuTr
 ));
 ContextMenuTrigger.displayName = "ContextMenuTrigger";
 
-export interface ContextMenuPositionerProps extends React.ComponentPropsWithoutRef<typeof BaseContextMenu.Positioner> {}
+export interface ContextMenuPositionerProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Positioner>> {}
 
 /** Positions the popup against the pointer (root menus) or the trigger (submenus), portaled to `<body>`. */
-export const ContextMenuPositioner = React.forwardRef<HTMLDivElement, ContextMenuPositionerProps>(({ className, ...props }, ref) => (
+export const ContextMenuPositioner = React.forwardRef<HTMLDivElement, ContextMenuPositionerProps>(({ ...props }, ref) => (
   <BaseContextMenu.Portal>
-    <BaseContextMenu.Positioner ref={ref} className={cn("z-50 outline-none", className)} {...props} />
+    <BaseContextMenu.Positioner ref={ref} className={cn("z-50 outline-none")} {...props} />
   </BaseContextMenu.Portal>
 ));
 ContextMenuPositioner.displayName = "ContextMenuPositioner";
 
-export interface ContextMenuPopupProps extends React.ComponentPropsWithoutRef<typeof BaseContextMenu.Popup> {}
+export interface ContextMenuPopupProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Popup>> {}
 
 /** The raised, elevated panel holding the menu's rows — same surface as `MenuPopup`. */
-export const ContextMenuPopup = React.forwardRef<HTMLDivElement, ContextMenuPopupProps>(({ className, ...props }, ref) => (
-  <BaseContextMenu.Popup ref={ref} className={cn(menuPopupSurfaceClass, className)} {...props} />
+export const ContextMenuPopup = React.forwardRef<HTMLDivElement, ContextMenuPopupProps>(({ ...props }, ref) => (
+  <BaseContextMenu.Popup ref={ref} className={cn(menuPopupSurfaceClass)} {...props} />
 ));
 ContextMenuPopup.displayName = "ContextMenuPopup";
 
-export interface ContextMenuContentProps extends Omit<ContextMenuPositionerProps, "className">, Pick<ContextMenuPopupProps, "className"> {}
+export interface ContextMenuContentProps extends NoClass<ContextMenuPositionerProps> {}
 
 /** Convenience bundle: `ContextMenuPortal` + `ContextMenuPositioner` + `ContextMenuPopup` in one. */
-export const ContextMenuContent = React.forwardRef<HTMLDivElement, ContextMenuContentProps>(({ children, className, ...positionerProps }, ref) => (
+export const ContextMenuContent = React.forwardRef<HTMLDivElement, ContextMenuContentProps>(({ children, ...positionerProps }, ref) => (
   <ContextMenuPositioner {...positionerProps}>
-    <ContextMenuPopup ref={ref} className={className}>
+    <ContextMenuPopup ref={ref}>
       {children}
     </ContextMenuPopup>
   </ContextMenuPositioner>
 ));
 ContextMenuContent.displayName = "ContextMenuContent";
 
-export interface ContextMenuItemProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Item>, "className">,
-    VariantProps<typeof menuRowVariants> {
+export interface ContextMenuItemProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Item>, "className">>, VariantProps<typeof menuRowVariants> {
   icon?: React.ReactNode;
   trailing?: React.ReactNode;
   /** Marks the row as the current single-select choice; renders the trailing check when `true`/`false` is given. */
   selected?: boolean;
-  className?: string;
 }
 
 /** A selectable row in the context menu: icon, label, optional trailing content, single-select check gutter. */
 export const ContextMenuItem = React.forwardRef<HTMLDivElement, ContextMenuItemProps>(
-  ({ variant, icon, trailing, selected, className, children, ...props }, ref) => (
+  ({ variant, icon, trailing, selected, children, ...props }, ref) => (
     <BaseContextMenu.Item
       ref={ref}
       {...(selected !== undefined ? { role: "menuitemradio", "aria-checked": selected } : {})}
-      className={cn(menuRowVariants({ variant }), className)}
+      className={cn(menuRowVariants({ variant }))}
       {...props}
     >
       {icon}
@@ -102,15 +100,15 @@ export const ContextMenuItem = React.forwardRef<HTMLDivElement, ContextMenuItemP
 );
 ContextMenuItem.displayName = "ContextMenuItem";
 
-export interface ContextMenuSeparatorProps extends React.ComponentPropsWithoutRef<typeof BaseContextMenu.Separator> {}
+export interface ContextMenuSeparatorProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Separator>> {}
 
 /** A divider between groups of rows — same chrome as `MenuSeparator`. */
-export const ContextMenuSeparator = React.forwardRef<HTMLDivElement, ContextMenuSeparatorProps>(({ className, ...props }, ref) => (
-  <BaseContextMenu.Separator ref={ref} className={cn("-mx-1 my-1 border-t border-subtle", className)} {...props} />
+export const ContextMenuSeparator = React.forwardRef<HTMLDivElement, ContextMenuSeparatorProps>(({ ...props }, ref) => (
+  <BaseContextMenu.Separator ref={ref} className={cn("-mx-1 my-1 border-t border-subtle")} {...props} />
 ));
 ContextMenuSeparator.displayName = "ContextMenuSeparator";
 
-export interface ContextMenuGroupProps extends React.ComponentPropsWithoutRef<typeof BaseContextMenu.Group> {}
+export interface ContextMenuGroupProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseContextMenu.Group>> {}
 
 /** Groups related rows with their `ContextMenuGroupLabel` heading. Structural only — no styling of its own. */
 export const ContextMenuGroup = React.forwardRef<HTMLDivElement, ContextMenuGroupProps>((props, ref) => (
@@ -118,18 +116,20 @@ export const ContextMenuGroup = React.forwardRef<HTMLDivElement, ContextMenuGrou
 ));
 ContextMenuGroup.displayName = "ContextMenuGroup";
 
-export interface ContextMenuGroupLabelProps extends React.ComponentPropsWithoutRef<typeof BaseContextMenu.GroupLabel> {}
+export interface ContextMenuGroupLabelProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseContextMenu.GroupLabel>> {}
 
 /** The non-interactive heading above a `ContextMenuGroup`'s rows — same chrome as `MenuGroupLabel`. */
-export const ContextMenuGroupLabel = React.forwardRef<HTMLDivElement, ContextMenuGroupLabelProps>(({ className, ...props }, ref) => (
-  <BaseContextMenu.GroupLabel ref={ref} className={cn("flex min-h-6 items-center gap-1.5 px-2 text-caption-md-medium text-tertiary", className)} {...props} />
+export const ContextMenuGroupLabel = React.forwardRef<HTMLDivElement, ContextMenuGroupLabelProps>(({ ...props }, ref) => (
+  <BaseContextMenu.GroupLabel ref={ref} className={cn("flex min-h-6 items-center gap-1.5 px-2 text-caption-md-medium text-tertiary")} {...props} />
 ));
 ContextMenuGroupLabel.displayName = "ContextMenuGroupLabel";
 
 /* __DOC_BLOCK
 <QUI.ContextMenu>
-  <QUI.ContextMenuTrigger className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-xs-regular text-tertiary">
+  <QUI.ContextMenuTrigger>
+    <div className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-xs-regular text-tertiary">
     Right-click this area
+  </div>
   </QUI.ContextMenuTrigger>
   <QUI.ContextMenuContent>
     <QUI.ContextMenuItem icon={<QUI.Icon icon={Icons.Pencil} />}>Rename</QUI.ContextMenuItem>

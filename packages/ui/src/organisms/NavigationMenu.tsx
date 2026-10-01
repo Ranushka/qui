@@ -3,6 +3,7 @@ import { NavigationMenu as BaseNavigationMenu } from "@base-ui/react/navigation-
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
 /**
@@ -35,7 +36,7 @@ const navigationMenuLinkVariants = cva(navigationMenuInteractiveClass, {
   defaultVariants: { appearance: "item" },
 });
 
-export interface NavigationMenuProps extends React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Root> {}
+export interface NavigationMenuProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Root>> {}
 
 /**
  * The navigation menu root — Base UI's `NavigationMenu.Root` passthrough. Renders an unstyled
@@ -47,17 +48,16 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
 ));
 NavigationMenu.displayName = "NavigationMenu";
 
-export interface NavigationMenuListProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.List>, "className"> {
-  className?: string;
+export interface NavigationMenuListProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.List>, "className">> {
 }
 
 /** The top-level row of `NavigationMenuItem`s, with roving arrow-key focus between them. */
-export const NavigationMenuList = React.forwardRef<HTMLUListElement, NavigationMenuListProps>(({ className, ...props }, ref) => (
-  <BaseNavigationMenu.List ref={ref} className={cn("flex items-center gap-1", className)} {...props} />
+export const NavigationMenuList = React.forwardRef<HTMLUListElement, NavigationMenuListProps>(({ ...props }, ref) => (
+  <BaseNavigationMenu.List ref={ref} className={cn("flex items-center gap-1")} {...props} />
 ));
 NavigationMenuList.displayName = "NavigationMenuList";
 
-export interface NavigationMenuItemProps extends React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Item> {}
+export interface NavigationMenuItemProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Item>> {}
 
 /** One `<li>` in the list — scopes a `NavigationMenuTrigger` to its `NavigationMenuContent`, or holds a lone `NavigationMenuLink`. Structural only. */
 export const NavigationMenuItem = React.forwardRef<HTMLLIElement, NavigationMenuItemProps>((props, ref) => (
@@ -65,17 +65,16 @@ export const NavigationMenuItem = React.forwardRef<HTMLLIElement, NavigationMenu
 ));
 NavigationMenuItem.displayName = "NavigationMenuItem";
 
-export interface NavigationMenuTriggerProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Trigger>, "children" | "className"> {
+export interface NavigationMenuTriggerProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Trigger>, "children" | "className">> {
   /** Visible trigger text. */
   label: React.ReactNode;
   /** Replaces the default chevron caret, which rotates while the item is open. */
   icon?: React.ReactNode;
-  className?: string;
 }
 
 /** Opens its item's content on hover or click. Renders the label plus a disclosure caret that flips while open. */
-export const NavigationMenuTrigger = React.forwardRef<HTMLButtonElement, NavigationMenuTriggerProps>(({ label, icon, className, ...props }, ref) => (
-  <BaseNavigationMenu.Trigger ref={ref} className={cn("group/trigger inline-flex h-8 items-center gap-1 px-3", navigationMenuInteractiveClass, className)} {...props}>
+export const NavigationMenuTrigger = React.forwardRef<HTMLButtonElement, NavigationMenuTriggerProps>(({ label, icon, ...props }, ref) => (
+  <BaseNavigationMenu.Trigger ref={ref} className={cn("group/trigger inline-flex h-8 items-center gap-1 px-3", navigationMenuInteractiveClass)} {...props}>
     <span className="min-w-0 truncate">{label}</span>
     <BaseNavigationMenu.Icon
       className={cn(
@@ -89,7 +88,7 @@ export const NavigationMenuTrigger = React.forwardRef<HTMLButtonElement, Navigat
 ));
 NavigationMenuTrigger.displayName = "NavigationMenuTrigger";
 
-export interface NavigationMenuContentProps extends React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Content> {}
+export interface NavigationMenuContentProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Content>> {}
 
 /** An item's content — moved into the shared panel's viewport while its item is active. Unstyled; put a `NavigationMenuContentList` of links inside. */
 export const NavigationMenuContent = React.forwardRef<HTMLDivElement, NavigationMenuContentProps>((props, ref) => (
@@ -98,16 +97,12 @@ export const NavigationMenuContent = React.forwardRef<HTMLDivElement, Navigation
 NavigationMenuContent.displayName = "NavigationMenuContent";
 
 /** Stacks a content panel's `NavigationMenuLink` cards in a fixed-width column. */
-export const NavigationMenuContentList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex w-72 flex-col gap-1", className)} {...props} />
+export const NavigationMenuContentList = React.forwardRef<HTMLDivElement, NoClass<React.HTMLAttributes<HTMLDivElement>>>(({ ...props }, ref) => (
+  <div ref={ref} className={cn("flex w-72 flex-col gap-1")} {...props} />
 ));
 NavigationMenuContentList.displayName = "NavigationMenuContentList";
 
-export interface NavigationMenuPanelProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Positioner>, "className" | "children">,
-    Pick<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Popup>, "children"> {
-  /** Applied to the popup surface. */
-  className?: string;
+export interface NavigationMenuPanelProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Positioner>, "className" | "children">>, NoClass<Pick<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Popup>, "children">> {
 }
 
 /**
@@ -116,10 +111,10 @@ export interface NavigationMenuPanelProps
  * the active item's content has somewhere to render.
  */
 export const NavigationMenuPanel = React.forwardRef<HTMLDivElement, NavigationMenuPanelProps>(
-  ({ side = "bottom", sideOffset = 4, align = "start", className, children, ...positionerProps }, ref) => (
+  ({ side = "bottom", sideOffset = 4, align = "start", children, ...positionerProps }, ref) => (
     <BaseNavigationMenu.Portal>
       <BaseNavigationMenu.Positioner side={side} sideOffset={sideOffset} align={align} className="z-50 outline-none" {...positionerProps}>
-        <BaseNavigationMenu.Popup ref={ref} className={cn(navigationMenuPopupClass, className)}>
+        <BaseNavigationMenu.Popup ref={ref} className={cn(navigationMenuPopupClass)}>
           {children}
         </BaseNavigationMenu.Popup>
       </BaseNavigationMenu.Positioner>
@@ -128,27 +123,22 @@ export const NavigationMenuPanel = React.forwardRef<HTMLDivElement, NavigationMe
 );
 NavigationMenuPanel.displayName = "NavigationMenuPanel";
 
-export interface NavigationMenuViewportProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Viewport>, "className"> {
-  className?: string;
+export interface NavigationMenuViewportProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Viewport>, "className">> {
 }
 
 /** Hosts the active item's content and animates the panel's size between items via Base UI's `--popup-width`/`--popup-height`. */
-export const NavigationMenuViewport = React.forwardRef<HTMLDivElement, NavigationMenuViewportProps>(({ className, ...props }, ref) => (
+export const NavigationMenuViewport = React.forwardRef<HTMLDivElement, NavigationMenuViewportProps>(({ ...props }, ref) => (
   <BaseNavigationMenu.Viewport
     ref={ref}
     className={cn(
-      "relative h-(--popup-height) w-(--popup-width) origin-(--transform-origin) transition-[width,height] duration-150 motion-reduce:transition-none",
-      className
+      "relative h-(--popup-height) w-(--popup-width) origin-(--transform-origin) transition-[width,height] duration-150 motion-reduce:transition-none"
     )}
     {...props}
   />
 ));
 NavigationMenuViewport.displayName = "NavigationMenuViewport";
 
-export interface NavigationMenuLinkProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Link>, "className">,
-    VariantProps<typeof navigationMenuLinkVariants> {
-  className?: string;
+export interface NavigationMenuLinkProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseNavigationMenu.Link>, "className">>, VariantProps<typeof navigationMenuLinkVariants> {
 }
 
 /**
@@ -156,20 +146,20 @@ export interface NavigationMenuLinkProps
  * `appearance="card"` is an entry inside a panel, pairing a `NavigationMenuLinkTitle` with an
  * optional `NavigationMenuLinkDescription`. Mark the current page with `active`.
  */
-export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, NavigationMenuLinkProps>(({ appearance, className, ...props }, ref) => (
-  <BaseNavigationMenu.Link ref={ref} className={cn(navigationMenuLinkVariants({ appearance }), className)} {...props} />
+export const NavigationMenuLink = React.forwardRef<HTMLAnchorElement, NavigationMenuLinkProps>(({ appearance, ...props }, ref) => (
+  <BaseNavigationMenu.Link ref={ref} className={cn(navigationMenuLinkVariants({ appearance }))} {...props} />
 ));
 NavigationMenuLink.displayName = "NavigationMenuLink";
 
 /** A card link's bold lead line. */
-export const NavigationMenuLinkTitle = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(({ className, ...props }, ref) => (
-  <span ref={ref} className={cn("block truncate text-body-sm-medium text-primary", className)} {...props} />
+export const NavigationMenuLinkTitle = React.forwardRef<HTMLSpanElement, NoClass<React.HTMLAttributes<HTMLSpanElement>>>(({ ...props }, ref) => (
+  <span ref={ref} className={cn("block truncate text-body-sm-medium text-primary")} {...props} />
 ));
 NavigationMenuLinkTitle.displayName = "NavigationMenuLinkTitle";
 
 /** A card link's supporting line under its title. */
-export const NavigationMenuLinkDescription = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(({ className, ...props }, ref) => (
-  <span ref={ref} className={cn("block text-caption-md-regular text-tertiary", className)} {...props} />
+export const NavigationMenuLinkDescription = React.forwardRef<HTMLSpanElement, NoClass<React.HTMLAttributes<HTMLSpanElement>>>(({ ...props }, ref) => (
+  <span ref={ref} className={cn("block text-caption-md-regular text-tertiary")} {...props} />
 ));
 NavigationMenuLinkDescription.displayName = "NavigationMenuLinkDescription";
 

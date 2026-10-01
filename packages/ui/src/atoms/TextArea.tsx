@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlGroupClass } from "../lib/control-group";
 
 const textAreaGroupVariants = cva(cn(controlGroupClass, "w-full items-stretch gap-1.5 rounded-lg"), {
@@ -47,10 +48,7 @@ function syncHeight(element: HTMLTextAreaElement, maxRows: number | undefined) {
   element.style.height = `${next}px`;
 }
 
-export interface TextAreaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size">,
-    VariantProps<typeof textAreaVariants>,
-    VariantProps<typeof textAreaGroupVariants> {
+export interface TextAreaProps extends NoClass<Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size">>, VariantProps<typeof textAreaVariants>, VariantProps<typeof textAreaGroupVariants> {
   /** Grows the control with its content, above the size's `min-height`. @default false */
   autoResize?: boolean;
   /** Caps `autoResize` growth at this many rows. */
@@ -64,7 +62,7 @@ export interface TextAreaProps
  * `maxRows` caps that growth before scrolling takes over.
  */
 export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ size = "md", autoResize = false, maxRows, resize = "vertical", className, groupClassName, onInput, ...props }, ref) => {
+  ({ size = "md", autoResize = false, maxRows, resize = "vertical", groupClassName, onInput, ...props }, ref) => {
     const localRef = React.useRef<HTMLTextAreaElement | null>(null);
     const setRef = React.useCallback(
       (node: HTMLTextAreaElement | null) => {
@@ -83,7 +81,7 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
       <div className={cn(textAreaGroupVariants({ resize: autoResize ? "none" : resize }), groupClassName)}>
         <textarea
           ref={setRef}
-          className={cn(textAreaVariants({ size }), autoResize && "h-auto", className)}
+          className={cn(textAreaVariants({ size }), autoResize && "h-auto")}
           onInput={(event) => {
             onInput?.(event);
             if (autoResize) syncHeight(event.currentTarget, maxRows);

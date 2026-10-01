@@ -2,6 +2,7 @@ import * as React from "react";
 import { Tabs as BaseTabs } from "@base-ui/react/tabs";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 type TabsVariant = "contained" | "underline";
 type TabsStretch = "auto" | "full";
@@ -33,39 +34,38 @@ const tabVariants = cva(
   }
 );
 
-export interface TabsProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Root>, "className"> {
+export interface TabsProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Root>, "className">> {
   /** Pill-in-a-track chrome, or a flat row with a sliding underline. @default "contained" */
   variant?: TabsVariant;
   /** Whether the tab strip hugs its content or stretches to fill the row. @default "auto" */
   stretch?: TabsStretch;
-  className?: string;
 }
 
 /**
  * Groups a `TabsList` of `Tab`s with their `TabsPanel`s on Base UI's `Tabs.Root` state machine.
  * `variant` and `stretch` are set once here and read by `TabsList`/`Tab` via context.
  */
-export function Tabs({ variant = "contained", stretch = "auto", className, ...props }: TabsProps) {
+export function Tabs({ variant = "contained", stretch = "auto", ...props }: TabsProps) {
   return (
     <TabsVariantContext.Provider value={variant}>
       <TabsStretchContext.Provider value={stretch}>
-        <BaseTabs.Root className={cn("flex w-full max-w-full flex-col items-start gap-3", className)} {...props} />
+        <BaseTabs.Root className={cn("flex w-full max-w-full flex-col items-start gap-3")} {...props} />
       </TabsStretchContext.Provider>
     </TabsVariantContext.Provider>
   );
 }
 
-export interface TabsListProps extends React.ComponentPropsWithoutRef<typeof BaseTabs.List> {}
+export interface TabsListProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseTabs.List>> {}
 
 /** The row of `Tab`s. Reads `variant`/`stretch` from the enclosing `Tabs`. */
-export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(({ className, ...props }, ref) => {
+export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(({ ...props }, ref) => {
   const variant = React.useContext(TabsVariantContext);
   const stretch = React.useContext(TabsStretchContext);
-  return <BaseTabs.List ref={ref} className={cn(tabsListVariants({ variant, stretch }), className)} {...props} />;
+  return <BaseTabs.List ref={ref} className={cn(tabsListVariants({ variant, stretch }))} {...props} />;
 });
 TabsList.displayName = "TabsList";
 
-export interface TabProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Tab>, "children"> {
+export interface TabProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Tab>, "children">> {
   /** Visible tab label. */
   label: string;
   /** Icon rendered before the label. */
@@ -73,7 +73,7 @@ export interface TabProps extends Omit<React.ComponentPropsWithoutRef<typeof Bas
 }
 
 /** A single tab button. Renders contained pill chrome or an underline label + sliding bar, per the set's `variant`. */
-export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon, className, ...props }, ref) => {
+export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon, ...props }, ref) => {
   const variant = React.useContext(TabsVariantContext);
   const stretch = React.useContext(TabsStretchContext);
 
@@ -83,8 +83,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon,
         ref={ref}
         className={cn(
           "group/tab inline-flex cursor-pointer flex-col items-stretch gap-2 whitespace-nowrap text-body-sm-medium outline-none select-none aria-disabled:cursor-not-allowed aria-disabled:text-disabled",
-          stretch === "full" && "flex-1",
-          className
+          stretch === "full" && "flex-1"
         )}
         {...props}
       >
@@ -100,7 +99,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon,
   }
 
   return (
-    <BaseTabs.Tab ref={ref} className={cn(tabVariants({ stretch }), className)} {...props}>
+    <BaseTabs.Tab ref={ref} className={cn(tabVariants({ stretch }))} {...props}>
       {icon}
       <span className="truncate">{label}</span>
     </BaseTabs.Tab>
@@ -108,11 +107,11 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon,
 });
 Tab.displayName = "Tab";
 
-export interface TabsPanelProps extends React.ComponentPropsWithoutRef<typeof BaseTabs.Panel> {}
+export interface TabsPanelProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseTabs.Panel>> {}
 
 /** The content shown for the `Tab` of the matching `value`. */
-export const TabsPanel = React.forwardRef<HTMLDivElement, TabsPanelProps>(({ className, ...props }, ref) => (
-  <BaseTabs.Panel ref={ref} className={cn("w-full min-w-0 text-body-sm-regular text-secondary outline-none", className)} {...props} />
+export const TabsPanel = React.forwardRef<HTMLDivElement, TabsPanelProps>(({ ...props }, ref) => (
+  <BaseTabs.Panel ref={ref} className={cn("w-full min-w-0 text-body-sm-regular text-secondary outline-none")} {...props} />
 ));
 TabsPanel.displayName = "TabsPanel";
 

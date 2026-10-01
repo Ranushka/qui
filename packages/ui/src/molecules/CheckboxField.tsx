@@ -1,9 +1,10 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { Checkbox, type CheckboxProps } from "../atoms/Checkbox";
 import { Field } from "./Field";
 import { FieldItemRow, type FieldSize } from "../lib/field-parts";
 
-export interface CheckboxFieldProps extends Omit<CheckboxProps, "label" | "icon" | "stretch" | "className" | "children"> {
+export interface CheckboxFieldProps extends NoClass<Omit<CheckboxProps, "label" | "icon" | "stretch" | "className" | "children">> {
   /** Visible label beside the checkbox. */
   label: React.ReactNode;
   /** Supporting text under the label, announced as the checkbox's description. */
@@ -14,8 +15,6 @@ export interface CheckboxFieldProps extends Omit<CheckboxProps, "label" | "icon"
   error?: React.ReactNode;
   /** Label and helper text size. @default "lg" */
   size?: FieldSize;
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 }
 
 /**
@@ -24,8 +23,8 @@ export interface CheckboxFieldProps extends Omit<CheckboxProps, "label" | "icon"
  * checkbox control.
  */
 export const CheckboxField = React.forwardRef<HTMLButtonElement, CheckboxFieldProps>(
-  ({ label, description, hint, error, size = "lg", name, disabled, className, ...checkboxProps }, ref) => (
-    <Field name={name} disabled={disabled} size={size} hint={hint} error={error} className={className}>
+  ({ label, description, hint, error, size = "lg", name, disabled, ...checkboxProps }, ref) => (
+    <Field name={name} disabled={disabled} size={size} hint={hint} error={error}>
       <FieldItemRow size={size} disabled={disabled} label={label} description={description} control={<Checkbox ref={ref} disabled={disabled} {...checkboxProps} />} />
     </Field>
   )

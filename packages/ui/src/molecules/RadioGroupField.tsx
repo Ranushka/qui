@@ -1,3 +1,4 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { Field as BaseField } from "@base-ui/react/field";
 import { Fieldset as BaseFieldset } from "@base-ui/react/fieldset";
@@ -14,7 +15,7 @@ import {
   type FieldSize,
 } from "../lib/field-parts";
 
-export interface RadioGroupFieldProps extends Omit<RadioGroupProps, "children" | "className" | "render" | "style"> {
+export interface RadioGroupFieldProps extends NoClass<Omit<RadioGroupProps, "children" | "className" | "render" | "style">> {
   /** The option rows, usually `RadioGroupFieldOption`s. */
   children: React.ReactNode;
   /** Visible legend naming the group. */
@@ -27,8 +28,6 @@ export interface RadioGroupFieldProps extends Omit<RadioGroupProps, "children" |
   error?: React.ReactNode;
   /** Legend, option and helper text size. Option rows inherit it. @default "lg" */
   size?: FieldSize;
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 }
 
 /**
@@ -37,8 +36,8 @@ export interface RadioGroupFieldProps extends Omit<RadioGroupProps, "children" |
  * on submit. Fill it with `RadioGroupFieldOption` rows.
  */
 export const RadioGroupField = React.forwardRef<HTMLDivElement, RadioGroupFieldProps>(
-  ({ children, label, name, description, hint, error, required, density = "comfortable", size = "lg", disabled, className, ...groupProps }, ref) => (
-    <Field name={name} disabled={disabled} size={size} hint={hint} error={error} className={className}>
+  ({ children, label, name, description, hint, error, required, density = "comfortable", size = "lg", disabled, ...groupProps }, ref) => (
+    <Field name={name} disabled={disabled} size={size} hint={hint} error={error}>
       <BaseFieldset.Root ref={ref} disabled={disabled} render={<RadioGroup density={density} disabled={disabled} required={required} {...groupProps} />}>
         <BaseFieldset.Legend className={fieldsetLegendVariants({ size })}>
           {label}
@@ -52,7 +51,7 @@ export const RadioGroupField = React.forwardRef<HTMLDivElement, RadioGroupFieldP
 );
 RadioGroupField.displayName = "RadioGroupField";
 
-export interface RadioGroupFieldOptionProps extends Omit<RadioProps, "className" | "children"> {
+export interface RadioGroupFieldOptionProps extends NoClass<Omit<RadioProps, "className" | "children">> {
   /** Visible label beside the radio. */
   label: React.ReactNode;
   /** Supporting text under the label, announced as the radio's description. */

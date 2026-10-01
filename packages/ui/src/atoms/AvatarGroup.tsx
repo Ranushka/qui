@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { Tooltip } from "./Tooltip";
 import { AvatarGroupContext, type AvatarSize } from "../lib/avatar-shared";
 
@@ -28,7 +29,7 @@ function getMemberCounts(childCount: number, max: number | undefined, total: num
   return { visibleCount, hiddenCount: memberCount - visibleCount };
 }
 
-export interface AvatarGroupProps extends React.HTMLAttributes<HTMLSpanElement> {
+export interface AvatarGroupProps extends NoClass<React.HTMLAttributes<HTMLSpanElement>> {
   /** Shared size for every member `Avatar` (an avatar's own `size` still wins). Also sizes the "+N" counter. */
   size?: AvatarSize;
   /** How many faces to show before collapsing the rest into a "+N" counter. @default 2 */
@@ -57,7 +58,7 @@ export function AvatarGroup({
   "aria-label": ariaLabel,
   overflowLabel,
   overflowTooltip,
-  className,
+  
   children,
   ...props
 }: AvatarGroupProps & { "aria-label"?: string }) {
@@ -89,7 +90,7 @@ export function AvatarGroup({
         <span
           role={summaryLabel ? (hasOverflowTooltip ? "group" : "img") : undefined}
           aria-label={summaryLabel}
-          className={cn("inline-flex items-center -space-x-1.5", className)}
+          className={cn("inline-flex items-center -space-x-1.5")}
           {...props}
         >
           {faces}

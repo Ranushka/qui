@@ -21,8 +21,6 @@ export type ComboboxFieldProps<Value, Multiple extends boolean | undefined = fal
   clearable?: boolean;
   /** Size of the control and its label/helper text. @default "lg" */
   size?: FieldSize;
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 };
 
 /** An option's display text: `itemToStringLabel`, else a record's `label`, else the value itself. */
@@ -49,12 +47,12 @@ export function ComboboxField<Value, Multiple extends boolean | undefined = fals
   name,
   disabled,
   required,
-  className,
+  
   ...comboboxProps
 }: ComboboxFieldProps<Value, Multiple>) {
   const toLabel = comboboxProps.itemToStringLabel ?? defaultLabel;
   return (
-    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error} className={className}>
+    <Field name={name} disabled={disabled} size={size} label={label} required={required} description={description} hint={hint} error={error}>
       <Combobox<Value, Multiple> disabled={disabled} required={required} {...comboboxProps}>
         <ComboboxInputGroup size={size} placeholder={placeholder} clearable={clearable} />
         <ComboboxContent emptyMessage={emptyMessage}>

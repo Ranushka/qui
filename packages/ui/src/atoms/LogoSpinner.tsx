@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /** `sm` 24px, `md` 44px, `fluid` 24px stepping to 44px at the 640px (`sm:`) breakpoint. */
 const logoSpinnerMarkVariants = cva("relative inline-flex shrink-0 items-center justify-center", {
@@ -16,7 +17,7 @@ const logoSpinnerMarkVariants = cva("relative inline-flex shrink-0 items-center 
 
 export type LogoSpinnerSize = "sm" | "md" | "fluid";
 
-export interface LogoSpinnerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+export interface LogoSpinnerProps extends NoClass<Omit<React.HTMLAttributes<HTMLDivElement>, "children">> {
   /** Mark height: `sm` 24px, `md` 44px, `fluid` 24px stepping to 44px at the 640px breakpoint. */
   size: LogoSpinnerSize;
   /** Accessible name (required) — what the app is waiting on, e.g. "Loading workspace". */
@@ -38,8 +39,8 @@ export interface LogoSpinnerProps extends Omit<React.HTMLAttributes<HTMLDivEleme
  * tokens; pass `logo` to put your own mark at its center. Under `prefers-reduced-motion: reduce`
  * all motion stops and the fully drawn mark shows still.
  */
-export const LogoSpinner = React.forwardRef<HTMLDivElement, LogoSpinnerProps>(({ size, alt, logo, className, ...props }, ref) => (
-  <div ref={ref} role="img" aria-label={alt} className={cn("flex items-center justify-center", className)} {...props}>
+export const LogoSpinner = React.forwardRef<HTMLDivElement, LogoSpinnerProps>(({ size, alt, logo, ...props }, ref) => (
+  <div ref={ref} role="img" aria-label={alt} className={cn("flex items-center justify-center")} {...props}>
     <span aria-hidden="true" className={logoSpinnerMarkVariants({ size })}>
       <svg viewBox="0 0 44 44" fill="none" className="absolute inset-0 size-full animate-spin [animation-duration:1.2s] motion-reduce:animate-none">
         <circle cx="22" cy="22" r="19" strokeWidth="3" className="stroke-(--border-color-subtle)" />

@@ -1,16 +1,19 @@
 import * as React from "react";
 import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { optionGroupVariants } from "../lib/option-group";
 import { Radio } from "./Radio";
 
-export interface RadioGroupProps extends React.ComponentPropsWithoutRef<typeof BaseRadioGroup> {
+export interface RadioGroupProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseRadioGroup>> {
   density?: "comfortable" | "compact";
+  /** Stack options in a column, or lay them out in a wrapping row. @default "vertical" */
+  orientation?: "vertical" | "horizontal";
 }
 
 /** Groups a set of `Radio` options so at most one can be selected at a time. */
-export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(({ density = "comfortable", className, ...props }, ref) => (
-  <BaseRadioGroup ref={ref} className={cn(optionGroupVariants({ density }), className)} {...props} />
+export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(({ density = "comfortable", orientation = "vertical", ...props }, ref) => (
+  <BaseRadioGroup ref={ref} className={cn(optionGroupVariants({ density, orientation }))} {...props} />
 ));
 RadioGroup.displayName = "RadioGroup";
 
@@ -21,7 +24,7 @@ const radioLabelClass = cn(
   "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:text-disabled"
 );
 
-export interface RadioOptionProps extends React.ComponentPropsWithoutRef<typeof Radio> {
+export interface RadioOptionProps extends NoClass<React.ComponentPropsWithoutRef<typeof Radio>> {
   label: React.ReactNode;
 }
 
@@ -39,7 +42,7 @@ export const RadioOption = React.forwardRef<HTMLButtonElement, RadioOptionProps>
 RadioOption.displayName = "RadioOption";
 
 /* __DOC_BLOCK
-<QUI.RadioGroup defaultValue="md" className="p-4">
+<QUI.RadioGroup defaultValue="md">
   <QUI.RadioOption value="sm" label="Small" />
   <QUI.RadioOption value="md" label="Medium" />
   <QUI.RadioOption value="lg" label="Large" />
@@ -48,5 +51,5 @@ RadioOption.displayName = "RadioOption";
 DOC__ */
 
 /* __PROPS
-{ "density": ["comfortable", "compact"] }
+{ "density": ["comfortable", "compact"], "orientation": ["vertical", "horizontal"] }
 PROPS__ */

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 const shortcutVariants = cva("shrink-0 text-tertiary", {
   variants: {
@@ -14,7 +15,7 @@ const shortcutVariants = cva("shrink-0 text-tertiary", {
 
 export type ShortcutSize = "sm" | "md";
 
-export interface ShortcutProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
+export interface ShortcutProps extends NoClass<Omit<React.HTMLAttributes<HTMLSpanElement>, "children">> {
   /** The key combination as display text, e.g. `"⌘ K"` or `"Ctrl Shift P"`. */
   keys: string;
   /** @default "md" */
@@ -27,8 +28,8 @@ export interface ShortcutProps extends Omit<React.HTMLAttributes<HTMLSpanElement
  * actionable element itself (pass `aria-hidden={false}` to have it read out anyway).
  */
 export const Shortcut = React.forwardRef<HTMLSpanElement, ShortcutProps>(
-  ({ keys, size, "aria-hidden": ariaHidden = true, className, ...props }, ref) => (
-    <span ref={ref} aria-hidden={ariaHidden} className={cn(shortcutVariants({ size }), className)} {...props}>
+  ({ keys, size, "aria-hidden": ariaHidden = true, ...props }, ref) => (
+    <span ref={ref} aria-hidden={ariaHidden} className={cn(shortcutVariants({ size }))} {...props}>
       {keys}
     </span>
   )

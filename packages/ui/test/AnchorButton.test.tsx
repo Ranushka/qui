@@ -1,3 +1,4 @@
+import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -34,10 +35,14 @@ describe("AnchorButton", () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it("projects onto a custom element via render", () => {
-    render(<AnchorButton render={<a data-router="yes" href="/r" />} label="Routed" />);
+  it("renders through a router link component via linkComponent", () => {
+    const RouterLink = React.forwardRef<HTMLAnchorElement, React.AnchorHTMLAttributes<HTMLAnchorElement>>((props, ref) => (
+      <a ref={ref} data-router="yes" {...props} />
+    ));
+    render(<AnchorButton linkComponent={RouterLink} href="/r" label="Routed" />);
     const link = screen.getByRole("link", { name: "Routed" });
     expect(link.getAttribute("data-router")).toBe("yes");
     expect(link.getAttribute("href")).toBe("/r");
+    expect(link.className).not.toBe("");
   });
 });

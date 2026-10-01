@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 const badgeVariants = cva("inline-flex w-fit shrink-0 items-center justify-center align-middle whitespace-nowrap", {
   variants: {
@@ -28,7 +29,7 @@ const badgeVariants = cva("inline-flex w-fit shrink-0 items-center justify-cente
   defaultVariants: { size: "md", variant: "neutral" },
 });
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
+export interface BadgeProps extends NoClass<React.HTMLAttributes<HTMLSpanElement>>, VariantProps<typeof badgeVariants> {
   label?: React.ReactNode;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
@@ -39,9 +40,9 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, Varia
  * `label` it's icon-only and defaults to `role="img"` so an author-supplied `aria-label` is valid
  * ARIA (a bare `<span>`'s generic role can't be named).
  */
-export function Badge({ size, variant, label, startIcon, endIcon, className, ...props }: BadgeProps) {
+export function Badge({ size, variant, label, startIcon, endIcon, ...props }: BadgeProps) {
   return (
-    <span role={label == null ? "img" : undefined} className={cn(badgeVariants({ size, variant }), className)} {...props}>
+    <span role={label == null ? "img" : undefined} className={cn(badgeVariants({ size, variant }))} {...props}>
       {startIcon}
       {label != null ? <span className="min-w-0 truncate">{label}</span> : null}
       {endIcon}

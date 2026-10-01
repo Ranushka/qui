@@ -2,6 +2,7 @@ import * as React from "react";
 import { Collapsible as BaseCollapsible } from "@base-ui/react/collapsible";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { DisclosureIndicator, collapsiblePanelClass, disclosureTriggerClass } from "../lib/disclosure";
 
 type CollapsiblePlacement = "inline" | "sidebar";
@@ -50,7 +51,7 @@ const collapsibleTrailingVariants = cva("flex shrink-0 items-center gap-2", {
   defaultVariants: { placement: "inline" },
 });
 
-export interface CollapsibleProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Root>, "children"> {
+export interface CollapsibleProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Root>, "children">> {
   /** The toggle button's label. */
   trigger: React.ReactNode;
   /** Leading glyph in the trigger, e.g. `<Icon icon={Folder} />`. */
@@ -78,10 +79,10 @@ export interface CollapsibleProps extends Omit<React.ComponentPropsWithoutRef<ty
  */
 export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
   (
-    { trigger, icon, trailing, indicator = true, placement = "inline", hug = false, keepMounted, hiddenUntilFound, className, children, ...props },
+    { trigger, icon, trailing, indicator = true, placement = "inline", hug = false, keepMounted, hiddenUntilFound, children, ...props },
     ref
   ) => (
-    <BaseCollapsible.Root ref={ref} className={cn("w-full", className)} {...props}>
+    <BaseCollapsible.Root ref={ref} className={cn("w-full")} {...props}>
       <div className={collapsibleHeaderVariants({ placement })}>
         <BaseCollapsible.Trigger className={collapsibleTriggerVariants({ placement })}>
           {placement === "inline" ? icon : null}
@@ -101,22 +102,22 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
 );
 Collapsible.displayName = "Collapsible";
 
-export interface CollapsibleRootProps extends React.ComponentPropsWithoutRef<typeof BaseCollapsible.Root> {}
+export interface CollapsibleRootProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Root>> {}
 
 /**
  * Bare Base UI `Collapsible.Root` (a full-width `<div>`) for composing your own disclosure — e.g. a
  * `ListItem` with a `ListItemDisclosureTrigger` above a `CollapsiblePanel` holding a nested `List`.
  */
-export const CollapsibleRoot = React.forwardRef<HTMLDivElement, CollapsibleRootProps>(({ className, ...props }, ref) => (
-  <BaseCollapsible.Root ref={ref} className={cn("w-full", className)} {...props} />
+export const CollapsibleRoot = React.forwardRef<HTMLDivElement, CollapsibleRootProps>(({ ...props }, ref) => (
+  <BaseCollapsible.Root ref={ref} className={cn("w-full")} {...props} />
 ));
 CollapsibleRoot.displayName = "CollapsibleRoot";
 
-export interface CollapsiblePanelProps extends React.ComponentPropsWithoutRef<typeof BaseCollapsible.Panel> {}
+export interface CollapsiblePanelProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Panel>> {}
 
 /** The height-animating panel on its own, with no inset or typography — pair with `CollapsibleRoot`. */
-export const CollapsiblePanel = React.forwardRef<HTMLDivElement, CollapsiblePanelProps>(({ className, ...props }, ref) => (
-  <BaseCollapsible.Panel ref={ref} className={cn(collapsiblePanelClass, className)} {...props} />
+export const CollapsiblePanel = React.forwardRef<HTMLDivElement, CollapsiblePanelProps>(({ ...props }, ref) => (
+  <BaseCollapsible.Panel ref={ref} className={cn(collapsiblePanelClass)} {...props} />
 ));
 CollapsiblePanel.displayName = "CollapsiblePanel";
 

@@ -50,7 +50,7 @@ export function AreaChart({
   height = 240,
   width,
   animate = true,
-  className,
+  
   "aria-label": ariaLabel,
 }: AreaChartProps) {
   const resolved = resolveSeries(series);
@@ -62,7 +62,7 @@ export function AreaChart({
       height={height}
       width={width}
       ariaLabel={ariaLabel}
-      className={className}
+
       legend={legendVisible ? resolved.map((s) => ({ label: s.label, color: s.color })) : undefined}
     >
       <RAreaChart data={data as ChartDatum[]} margin={{ top: 8, right: 12, bottom: 0, left: 0 }} {...(width != null ? { width, height } : {})}>

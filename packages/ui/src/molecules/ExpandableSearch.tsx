@@ -3,6 +3,7 @@ import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete";
 import { Search, X } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlGroupClass, controlSize, type ControlSize } from "../lib/control-group";
 import { controlInputClass } from "../lib/control-input";
 import { Icon } from "../atoms/Icon";
@@ -65,7 +66,7 @@ function isFilled(value: unknown) {
 
 type AutocompleteRootProps = React.ComponentPropsWithoutRef<typeof BaseAutocomplete.Root>;
 
-export interface ExpandableSearchProps extends Omit<AutocompleteRootProps, "children"> {
+export interface ExpandableSearchProps extends NoClass<Omit<AutocompleteRootProps, "children">> {
   /** Accessible name for both the collapsed trigger and the expanded input. */
   "aria-label": string;
   /** Accessible name for the clear button shown once there's text. @default "Clear search" */
@@ -82,8 +83,6 @@ export interface ExpandableSearchProps extends Omit<AutocompleteRootProps, "chil
   onExpandedChange?: (expanded: boolean) => void;
   /** Suggestion popup (e.g. `AutocompleteContent`), used together with `items`. Omit for a plain search box. */
   children?: React.ReactNode;
-  /** Classes for the outer track wrapping trigger + row (e.g. a fixed expanded width). */
-  className?: string;
 }
 
 /**
@@ -107,7 +106,7 @@ export function ExpandableSearch({
   defaultExpanded,
   onExpandedChange,
   children,
-  className,
+  
   open,
   disabled,
   value,
@@ -153,7 +152,7 @@ export function ExpandableSearch({
 
   return (
     <BaseAutocomplete.Root open={resolvedOpen} disabled={disabled} value={value} defaultValue={defaultValue} {...rootProps}>
-      <div className={cn(expandableSearchTrackClass, className)}>
+      <div className={cn(expandableSearchTrackClass)}>
         <span className={expandableSearchTriggerVariants({ size })} data-expanded={expanded ? "" : undefined} inert={expanded || undefined}>
           <IconButton
             ref={triggerRef}

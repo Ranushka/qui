@@ -1,9 +1,10 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { Switch, type SwitchProps } from "../atoms/Switch";
 import { Field } from "./Field";
 import { FieldItemRow, type FieldSize } from "../lib/field-parts";
 
-export interface SwitchFieldProps extends Omit<SwitchProps, "size" | "className" | "children"> {
+export interface SwitchFieldProps extends NoClass<Omit<SwitchProps, "size" | "className" | "children">> {
   /** Visible label beside the switch. */
   label: React.ReactNode;
   /** Supporting text under the label, announced as the switch's description. */
@@ -16,8 +17,6 @@ export interface SwitchFieldProps extends Omit<SwitchProps, "size" | "className"
   size?: FieldSize;
   /** Size of the switch track itself. @default "md" */
   switchSize?: SwitchProps["size"];
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 }
 
 /**
@@ -25,8 +24,8 @@ export interface SwitchFieldProps extends Omit<SwitchProps, "size" | "className"
  * beneath it. Clicking anywhere on the row flips the switch. The ref goes to the switch control.
  */
 export const SwitchField = React.forwardRef<HTMLButtonElement, SwitchFieldProps>(
-  ({ label, description, hint, error, size = "lg", switchSize, name, disabled, className, ...switchProps }, ref) => (
-    <Field name={name} disabled={disabled} size={size} hint={hint} error={error} className={className}>
+  ({ label, description, hint, error, size = "lg", switchSize, name, disabled, ...switchProps }, ref) => (
+    <Field name={name} disabled={disabled} size={size} hint={hint} error={error}>
       <FieldItemRow
         size={size}
         disabled={disabled}

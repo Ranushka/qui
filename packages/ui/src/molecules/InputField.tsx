@@ -1,9 +1,10 @@
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { Input, type InputProps } from "../atoms/Input";
 import { Field } from "./Field";
 import type { FieldSize } from "../lib/field-parts";
 
-export interface InputFieldProps extends Omit<InputProps, "size" | "startSlot" | "endSlot" | "className" | "groupClassName" | "required"> {
+export interface InputFieldProps extends NoClass<Omit<InputProps, "size" | "startSlot" | "endSlot" | "className" | "groupClassName" | "required">> {
   /** Size of the control and its label/helper text. @default "lg" */
   size?: FieldSize;
   /** Label placement: above the control, or beside it. @default "vertical" */
@@ -26,8 +27,6 @@ export interface InputFieldProps extends Omit<InputProps, "size" | "startSlot" |
   startIcon?: React.ReactNode;
   /** Content at the inline end of the input frame. */
   endIcon?: React.ReactNode;
-  /** Classes for the field's outer wrapper (layout only — width, margins). */
-  className?: string;
 }
 
 /**
@@ -36,7 +35,7 @@ export interface InputFieldProps extends Omit<InputProps, "size" | "startSlot" |
  * the control. The ref goes to the `<input>`.
  */
 export const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ size = "lg", orientation = "vertical", name, label, required, description, hint, error, startIcon, endIcon, disabled, className, ...inputProps }, ref) => (
+  ({ size = "lg", orientation = "vertical", name, label, required, description, hint, error, startIcon, endIcon, disabled, ...inputProps }, ref) => (
     <Field
       name={name}
       disabled={disabled}
@@ -47,7 +46,7 @@ export const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       description={description}
       hint={hint}
       error={error}
-      className={className}
+
     >
       <Input ref={ref} size={size} startSlot={startIcon} endSlot={endIcon} aria-required={required || undefined} {...inputProps} />
     </Field>

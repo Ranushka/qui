@@ -6,6 +6,7 @@ import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlChromeVariants } from "../lib/control-chrome";
 import { fieldControlSurfaceVariants } from "../lib/field-control-surface";
 import { Icon } from "../atoms/Icon";
@@ -124,7 +125,6 @@ interface ToolbarItemStyleProps {
   variant?: ToolbarItemVariant;
   /** Shows the `aria-label` as a tooltip on icon-only items. @default true */
   showTooltip?: boolean;
-  className?: string;
 }
 
 /** Wraps an icon-only item in a `Tooltip` showing its `aria-label`; passes labeled items through. */
@@ -133,12 +133,11 @@ function withTooltip(element: React.ReactElement, label: string | undefined, ari
   return <Tooltip label={ariaLabel}>{element}</Tooltip>;
 }
 
-export interface ToolbarProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Root>, "className" | "orientation" | "render"> {
+export interface ToolbarProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Root>, "className" | "orientation" | "render">> {
   /** Control scale shared with every item inside: `sm` (24px) or `md` (28px). @default "sm" */
   size?: ToolbarSize;
   /** Draws its own raised surface, or sits flush. @default "flat" */
   elevation?: ToolbarElevation;
-  className?: string;
 }
 
 /**
@@ -146,39 +145,39 @@ export interface ToolbarProps extends Omit<React.ComponentPropsWithoutRef<typeof
  * stop and arrow-key roving focus across its buttons, links, toggles and inputs (`loopFocus`
  * wraps at the ends; `disabled` disables everything). `size` is shared with the items via context.
  */
-export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(({ size = "sm", elevation = "flat", className, ...props }, ref) => (
+export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(({ size = "sm", elevation = "flat", ...props }, ref) => (
   <ToolbarSizeContext.Provider value={size}>
-    <BaseToolbar.Root ref={ref} className={cn(toolbarVariants({ elevation }), className)} {...props} />
+    <BaseToolbar.Root ref={ref} className={cn(toolbarVariants({ elevation }))} {...props} />
   </ToolbarSizeContext.Provider>
 ));
 Toolbar.displayName = "Toolbar";
 
-export interface ToolbarGroupProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Group>, "className" | "render"> {
-  className?: string;
+export interface ToolbarGroupProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Group>, "className" | "render">> {
 }
 
 /**
  * A `role="group"` cluster of related items; `disabled` disables the cluster. It keeps the row's
  * own gap, so grouping reads visually from `ToolbarSeparator`s placed either side.
  */
-export const ToolbarGroup = React.forwardRef<HTMLDivElement, ToolbarGroupProps>(({ className, ...props }, ref) => (
-  <BaseToolbar.Group ref={ref} className={cn("flex items-center gap-2", className)} {...props} />
+export const ToolbarGroup = React.forwardRef<HTMLDivElement, ToolbarGroupProps>(({ ...props }, ref) => (
+  <BaseToolbar.Group ref={ref} className={cn("flex items-center gap-2")} {...props} />
 ));
 ToolbarGroup.displayName = "ToolbarGroup";
 
-export interface ToolbarSeparatorProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Separator>, "className" | "render" | "orientation"> {
-  className?: string;
+export interface ToolbarSeparatorProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Separator>, "className" | "render" | "orientation">> {
 }
 
 /** A short vertical rule dividing one cluster of items from the next. */
-export const ToolbarSeparator = React.forwardRef<HTMLDivElement, ToolbarSeparatorProps>(({ className, ...props }, ref) => (
-  <BaseToolbar.Separator ref={ref} orientation="vertical" className={cn("h-3.5 w-0 shrink-0 border-s-sm border-subtle", className)} {...props} />
+export const ToolbarSeparator = React.forwardRef<HTMLDivElement, ToolbarSeparatorProps>(({ ...props }, ref) => (
+  <BaseToolbar.Separator ref={ref} orientation="vertical" className={cn("h-3.5 w-0 shrink-0 border-s-sm border-subtle")} {...props} />
 ));
 ToolbarSeparator.displayName = "ToolbarSeparator";
 
-export type ToolbarButtonProps = Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Button>, "children" | "className" | "render" | "aria-label"> &
+export type ToolbarButtonProps = NoClass<
+Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Button>, "children" | "className" | "render" | "aria-label"> &
   ToolbarItemStyleProps &
-  ToolbarItemContent;
+  ToolbarItemContent
+>;
 
 /**
  * An action button in the toolbar's roving tab order, on the same control chrome as
@@ -186,10 +185,10 @@ export type ToolbarButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Base
  * still discover them.
  */
 export const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
-  ({ size, variant = "ghost", showTooltip = true, icon, label, className, "aria-label": ariaLabel, ...props }, ref) => {
+  ({ size, variant = "ghost", showTooltip = true, icon, label, "aria-label": ariaLabel, ...props }, ref) => {
     const toolbarSize = React.useContext(ToolbarSizeContext);
     const button = (
-      <BaseToolbar.Button ref={ref} aria-label={ariaLabel} className={toolbarItemClass(variant, size ?? toolbarSize, !!label, className)} {...props}>
+      <BaseToolbar.Button ref={ref} aria-label={ariaLabel} className={toolbarItemClass(variant, size ?? toolbarSize, !!label)} {...props}>
         {itemContent(icon, label)}
       </BaseToolbar.Button>
     );
@@ -198,10 +197,12 @@ export const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonPr
 );
 ToolbarButton.displayName = "ToolbarButton";
 
-export type ToolbarToggleProps = Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Button>, "children" | "className" | "render" | "aria-label"> &
+export type ToolbarToggleProps = NoClass<
+Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Button>, "children" | "className" | "render" | "aria-label"> &
   Pick<React.ComponentPropsWithoutRef<typeof BaseToggle>, "pressed" | "defaultPressed" | "onPressedChange" | "value"> &
   ToolbarItemStyleProps &
-  ToolbarItemContent;
+  ToolbarItemContent
+>;
 
 /**
  * A two-state toolbar button (bold, italic, a view switch) — Base UI's `Toggle` pressed state on a
@@ -209,7 +210,7 @@ export type ToolbarToggleProps = Omit<React.ComponentPropsWithoutRef<typeof Base
  */
 export const ToolbarToggle = React.forwardRef<HTMLButtonElement, ToolbarToggleProps>(
   (
-    { size, variant = "ghost", showTooltip = true, icon, label, className, pressed, defaultPressed, onPressedChange, value, disabled, "aria-label": ariaLabel, ...props },
+    { size, variant = "ghost", showTooltip = true, icon, label, pressed, defaultPressed, onPressedChange, value, disabled, "aria-label": ariaLabel, ...props },
     ref
   ) => {
     const toolbarSize = React.useContext(ToolbarSizeContext);
@@ -218,7 +219,7 @@ export const ToolbarToggle = React.forwardRef<HTMLButtonElement, ToolbarTogglePr
         ref={ref}
         disabled={disabled}
         aria-label={ariaLabel}
-        className={toolbarItemClass(variant, size ?? toolbarSize, !!label, className)}
+        className={toolbarItemClass(variant, size ?? toolbarSize, !!label)}
         render={<BaseToggle pressed={pressed} defaultPressed={defaultPressed} onPressedChange={onPressedChange} value={value} disabled={disabled} />}
         {...props}
       >
@@ -230,10 +231,9 @@ export const ToolbarToggle = React.forwardRef<HTMLButtonElement, ToolbarTogglePr
 );
 ToolbarToggle.displayName = "ToolbarToggle";
 
-export interface ToolbarToggleGroupProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseToggleGroup>, "className" | "render"> {
+export interface ToolbarToggleGroupProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseToggleGroup>, "className" | "render">> {
   /** Required accessible name for the set, e.g. "Text alignment". */
   "aria-label": string;
-  className?: string;
 }
 
 /**
@@ -241,21 +241,23 @@ export interface ToolbarToggleGroupProps extends Omit<React.ComponentPropsWithou
  * `ToggleGroup` — which joins the toolbar's roving focus instead of running its own. Drive it
  * with `value`/`defaultValue` + `onValueChange`.
  */
-export const ToolbarToggleGroup = React.forwardRef<HTMLDivElement, ToolbarToggleGroupProps>(({ className, ...props }, ref) => (
-  <BaseToggleGroup ref={ref} className={cn("flex items-center gap-2", className)} {...props} />
+export const ToolbarToggleGroup = React.forwardRef<HTMLDivElement, ToolbarToggleGroupProps>(({ ...props }, ref) => (
+  <BaseToggleGroup ref={ref} className={cn("flex items-center gap-2")} {...props} />
 ));
 ToolbarToggleGroup.displayName = "ToolbarToggleGroup";
 
-export type ToolbarLinkProps = Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Link>, "children" | "className" | "render" | "aria-label"> &
+export type ToolbarLinkProps = NoClass<
+Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Link>, "children" | "className" | "render" | "aria-label"> &
   ToolbarItemStyleProps &
-  ToolbarItemContent;
+  ToolbarItemContent
+>;
 
 /** A toolbar item that navigates: an `<a>` in the roving tab order, with the same chrome as `ToolbarButton`. */
 export const ToolbarLink = React.forwardRef<HTMLAnchorElement, ToolbarLinkProps>(
-  ({ size, variant = "ghost", showTooltip = true, icon, label, className, "aria-label": ariaLabel, ...props }, ref) => {
+  ({ size, variant = "ghost", showTooltip = true, icon, label, "aria-label": ariaLabel, ...props }, ref) => {
     const toolbarSize = React.useContext(ToolbarSizeContext);
     const link = (
-      <BaseToolbar.Link ref={ref} aria-label={ariaLabel} className={toolbarItemClass(variant, size ?? toolbarSize, !!label, className)} {...props}>
+      <BaseToolbar.Link ref={ref} aria-label={ariaLabel} className={toolbarItemClass(variant, size ?? toolbarSize, !!label)} {...props}>
         {itemContent(icon, label)}
       </BaseToolbar.Link>
     );
@@ -264,12 +266,11 @@ export const ToolbarLink = React.forwardRef<HTMLAnchorElement, ToolbarLinkProps>
 );
 ToolbarLink.displayName = "ToolbarLink";
 
-export interface ToolbarInputProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Input>, "className" | "render" | "size"> {
+export interface ToolbarInputProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Input>, "className" | "render" | "size">> {
   /** Size override; defaults to the enclosing `Toolbar`'s `size`. */
   size?: ToolbarSize;
   /** Required accessible name — a toolbar input has no visible label. */
   "aria-label": string;
-  className?: string;
 }
 
 /**
@@ -277,20 +278,19 @@ export interface ToolbarInputProps extends Omit<React.ComponentPropsWithoutRef<t
  * bordered field surface. Left/Right arrows move the caret while it has text to cross, then move
  * focus to the neighboring item.
  */
-export const ToolbarInput = React.forwardRef<HTMLInputElement, ToolbarInputProps>(({ size, className, ...props }, ref) => {
+export const ToolbarInput = React.forwardRef<HTMLInputElement, ToolbarInputProps>(({ size, ...props }, ref) => {
   const toolbarSize = React.useContext(ToolbarSizeContext);
-  return <BaseToolbar.Input ref={ref} className={cn(toolbarInputVariants({ size: size ?? toolbarSize }), className)} {...props} />;
+  return <BaseToolbar.Input ref={ref} className={cn(toolbarInputVariants({ size: size ?? toolbarSize }))} {...props} />;
 });
 ToolbarInput.displayName = "ToolbarInput";
 
-export interface ToolbarMenuTriggerProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Button>, "children" | "className" | "render"> {
+export interface ToolbarMenuTriggerProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseToolbar.Button>, "children" | "className" | "render">> {
   /** Visible trigger text, e.g. the current choice ("Paragraph"). */
   label: string;
   /** Size override; defaults to the enclosing `Toolbar`'s `size`. */
   size?: ToolbarSize;
   /** Control chrome, shared with `Button`. @default "ghost" */
   variant?: ToolbarItemVariant;
-  className?: string;
 }
 
 /**
@@ -299,12 +299,12 @@ export interface ToolbarMenuTriggerProps extends Omit<React.ComponentPropsWithou
  * `<Menu>` alongside the menu's `MenuContent`.
  */
 export const ToolbarMenuTrigger = React.forwardRef<HTMLButtonElement, ToolbarMenuTriggerProps>(
-  ({ label, size, variant = "ghost", className, ...props }, ref) => {
+  ({ label, size, variant = "ghost", ...props }, ref) => {
     const toolbarSize = React.useContext(ToolbarSizeContext);
     return (
       <BaseToolbar.Button
         ref={ref}
-        className={cn(controlChromeVariants({ variant }), toolbarMenuTriggerGeometryVariants({ size: size ?? toolbarSize }), className)}
+        className={cn(controlChromeVariants({ variant }), toolbarMenuTriggerGeometryVariants({ size: size ?? toolbarSize }))}
         render={<BaseMenu.Trigger />}
         {...props}
       >

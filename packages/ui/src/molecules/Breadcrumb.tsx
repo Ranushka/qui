@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
 /**
@@ -10,20 +11,20 @@ import { nodeSlotClass } from "../lib/node-slot";
  */
 const crumbBaseClass = "inline-flex h-6 items-center gap-1.5 rounded-md px-1 text-body-xs-medium whitespace-nowrap [--node-size:var(--control-glyph-md)]";
 
-export interface BreadcrumbProps extends React.ComponentPropsWithoutRef<"nav"> {
+export interface BreadcrumbProps extends NoClass<React.ComponentPropsWithoutRef<"nav">> {
   /** Landmark name for the trail. @default "Breadcrumb" */
   "aria-label"?: string;
 }
 
 /** Breadcrumb trail landmark: a `<nav>` wrapping the ordered list of crumbs. */
-export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(({ "aria-label": ariaLabel = "Breadcrumb", className, children, ...props }, ref) => (
-  <nav ref={ref} aria-label={ariaLabel} className={className} {...props}>
+export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(({ "aria-label": ariaLabel = "Breadcrumb", children, ...props }, ref) => (
+  <nav ref={ref} aria-label={ariaLabel} {...props}>
     <ol className="flex items-center">{children}</ol>
   </nav>
 ));
 Breadcrumb.displayName = "Breadcrumb";
 
-export interface BreadcrumbItemProps extends Omit<React.ComponentPropsWithoutRef<"a">, "href"> {
+export interface BreadcrumbItemProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"a">, "href">> {
   /** Renders as the non-interactive current page (`aria-current="page"`) instead of a link. */
   current?: boolean;
   /** Destination for a navigable crumb. Ignored when `current`. */
@@ -34,7 +35,7 @@ export interface BreadcrumbItemProps extends Omit<React.ComponentPropsWithoutRef
 
 /** One step in the trail: a hoverable link, or the non-interactive current page. */
 export const BreadcrumbItem = React.forwardRef<HTMLAnchorElement | HTMLSpanElement, BreadcrumbItemProps>(
-  ({ current = false, href, icon, className, children, ...props }, ref) => {
+  ({ current = false, href, icon, children, ...props }, ref) => {
     const content = (
       <>
         {icon}
@@ -45,14 +46,14 @@ export const BreadcrumbItem = React.forwardRef<HTMLAnchorElement | HTMLSpanEleme
     return (
       <li className="inline-flex items-center">
         {current ? (
-          <span ref={ref as React.Ref<HTMLSpanElement>} aria-current="page" className={cn(crumbBaseClass, "text-primary", className)}>
+          <span ref={ref as React.Ref<HTMLSpanElement>} aria-current="page" className={cn(crumbBaseClass, "text-primary")}>
             {content}
           </span>
         ) : (
           <a
             ref={ref as React.Ref<HTMLAnchorElement>}
             href={href}
-            className={cn(crumbBaseClass, "cursor-pointer text-tertiary transition-colors hover:bg-layer-transparent-hover", className)}
+            className={cn(crumbBaseClass, "cursor-pointer text-tertiary transition-colors hover:bg-layer-transparent-hover")}
             {...props}
           >
             {content}
@@ -64,18 +65,18 @@ export const BreadcrumbItem = React.forwardRef<HTMLAnchorElement | HTMLSpanEleme
 );
 BreadcrumbItem.displayName = "BreadcrumbItem";
 
-export interface BreadcrumbSeparatorProps extends React.ComponentPropsWithoutRef<"li"> {}
+export interface BreadcrumbSeparatorProps extends NoClass<React.ComponentPropsWithoutRef<"li">> {}
 
 /**
  * The divider between crumbs. A fixed 24px-square node slot holding the given glyph (a chevron by
  * default); decorative, so it's removed from the accessibility tree.
  */
-export const BreadcrumbSeparator = React.forwardRef<HTMLLIElement, BreadcrumbSeparatorProps>(({ className, children, ...props }, ref) => (
+export const BreadcrumbSeparator = React.forwardRef<HTMLLIElement, BreadcrumbSeparatorProps>(({ children, ...props }, ref) => (
   <li
     ref={ref}
     aria-hidden
     role="presentation"
-    className={cn(nodeSlotClass, "size-6 text-icon-secondary [--node-size:var(--control-glyph-sm)]", className)}
+    className={cn(nodeSlotClass, "size-6 text-icon-secondary [--node-size:var(--control-glyph-sm)]")}
     {...props}
   >
     {children ?? <ChevronRight />}

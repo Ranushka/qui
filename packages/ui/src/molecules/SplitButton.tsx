@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { splitButtonFrameVariants, type SplitButtonSize, type SplitButtonVariant } from "../lib/split-button-frame";
 import { Button } from "../atoms/Button";
 import { IconButton } from "../atoms/IconButton";
@@ -9,7 +10,7 @@ import { MenuTrigger } from "./Menu";
 
 export type { SplitButtonSize, SplitButtonVariant };
 
-export interface SplitButtonProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onClick"> {
+export interface SplitButtonProps extends NoClass<Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onClick">> {
   /** Neutral look of both segments — separate pills (`primary`) or one connected outline (`secondary`). @default "primary" */
   variant?: SplitButtonVariant;
   /** Control-ladder rung of both segments. @default "md" */
@@ -48,10 +49,10 @@ export interface SplitButtonProps extends Omit<React.HTMLAttributes<HTMLDivEleme
  */
 export const SplitButton = React.forwardRef<HTMLDivElement, SplitButtonProps>(
   (
-    { variant = "primary", size = "md", label, onClick, icon, iconPosition, loading = false, disabled, type = "button", menuLabel = "More options", className, ...props },
+    { variant = "primary", size = "md", label, onClick, icon, iconPosition, loading = false, disabled, type = "button", menuLabel = "More options", ...props },
     ref
   ) => (
-    <div ref={ref} className={cn(splitButtonFrameVariants({ variant }), className)} {...props}>
+    <div ref={ref} className={cn(splitButtonFrameVariants({ variant }))} {...props}>
       <Button variant={variant} size={size} label={label} onClick={onClick} icon={icon} iconPosition={iconPosition} loading={loading} disabled={disabled} type={type} />
       <MenuTrigger
         disabled={disabled || loading}

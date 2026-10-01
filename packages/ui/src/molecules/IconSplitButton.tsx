@@ -1,12 +1,13 @@
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { splitButtonFrameVariants, type SplitButtonSize, type SplitButtonVariant } from "../lib/split-button-frame";
 import { IconButton } from "../atoms/IconButton";
 import { Icon } from "../atoms/Icon";
 import { MenuTrigger } from "./Menu";
 
-export interface IconSplitButtonProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onClick" | "aria-label"> {
+export interface IconSplitButtonProps extends NoClass<Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onClick" | "aria-label">> {
   /** Neutral look of both segments — separate pills (`primary`) or one connected outline (`secondary`). @default "primary" */
   variant?: SplitButtonVariant;
   /** Control-ladder rung; both segments are the same square box. @default "md" */
@@ -35,10 +36,10 @@ export interface IconSplitButtonProps extends Omit<React.HTMLAttributes<HTMLDivE
  */
 export const IconSplitButton = React.forwardRef<HTMLDivElement, IconSplitButtonProps>(
   (
-    { variant = "primary", size = "md", icon, "aria-label": ariaLabel, onClick, loading = false, disabled, type = "button", menuLabel = "More options", className, ...props },
+    { variant = "primary", size = "md", icon, "aria-label": ariaLabel, onClick, loading = false, disabled, type = "button", menuLabel = "More options", ...props },
     ref
   ) => (
-    <div ref={ref} className={cn(splitButtonFrameVariants({ variant }), className)} {...props}>
+    <div ref={ref} className={cn(splitButtonFrameVariants({ variant }))} {...props}>
       <IconButton variant={variant} size={size} icon={icon} aria-label={ariaLabel} onClick={onClick} loading={loading} disabled={disabled} type={type} />
       <MenuTrigger
         disabled={disabled || loading}

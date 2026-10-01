@@ -2,6 +2,7 @@ import * as React from "react";
 import { Collapsible as BaseCollapsible } from "@base-ui/react/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { DisclosureIndicator, collapsiblePanelClass } from "../lib/disclosure";
 
 /** Marks the elements a `List` roves between (row primaries and opted-in sibling controls). */
@@ -49,7 +50,7 @@ function isNavigable(el: HTMLElement) {
   return !(el as HTMLButtonElement).disabled && el.getAttribute("aria-disabled") !== "true" && !el.closest("[hidden],[inert]");
 }
 
-export interface ListProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof listVariants> {
+export interface ListProps extends NoClass<React.HTMLAttributes<HTMLDivElement>>, VariantProps<typeof listVariants> {
   /** Whether arrow keys wrap from the last row to the first (and back). @default true */
   loopFocus?: boolean;
 }
@@ -61,7 +62,7 @@ export interface ListProps extends React.HTMLAttributes<HTMLDivElement>, Variant
  * document order, `Home`/`End` jump to the ends. A nested `List` is its own tab stop. Role-flexible:
  * pass the `role`/`aria-*` the context calls for. `gap` sets row spacing.
  */
-export const List = React.forwardRef<HTMLDivElement, ListProps>(({ gap, loopFocus = true, className, onKeyDown, onFocus, ...props }, ref) => {
+export const List = React.forwardRef<HTMLDivElement, ListProps>(({ gap, loopFocus = true, onKeyDown, onFocus, ...props }, ref) => {
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const activeRef = React.useRef<HTMLElement | null>(null);
 
@@ -107,7 +108,7 @@ export const List = React.forwardRef<HTMLDivElement, ListProps>(({ gap, loopFocu
     <div
       ref={setRoot}
       {...{ [ROOT_ATTR]: "" }}
-      className={cn(listVariants({ gap }), className)}
+      className={cn(listVariants({ gap }))}
       onFocus={(event) => {
         const target = event.target as HTMLElement;
         if (target.hasAttribute(ROVING_ATTR) && target.parentElement?.closest(`[${ROOT_ATTR}]`) === rootRef.current) {
@@ -138,29 +139,29 @@ export const List = React.forwardRef<HTMLDivElement, ListProps>(({ gap, loopFocu
 });
 List.displayName = "List";
 
-export interface ListItemProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof listItemVariants> {}
+export interface ListItemProps extends NoClass<React.HTMLAttributes<HTMLDivElement>>, VariantProps<typeof listItemVariants> {}
 
 /**
  * A row wrapper carrying the row chrome (hover/pressed fill, current-page fill, focus ring for its
  * primary). Holds one `ListItemLink`/`ListItemButton` plus optional sibling controls. `level`
  * (1–5) indents nested rows; `density` sets the label/counter text scale.
  */
-export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(({ level, density, className, ...props }, ref) => (
-  <div ref={ref} className={cn(listItemVariants({ level, density }), className)} {...props} />
+export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(({ level, density, ...props }, ref) => (
+  <div ref={ref} className={cn(listItemVariants({ level, density }))} {...props} />
 ));
 ListItem.displayName = "ListItem";
 
 /** The row label — fills the remaining width and truncates. */
-export const ListItemLabel = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(({ className, ...props }, ref) => (
-  <span ref={ref} className={cn("min-w-0 flex-1 truncate", className)} {...props} />
+export const ListItemLabel = React.forwardRef<HTMLSpanElement, NoClass<React.HTMLAttributes<HTMLSpanElement>>>(({ ...props }, ref) => (
+  <span ref={ref} className={cn("min-w-0 flex-1 truncate")} {...props} />
 ));
 ListItemLabel.displayName = "ListItemLabel";
 
 /** A trailing count chip (e.g. unread items). Inherits the row's density type; color stays pinned. */
-export const ListItemCounter = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(({ className, ...props }, ref) => (
+export const ListItemCounter = React.forwardRef<HTMLSpanElement, NoClass<React.HTMLAttributes<HTMLSpanElement>>>(({ ...props }, ref) => (
   <span
     ref={ref}
-    className={cn("flex shrink-0 items-center justify-center rounded-sm bg-layer-3 px-0.5 leading-none text-label-grey-text", className)}
+    className={cn("flex shrink-0 items-center justify-center rounded-sm bg-layer-3 px-0.5 leading-none text-label-grey-text")}
     {...props}
   />
 ));
@@ -189,32 +190,32 @@ function ListItemContent({ startIcon, label, count, endIcon }: ListItemContentPr
   );
 }
 
-export interface ListItemLinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "children">, ListItemContentProps {}
+export interface ListItemLinkProps extends NoClass<Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "children">>, ListItemContentProps {}
 
 /**
  * A row's primary navigation target — an `<a>` in the list's roving order. Mark the current page
  * with `aria-current="page"`. Keep sibling controls (`ListItemDisclosureTrigger`) outside it.
  */
-export const ListItemLink = React.forwardRef<HTMLAnchorElement, ListItemLinkProps>(({ startIcon, label, count, endIcon, className, ...props }, ref) => (
-  <a ref={ref} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass, className)} {...props}>
+export const ListItemLink = React.forwardRef<HTMLAnchorElement, ListItemLinkProps>(({ startIcon, label, count, endIcon, ...props }, ref) => (
+  <a ref={ref} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass)} {...props}>
     <ListItemContent startIcon={startIcon} label={label} count={count} endIcon={endIcon} />
   </a>
 ));
 ListItemLink.displayName = "ListItemLink";
 
-export interface ListItemButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">, ListItemContentProps {}
+export interface ListItemButtonProps extends NoClass<Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">>, ListItemContentProps {}
 
 /** A row's primary action — a `<button>` in the list's roving order. Keep sibling controls outside it. */
 export const ListItemButton = React.forwardRef<HTMLButtonElement, ListItemButtonProps>(
-  ({ startIcon, label, count, endIcon, type = "button", className, ...props }, ref) => (
-    <button ref={ref} type={type} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass, className)} {...props}>
+  ({ startIcon, label, count, endIcon, type = "button", ...props }, ref) => (
+    <button ref={ref} type={type} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass)} {...props}>
       <ListItemContent startIcon={startIcon} label={label} count={count} endIcon={endIcon} />
     </button>
   )
 );
 ListItemButton.displayName = "ListItemButton";
 
-export interface ListItemDisclosureTriggerProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Trigger>, "children"> {}
+export interface ListItemDisclosureTriggerProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Trigger>, "children">> {}
 
 /**
  * A row's expand/collapse caret — Base UI's `Collapsible.Trigger`, joined to the list's roving
@@ -222,20 +223,20 @@ export interface ListItemDisclosureTriggerProps extends Omit<React.ComponentProp
  * `CollapsibleRoot` that also wraps a `CollapsiblePanel` holding the nested `List`. Give it an
  * `aria-label`.
  */
-export const ListItemDisclosureTrigger = React.forwardRef<HTMLButtonElement, ListItemDisclosureTriggerProps>(({ className, ...props }, ref) => (
-  <BaseCollapsible.Trigger ref={ref} {...{ [ROVING_ATTR]: "" }} className={cn(listItemDisclosureTriggerClass, className)} {...props}>
+export const ListItemDisclosureTrigger = React.forwardRef<HTMLButtonElement, ListItemDisclosureTriggerProps>(({ ...props }, ref) => (
+  <BaseCollapsible.Trigger ref={ref} {...{ [ROVING_ATTR]: "" }} className={cn(listItemDisclosureTriggerClass)} {...props}>
     <DisclosureIndicator />
   </BaseCollapsible.Trigger>
 ));
 ListItemDisclosureTrigger.displayName = "ListItemDisclosureTrigger";
 
 /** A static, non-interactive heading naming a group of rows (settings-style sidebars). */
-export const ListSectionHeading = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex h-7 w-full items-center px-2 py-1 text-body-xs-semibold text-tertiary", className)} {...props} />
+export const ListSectionHeading = React.forwardRef<HTMLDivElement, NoClass<React.HTMLAttributes<HTMLDivElement>>>(({ ...props }, ref) => (
+  <div ref={ref} className={cn("flex h-7 w-full items-center px-2 py-1 text-body-xs-semibold text-tertiary")} {...props} />
 ));
 ListSectionHeading.displayName = "ListSectionHeading";
 
-export interface ListSectionProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Root>, "children"> {
+export interface ListSectionProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCollapsible.Root>, "children">> {
   /** The section heading text. */
   label: React.ReactNode;
   /** Shows the chevron at the heading's inline-end. @default true */
@@ -249,8 +250,8 @@ export interface ListSectionProps extends Omit<React.ComponentPropsWithoutRef<ty
  * inline-end (pointing inline-end while collapsed, down when open). Drive it with `defaultOpen`
  * or `open` + `onOpenChange`.
  */
-export const ListSection = React.forwardRef<HTMLDivElement, ListSectionProps>(({ label, indicator = true, className, children, ...props }, ref) => (
-  <BaseCollapsible.Root ref={ref} className={cn("w-full", className)} {...props}>
+export const ListSection = React.forwardRef<HTMLDivElement, ListSectionProps>(({ label, indicator = true, children, ...props }, ref) => (
+  <BaseCollapsible.Root ref={ref} className={cn("w-full")} {...props}>
     <BaseCollapsible.Trigger className={listSectionTriggerClass}>
       {label}
       {indicator ? <DisclosureIndicator /> : null}

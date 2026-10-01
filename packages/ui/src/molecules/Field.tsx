@@ -2,6 +2,7 @@ import * as React from "react";
 import { Field as BaseField } from "@base-ui/react/field";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { FieldHelperText, FieldRequiredMarker, fieldDescriptionVariants, fieldLabelVariants, type FieldSize } from "../lib/field-parts";
 
 export type { FieldSize } from "../lib/field-parts";
@@ -50,9 +51,7 @@ const fieldControlContentVariants = cva("flex flex-col", {
   ],
 });
 
-export interface FieldProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseField.Root>, "children">,
-    VariantProps<typeof fieldRootVariants> {
+export interface FieldProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseField.Root>, "children">>, VariantProps<typeof fieldRootVariants> {
   /** Label naming the control. Auto-associated with it via Base UI's `Field.Label`. */
   label?: React.ReactNode;
   /** Shows a required marker after the label. Purely visual — set `required` on the control itself too. */
@@ -69,7 +68,6 @@ export interface FieldProps
    * own validation channel stays live — a failed `validate`/`required` still renders its message.
    */
   error?: React.ReactNode;
-  className?: string;
 }
 
 /**
@@ -83,14 +81,14 @@ export interface FieldProps
  * their control and are the usual entry point.
  */
 export const Field = React.forwardRef<HTMLDivElement, FieldProps>(
-  ({ size, orientation, label, required, description, children, hint, error, invalid, className, ...props }, ref) => {
+  ({ size, orientation, label, required, description, children, hint, error, invalid, ...props }, ref) => {
     const fieldSize: FieldSize = size ?? "lg";
     const layout = orientation ?? "vertical";
     return (
       <BaseField.Root
         ref={ref}
         invalid={invalid ?? (error != null ? true : undefined)}
-        className={cn(fieldRootVariants({ size: fieldSize, orientation: layout }), className)}
+        className={cn(fieldRootVariants({ size: fieldSize, orientation: layout }))}
         {...props}
       >
         {label != null || description != null ? (

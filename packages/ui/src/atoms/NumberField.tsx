@@ -3,6 +3,7 @@ import { NumberField as BaseNumberField } from "@base-ui/react/number-field";
 import { Minus, Plus } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 import { controlGroupClass } from "../lib/control-group";
 import { controlInputClass } from "../lib/control-input";
 import { IconButton } from "./IconButton";
@@ -36,9 +37,7 @@ const numberFieldInputVariants = cva(cn(controlInputClass, "field-sizing-content
 /** IconButton `size` that keeps steppers flush inside a field of the given `size`. */
 const stepperSize = { sm: "xs", md: "sm", lg: "md" } as const;
 
-export interface NumberFieldProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BaseNumberField.Root>, "render" | "children">,
-    VariantProps<typeof numberFieldGroupVariants> {
+export interface NumberFieldProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseNumberField.Root>, "render" | "children">>, VariantProps<typeof numberFieldGroupVariants> {
   "aria-label"?: string;
   "aria-labelledby"?: string;
 }

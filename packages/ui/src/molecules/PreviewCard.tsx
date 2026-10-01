@@ -1,6 +1,8 @@
 import * as React from "react";
 import { PreviewCard as BasePreviewCard } from "@base-ui/react/preview-card";
 import { cn } from "../lib/cn";
+import { textLinkBaseClass, textLinkPalette } from "../lib/text-link-chrome";
+import type { NoClass, NoStyle } from "../lib/no-class";
 
 /** Same raised surface as `Popover`'s compact `text` variant: 296px card, overlay elevation, scale-in. */
 const previewCardPopupClass = cn(
@@ -19,16 +21,16 @@ export const PreviewCard = BasePreviewCard.Root;
  */
 export const createPreviewCardHandle = BasePreviewCard.createHandle;
 
-export interface PreviewCardTriggerProps extends React.ComponentPropsWithoutRef<typeof BasePreviewCard.Trigger> {}
+export interface PreviewCardTriggerProps extends NoStyle<React.ComponentPropsWithoutRef<typeof BasePreviewCard.Trigger>> {}
 
 /** The link that opens the card on hover or focus. Renders an `<a>`; use `render` to project it onto your own link. */
+/** The link that opens the card on hover/focus. Wears the inline text-link look by default. */
 export const PreviewCardTrigger = React.forwardRef<HTMLAnchorElement, PreviewCardTriggerProps>((props, ref) => (
-  <BasePreviewCard.Trigger ref={ref} {...props} />
+  <BasePreviewCard.Trigger ref={ref} className={cn(textLinkBaseClass, textLinkPalette.primary, "underline underline-offset-2")} {...props} />
 ));
 PreviewCardTrigger.displayName = "PreviewCardTrigger";
 
-export interface PreviewCardContentProps
-  extends Pick<
+export interface PreviewCardContentProps extends NoClass<Pick<
       React.ComponentPropsWithoutRef<typeof BasePreviewCard.Positioner>,
       | "side"
       | "sideOffset"
@@ -41,8 +43,7 @@ export interface PreviewCardContentProps
       | "positionMethod"
       | "anchor"
       | "disableAnchorTracking"
-    >,
-    React.ComponentPropsWithoutRef<typeof BasePreviewCard.Popup> {}
+    >>, NoClass<React.ComponentPropsWithoutRef<typeof BasePreviewCard.Popup>> {}
 
 /**
  * The anchored card: `Portal` → `Positioner` → the styled popup. Positioning props go to the
@@ -63,7 +64,7 @@ export const PreviewCardContent = React.forwardRef<HTMLDivElement, PreviewCardCo
       positionMethod,
       anchor,
       disableAnchorTracking,
-      className,
+      
       ...props
     },
     ref
@@ -83,7 +84,7 @@ export const PreviewCardContent = React.forwardRef<HTMLDivElement, PreviewCardCo
         disableAnchorTracking={disableAnchorTracking}
         className="z-50 outline-none"
       >
-        <BasePreviewCard.Popup ref={ref} className={cn(previewCardPopupClass, className)} {...props} />
+        <BasePreviewCard.Popup ref={ref} className={cn(previewCardPopupClass)} {...props} />
       </BasePreviewCard.Positioner>
     </BasePreviewCard.Portal>
   )
@@ -91,26 +92,26 @@ export const PreviewCardContent = React.forwardRef<HTMLDivElement, PreviewCardCo
 PreviewCardContent.displayName = "PreviewCardContent";
 
 /** A full-width thumbnail at the top of the card; clips to the card's top corners. Height comes from the image or `height`. */
-export const PreviewCardImage = React.forwardRef<HTMLImageElement, React.ImgHTMLAttributes<HTMLImageElement>>(({ className, alt = "", ...props }, ref) => (
-  <img ref={ref} alt={alt} className={cn("w-full overflow-hidden rounded-t-lg object-cover", className)} {...props} />
+export const PreviewCardImage = React.forwardRef<HTMLImageElement, NoClass<React.ImgHTMLAttributes<HTMLImageElement>>>(({ alt = "", ...props }, ref) => (
+  <img ref={ref} alt={alt} className={cn("w-full overflow-hidden rounded-t-lg object-cover")} {...props} />
 ));
 PreviewCardImage.displayName = "PreviewCardImage";
 
 /** The padded text column beneath the (optional) image. */
-export const PreviewCardBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex flex-col gap-1 px-3 py-2", className)} {...props} />
+export const PreviewCardBody = React.forwardRef<HTMLDivElement, NoClass<React.HTMLAttributes<HTMLDivElement>>>(({ ...props }, ref) => (
+  <div ref={ref} className={cn("flex flex-col gap-1 px-3 py-2")} {...props} />
 ));
 PreviewCardBody.displayName = "PreviewCardBody";
 
 /** A row pairing a leading glyph (type icon, project emoji) with an identifier label or the title. */
-export const PreviewCardEyebrow = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex items-center gap-2 [--node-size:var(--control-glyph-md)]", className)} {...props} />
+export const PreviewCardEyebrow = React.forwardRef<HTMLDivElement, NoClass<React.HTMLAttributes<HTMLDivElement>>>(({ ...props }, ref) => (
+  <div ref={ref} className={cn("flex items-center gap-2 [--node-size:var(--control-glyph-md)]")} {...props} />
 ));
 PreviewCardEyebrow.displayName = "PreviewCardEyebrow";
 
 /** Muted identifier text inside a `PreviewCardEyebrow`, e.g. an issue key. */
-export const PreviewCardEyebrowLabel = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(({ className, ...props }, ref) => (
-  <span ref={ref} className={cn("min-w-0 flex-1 truncate text-body-xs-regular text-tertiary", className)} {...props} />
+export const PreviewCardEyebrowLabel = React.forwardRef<HTMLSpanElement, NoClass<React.HTMLAttributes<HTMLSpanElement>>>(({ ...props }, ref) => (
+  <span ref={ref} className={cn("min-w-0 flex-1 truncate text-body-xs-regular text-tertiary")} {...props} />
 ));
 PreviewCardEyebrowLabel.displayName = "PreviewCardEyebrowLabel";
 
@@ -118,12 +119,12 @@ PreviewCardEyebrowLabel.displayName = "PreviewCardEyebrowLabel";
  * The card's heading: one line, truncated. When `children` is a string it doubles as a native
  * `title` so hover recovers the full text (pass `title` to override, `title=""` to suppress).
  */
-export const PreviewCardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, title, children, ...props }, ref) => (
+export const PreviewCardTitle = React.forwardRef<HTMLHeadingElement, NoClass<React.HTMLAttributes<HTMLHeadingElement>>>(
+  ({ title, children, ...props }, ref) => (
     <h2
       ref={ref}
       title={title !== undefined ? title : typeof children === "string" ? children : undefined}
-      className={cn("min-w-0 truncate text-body-sm-medium text-primary", className)}
+      className={cn("min-w-0 truncate text-body-sm-medium text-primary")}
       {...props}
     >
       {children}
@@ -133,20 +134,20 @@ export const PreviewCardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLA
 PreviewCardTitle.displayName = "PreviewCardTitle";
 
 /** Supporting copy beneath the title. */
-export const PreviewCardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("text-body-xs-regular text-secondary", className)} {...props} />
+export const PreviewCardDescription = React.forwardRef<HTMLParagraphElement, NoClass<React.HTMLAttributes<HTMLParagraphElement>>>(({ ...props }, ref) => (
+  <p ref={ref} className={cn("text-body-xs-regular text-secondary")} {...props} />
 ));
 PreviewCardDescription.displayName = "PreviewCardDescription";
 
 /** A wrapping row of property chips (`Pill`, `Avatar`, `Badge`, …). */
-export const PreviewCardPropertyGroup = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex flex-wrap items-center gap-2", className)} {...props} />
+export const PreviewCardPropertyGroup = React.forwardRef<HTMLDivElement, NoClass<React.HTMLAttributes<HTMLDivElement>>>(({ ...props }, ref) => (
+  <div ref={ref} className={cn("flex flex-wrap items-center gap-2")} {...props} />
 ));
 PreviewCardPropertyGroup.displayName = "PreviewCardPropertyGroup";
 
 /** A muted footer caption — a source domain, a relative timestamp. */
-export const PreviewCardMeta = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("text-caption-md-regular text-tertiary", className)} {...props} />
+export const PreviewCardMeta = React.forwardRef<HTMLDivElement, NoClass<React.HTMLAttributes<HTMLDivElement>>>(({ ...props }, ref) => (
+  <div ref={ref} className={cn("text-caption-md-regular text-tertiary")} {...props} />
 ));
 PreviewCardMeta.displayName = "PreviewCardMeta";
 
@@ -154,7 +155,7 @@ PreviewCardMeta.displayName = "PreviewCardMeta";
 <p className="text-body-sm-regular text-secondary">
   Blocked by{" "}
   <QUI.PreviewCard>
-    <QUI.PreviewCardTrigger href="#" className="text-accent-primary underline underline-offset-2">
+    <QUI.PreviewCardTrigger href="#">
       WEB-142
     </QUI.PreviewCardTrigger>
     <QUI.PreviewCardContent>

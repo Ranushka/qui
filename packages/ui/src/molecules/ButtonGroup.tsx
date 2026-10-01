@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /**
  * The connected frame: one raised surface, one outer border, hairline dividers between segments,
@@ -38,7 +39,7 @@ type ButtonGroupSize = NonNullable<VariantProps<typeof buttonGroupButtonVariants
 /** Shares the group's `size` with every segment inside, so they pack to match without repeating it. */
 const ButtonGroupSizeContext = React.createContext<ButtonGroupSize | undefined>(undefined);
 
-export interface ButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ButtonGroupProps extends NoClass<React.HTMLAttributes<HTMLDivElement>> {
   /** Size of every `ButtonGroupButton` inside (each can still override it). @default "sm" */
   size?: ButtonGroupSize;
 }
@@ -48,14 +49,14 @@ export interface ButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
  * actions). It's a plain `role="group"` frame — there's no roving focus or selection; each segment
  * is an independent button. Name the set for assistive tech via `aria-label`.
  */
-export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(({ size = "sm", className, ...props }, ref) => (
+export const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(({ size = "sm", ...props }, ref) => (
   <ButtonGroupSizeContext.Provider value={size}>
-    <div ref={ref} role="group" className={cn(buttonGroupClass, className)} {...props} />
+    <div ref={ref} role="group" className={cn(buttonGroupClass)} {...props} />
   </ButtonGroupSizeContext.Provider>
 ));
 ButtonGroup.displayName = "ButtonGroup";
 
-export interface ButtonGroupButtonProps extends Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "type"> {
+export interface ButtonGroupButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "type">> {
   /** Visible segment label. */
   label: string;
   /** Icon beside the label (inline-start by default), e.g. `<Icon icon={Plus} />`. */
@@ -70,10 +71,10 @@ export interface ButtonGroupButtonProps extends Omit<React.ComponentPropsWithout
 
 /** One segment of a `ButtonGroup`: Base UI's `Button` with an optional icon beside its label. */
 export const ButtonGroupButton = React.forwardRef<HTMLButtonElement, ButtonGroupButtonProps>(
-  ({ label, icon, iconPosition = "start", size, type = "button", className, ...props }, ref) => {
+  ({ label, icon, iconPosition = "start", size, type = "button", ...props }, ref) => {
     const groupSize = React.useContext(ButtonGroupSizeContext);
     return (
-      <BaseButton ref={ref} type={type} className={cn(buttonGroupButtonVariants({ size: size ?? groupSize }), className)} {...props}>
+      <BaseButton ref={ref} type={type} className={cn(buttonGroupButtonVariants({ size: size ?? groupSize }))} {...props}>
         {iconPosition === "start" ? icon : null}
         {label}
         {iconPosition === "end" ? icon : null}

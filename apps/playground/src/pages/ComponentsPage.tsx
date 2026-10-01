@@ -165,7 +165,7 @@ export function ComponentsPage() {
   <QUI.Checkbox label="Disabled checked" disabled defaultChecked />
 </div>
           </Section>
-          <Section title="CheckboxGroup" align="block" props={{"density":["comfortable","compact"],"disabled":"boolean"}}>
+          <Section title="CheckboxGroup" align="block" props={{"density":["comfortable","compact"],"orientation":["vertical","horizontal"],"disabled":"boolean"}}>
 <div className="flex flex-wrap gap-8 p-4">
   <QUI.CheckboxGroup aria-label="Notifications" defaultValue={["email"]}>
     <QUI.Checkbox value="email" label="Email" />
@@ -292,14 +292,14 @@ export function ComponentsPage() {
 </div>
           </Section>
           <Section title="Radio" align="row" props={{"disabled":"boolean"}}>
-<QUI.RadioGroup defaultValue="a" className="flex-row gap-4">
+<QUI.RadioGroup defaultValue="a" orientation="horizontal">
   <QUI.Radio value="a" aria-label="Option A" />
   <QUI.Radio value="b" aria-label="Option B" />
   <QUI.Radio value="c" aria-label="Option C (disabled)" disabled />
 </QUI.RadioGroup>
           </Section>
-          <Section title="RadioGroup" align="block" props={{"density":["comfortable","compact"]}}>
-<QUI.RadioGroup defaultValue="md" className="p-4">
+          <Section title="RadioGroup" align="block" props={{"density":["comfortable","compact"],"orientation":["vertical","horizontal"]}}>
+<QUI.RadioGroup defaultValue="md">
   <QUI.RadioOption value="sm" label="Small" />
   <QUI.RadioOption value="md" label="Medium" />
   <QUI.RadioOption value="lg" label="Large" />
@@ -538,7 +538,7 @@ export function ComponentsPage() {
           <Section title="Autocomplete" align="block" props={{"size":["md","lg","xl","2xl"],"disabled":"boolean","autoHighlight":["true","always"],"openOnInputClick":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <QUI.Autocomplete items={["Afghanistan", "Albania", "Algeria", "Andorra", "Angola"]}>
-    <QUI.AutocompleteInputGroup placeholder="Search countries…" className="w-64" />
+    <div className="w-64"><QUI.AutocompleteInputGroup placeholder="Search countries…" /></div>
     <QUI.AutocompleteContent>
       {(item) => <QUI.AutocompleteItem key={item} value={item}>{item}</QUI.AutocompleteItem>}
     </QUI.AutocompleteContent>
@@ -627,13 +627,13 @@ export function ComponentsPage() {
           <Section title="Combobox" align="block" props={{"size":["md","lg","xl","2xl"],"clearable":"boolean","disabled":"boolean","multiple":"boolean","autoHighlight":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <QUI.Combobox items={["Apple", "Banana", "Cherry", "Date", "Elderberry"]} defaultValue="Banana">
-    <QUI.ComboboxInputGroup placeholder="Search fruit…" className="w-64" />
+    <div className="w-64"><QUI.ComboboxInputGroup placeholder="Search fruit…" /></div>
     <QUI.ComboboxContent>
       {(item) => <QUI.ComboboxItem key={item} value={item}>{item}</QUI.ComboboxItem>}
     </QUI.ComboboxContent>
   </QUI.Combobox>
   <QUI.Combobox items={["Apple", "Banana", "Cherry"]} multiple defaultValue={["Apple"]}>
-    <QUI.ComboboxInputGroup placeholder="Search fruit…" className="w-64" />
+    <div className="w-64"><QUI.ComboboxInputGroup placeholder="Search fruit…" /></div>
     <QUI.ComboboxContent>
       {(item) => <QUI.ComboboxItem key={item} value={item}>{item}</QUI.ComboboxItem>}
     </QUI.ComboboxContent>
@@ -649,8 +649,10 @@ export function ComponentsPage() {
           </Section>
           <Section title="ContextMenu" align="block" props={{"ContextMenuItem.variant":["neutral","accent","danger"],"ContextMenuItem.selected":"boolean"}}>
 <QUI.ContextMenu>
-  <QUI.ContextMenuTrigger className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-xs-regular text-tertiary">
+  <QUI.ContextMenuTrigger>
+    <div className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-xs-regular text-tertiary">
     Right-click this area
+  </div>
   </QUI.ContextMenuTrigger>
   <QUI.ContextMenuContent>
     <QUI.ContextMenuItem icon={<QUI.Icon icon={Icons.Pencil} />}>Rename</QUI.ContextMenuItem>
@@ -747,7 +749,8 @@ export function ComponentsPage() {
 </div>
           </Section>
           <Section title="Form" align="block" props={{"validationMode":["onSubmit","onBlur","onChange"],"FormBody.layout":["single","multi"],"FormActions.layout":["inline","stretch"]}}>
-<QUI.Form className="max-w-md p-4" errors={{ email: "This email is already registered." }}>
+<div className="max-w-md p-4">
+<QUI.Form errors={{ email: "This email is already registered." }}>
   <QUI.FormBody>
     <QUI.InputField name="name" label="Full name" placeholder="Jane Doe" />
     <QUI.InputField name="email" label="Email" placeholder="you@company.com" />
@@ -758,6 +761,7 @@ export function ComponentsPage() {
     <QUI.Button type="submit" label="Invite" />
   </QUI.FormActions>
 </QUI.Form>
+</div>
           </Section>
           <Section title="IconSplitButton" align="block" props={{"variant":["primary","secondary"],"size":["sm","md","lg"],"loading":"boolean","disabled":"boolean"}}>
 <div className="flex flex-wrap items-center gap-3 p-4">
@@ -916,7 +920,7 @@ export function ComponentsPage() {
 <p className="text-body-sm-regular text-secondary">
   Blocked by{" "}
   <QUI.PreviewCard>
-    <QUI.PreviewCardTrigger href="#" className="text-accent-primary underline underline-offset-2">
+    <QUI.PreviewCardTrigger href="#">
       WEB-142
     </QUI.PreviewCardTrigger>
     <QUI.PreviewCardContent>
@@ -979,7 +983,7 @@ export function ComponentsPage() {
           <Section title="Select" align="block" props={{"size":["md","lg","xl","2xl"],"disabled":"boolean","required":"boolean","readOnly":"boolean","multiple":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <QUI.Select items={[{ label: "Backlog", value: "backlog" }, { label: "In Progress", value: "in-progress" }, { label: "Done", value: "done" }]} defaultValue="backlog">
-    <QUI.SelectTrigger placeholder="Select a status" className="w-56" />
+    <div className="w-56"><QUI.SelectTrigger placeholder="Select a status" /></div>
     <QUI.SelectContent>
       <QUI.SelectGroup>
         <QUI.SelectGroupLabel>Status</QUI.SelectGroupLabel>
@@ -991,7 +995,7 @@ export function ComponentsPage() {
     </QUI.SelectContent>
   </QUI.Select>
   <QUI.Select disabled>
-    <QUI.SelectTrigger placeholder="Disabled" className="w-56" />
+    <div className="w-56"><QUI.SelectTrigger placeholder="Disabled" /></div>
     <QUI.SelectContent>
       <QUI.SelectItem value="a">Option A</QUI.SelectItem>
     </QUI.SelectContent>

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /**
  * An 8px filled disc drawn as an `::after` pseudo-element, centred inside a `--node-size` box so the
@@ -14,7 +15,7 @@ const swatchVariants = cva(
   )
 );
 
-export interface SwatchProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
+export interface SwatchProps extends NoClass<Omit<React.HTMLAttributes<HTMLSpanElement>, "children">> {
   /**
    * Any CSS color for the disc (`"#3f76ff"`, `"oklch(...)"`, `"var(--some-token)"`). Colour here is
    * data — a label's or state's own colour — rather than a design token, so it's a prop.
@@ -27,12 +28,12 @@ export interface SwatchProps extends Omit<React.HTMLAttributes<HTMLSpanElement>,
  * `icon`, a select option — and sizes itself off the inherited `--node-size`. Decorative
  * (`aria-hidden`): the text next to it carries the meaning.
  */
-export const Swatch = React.forwardRef<HTMLSpanElement, SwatchProps>(({ fill, className, style, ...props }, ref) => (
+export const Swatch = React.forwardRef<HTMLSpanElement, SwatchProps>(({ fill, ...props }, ref) => (
   <span
     ref={ref}
     aria-hidden
-    className={cn(swatchVariants(), className)}
-    style={{ ...style, ["--swatch-fill" as string]: fill } as React.CSSProperties}
+    className={cn(swatchVariants())}
+    style={{ ["--swatch-fill" as string]: fill } as React.CSSProperties}
     {...props}
   />
 ));

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Radio as BaseRadio } from "@base-ui/react/radio";
 import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /**
  * The radio CIRCLE look: a 16px ring stroked with `currentColor` so the ring and inner dot recolor
@@ -18,23 +19,22 @@ const radioClass = cn(
   "data-disabled:data-checked:text-icon-disabled"
 );
 
-export interface RadioProps extends React.ComponentPropsWithoutRef<typeof BaseRadio.Root> {
-  className?: string;
+export interface RadioProps extends NoClass<React.ComponentPropsWithoutRef<typeof BaseRadio.Root>> {
 }
 
 /**
  * A single radio option: an empty ring that fills with a dot when selected. Must be rendered
  * inside a `RadioGroup`. Use `disabled` for a non-editable (read-only) option.
  */
-export const Radio = React.forwardRef<HTMLButtonElement, RadioProps>(({ className, ...props }, ref) => (
-  <BaseRadio.Root ref={ref} className={cn(radioClass, className)} {...props}>
+export const Radio = React.forwardRef<HTMLButtonElement, RadioProps>(({ ...props }, ref) => (
+  <BaseRadio.Root ref={ref} className={cn(radioClass)} {...props}>
     <BaseRadio.Indicator className="size-2 rounded-full bg-current" />
   </BaseRadio.Root>
 ));
 Radio.displayName = "Radio";
 
 /* __DOC
-<QUI.RadioGroup defaultValue="a" className="flex-row gap-4">
+<QUI.RadioGroup defaultValue="a" orientation="horizontal">
   <QUI.Radio value="a" aria-label="Option A" />
   <QUI.Radio value="b" aria-label="Option B" />
   <QUI.Radio value="c" aria-label="Option C (disabled)" disabled />
