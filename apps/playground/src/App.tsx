@@ -45,11 +45,11 @@ export function App() {
             </QUI.Inline>
           </QUI.Box>
           {page.fullBleed ? (
-            <QUI.Box as="main" grow>
+            <QUI.Box as="main" key={page.path} grow>
               <Page />
             </QUI.Box>
           ) : (
-            <QUI.Box as="main" grow overflow="auto" padding="8">
+            <QUI.Box as="main" key={page.path} grow overflow="auto" padding="8">
               <Page />
             </QUI.Box>
           )}

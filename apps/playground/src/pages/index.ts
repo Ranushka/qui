@@ -1,5 +1,6 @@
 import type * as React from "react";
 import { ComponentsPage } from "./ComponentsPage";
+import { IconsPage } from "./IconsPage";
 import { WorkItemsPage } from "./WorkItemsPage";
 
 export type PlaygroundPage = {
@@ -14,6 +15,7 @@ export type PlaygroundPage = {
 /** Every playground page. Add a page here and it gets a nav tab and its own URL. */
 export const pages: PlaygroundPage[] = [
   { path: "/components", title: "Components", component: ComponentsPage },
+  { path: "/icons", title: "Icons", component: IconsPage },
   { path: "/examples/work-items", title: "Work items", component: WorkItemsPage, fullBleed: true },
 ];
 
