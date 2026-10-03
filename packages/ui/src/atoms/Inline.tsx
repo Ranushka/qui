@@ -1,7 +1,14 @@
 import * as React from "react";
 import { cn } from "../lib/cn";
-import { alignItemsClass, justifyClass, layoutClasses, listReset, type LayoutProps } from "../lib/layout";
+import { alignItemsClass, justifyClass, layoutClasses, listReset, type Breakpoint, type LayoutProps } from "../lib/layout";
 import { gapClass, gapYClass, type Space } from "../lib/space";
+
+// Spelled out so Tailwind sees every class.
+const stackBelowClass: Record<Breakpoint, string> = {
+  sm: "max-sm:flex-col max-sm:items-stretch",
+  md: "max-md:flex-col max-md:items-stretch",
+  lg: "max-lg:flex-col max-lg:items-stretch",
+};
 
 export type InlineProps = LayoutProps & {
   /** Space between children, from the spacing scale. @default "2" */
@@ -14,6 +21,8 @@ export type InlineProps = LayoutProps & {
   justify?: keyof typeof justifyClass;
   /** Let children flow onto more rows when they don't fit. Turn off for a single row where one child `grow`s and truncates. @default true */
   wrap?: boolean;
+  /** Turn the row into a full-width column on screens narrower than this breakpoint. */
+  stackBelow?: Breakpoint;
 };
 
 /**
@@ -21,7 +30,7 @@ export type InlineProps = LayoutProps & {
  * tag lists, label + value pairs. Use it instead of a `<div>` with flex classes.
  */
 export const Inline = React.forwardRef<HTMLElement, InlineProps>(
-  ({ gap = "2", rowGap, align = "center", justify, wrap = true, ...props }, ref) => {
+  ({ gap = "2", rowGap, align = "center", justify, wrap = true, stackBelow, ...props }, ref) => {
     const { Tag, classes, rest } = layoutClasses(props);
     return (
       <Tag
@@ -34,6 +43,7 @@ export const Inline = React.forwardRef<HTMLElement, InlineProps>(
           rowGap && gapYClass[rowGap],
           alignItemsClass[align],
           justify && justifyClass[justify],
+          stackBelow && stackBelowClass[stackBelow],
           ...classes
         )}
         {...rest}
@@ -70,11 +80,13 @@ DOC__ */
   "align": ["start", "center", "end", "stretch", "baseline"],
   "justify": ["start", "center", "end", "between"],
   "wrap": "boolean",
+  "stackBelow": ["sm", "md", "lg"],
   "padding / paddingX / paddingY": ["0", "0.5", "1", "1.5", "2", "3", "4", "5", "6", "8", "10", "12", "16"],
   "width": ["full", "auto", "3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],
   "maxWidth": ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],
   "grow": "boolean",
   "shrink": "boolean",
+  "hideBelow / hideAbove": ["sm", "md", "lg"],
   "as": ["div", "section", "article", "header", "footer", "main", "nav", "aside", "ul", "ol", "li", "form"]
 }
 PROPS__ */

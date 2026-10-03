@@ -29,6 +29,12 @@ const widthClass: Record<ContainerSize | "full" | "auto", string> = {
 
 const heightClass = { full: "h-full", screen: "h-dvh" } as const;
 
+/** Tailwind's breakpoints: sm = 40rem (640px), md = 48rem (768px), lg = 64rem (1024px). */
+export type Breakpoint = "sm" | "md" | "lg";
+
+const hideBelowClass: Record<Breakpoint, string> = { sm: "max-sm:hidden", md: "max-md:hidden", lg: "max-lg:hidden" };
+const hideAboveClass: Record<Breakpoint, string> = { sm: "sm:hidden", md: "md:hidden", lg: "lg:hidden" };
+
 const maxWidthClass: Record<ContainerSize, string> = {
   "3xs": "max-w-3xs", "2xs": "max-w-2xs", xs: "max-w-xs", sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-xl", "2xl": "max-w-2xl",
 };
@@ -56,6 +62,10 @@ export type LayoutProps = Omit<React.HTMLAttributes<HTMLElement>, "className" | 
   grow?: boolean;
   /** `false` keeps this element at its natural size when a Stack/Inline row runs out of space. @default true */
   shrink?: boolean;
+  /** Hide on screens narrower than this breakpoint, e.g. a sidebar that phones don't show. */
+  hideBelow?: Breakpoint;
+  /** Hide from this breakpoint up, e.g. a menu button that only phones need. */
+  hideAbove?: Breakpoint;
 };
 
 /** Splits the shared layout props off, returning their classes and the remaining props. */
@@ -73,6 +83,8 @@ export function layoutClasses<P extends LayoutProps>({
   height,
   grow,
   shrink = true,
+  hideBelow,
+  hideAbove,
   ...rest
 }: P) {
   const classes = [
@@ -88,6 +100,8 @@ export function layoutClasses<P extends LayoutProps>({
     height && heightClass[height],
     grow && "min-h-0 min-w-0 flex-1",
     !shrink && "shrink-0",
+    hideBelow && hideBelowClass[hideBelow],
+    hideAbove && hideAboveClass[hideAbove],
   ];
   return { Tag: (as ?? "div") as LayoutTag, classes, rest };
 }

@@ -66,3 +66,18 @@ describe("Box", () => {
     );
   });
 });
+
+describe("responsive props", () => {
+  it("hides below or above a breakpoint", () => {
+    render(<Box hideBelow="md" data-testid="a" />);
+    render(<Box hideAbove="lg" data-testid="b" />);
+    expect(screen.getByTestId("a").className.split(" ")).toContain("max-md:hidden");
+    expect(screen.getByTestId("b").className.split(" ")).toContain("lg:hidden");
+  });
+
+  it("stacks an Inline into a column below a breakpoint", () => {
+    render(<Inline stackBelow="sm" data-testid="i" />);
+    expect(screen.getByTestId("i").className.split(" ")).toEqual(expect.arrayContaining(["flex-row", "max-sm:flex-col", "max-sm:items-stretch"]));
+  });
+});
+

@@ -15,7 +15,7 @@ export * from "./atoms/Box";
 export * from "./atoms/Stack";
 export * from "./atoms/Inline";
 export * from "./atoms/Grid";
-export type { ContainerSize, LayoutTag } from "./lib/layout";
+export type { Breakpoint, ContainerSize, LayoutTag } from "./lib/layout";
 export type { Space } from "./lib/space";
 export { Avatar, type AvatarProps } from "./atoms/Avatar";
 export { AvatarGroup, type AvatarGroupProps } from "./atoms/AvatarGroup";

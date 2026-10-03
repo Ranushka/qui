@@ -1,10 +1,9 @@
 import * as React from "react";
 import { cn } from "../lib/cn";
-import { alignItemsClass, layoutClasses, listReset, type LayoutProps } from "../lib/layout";
+import { alignItemsClass, layoutClasses, listReset, type Breakpoint, type LayoutProps } from "../lib/layout";
 import { gapClass, gapYClass, type Space } from "../lib/space";
 
 type Columns = 1 | 2 | 3 | 4 | 5 | 6;
-type Breakpoint = "sm" | "md" | "lg";
 
 // Spelled out so Tailwind sees every class.
 const columnsClass: Record<Columns, string> = {
@@ -77,6 +76,7 @@ DOC__ */
   "padding / paddingX / paddingY": ["0", "0.5", "1", "1.5", "2", "3", "4", "5", "6", "8", "10", "12", "16"],
   "width": ["full", "auto", "3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],
   "maxWidth": ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],
+  "hideBelow / hideAbove": ["sm", "md", "lg"],
   "as": ["div", "section", "article", "header", "footer", "main", "nav", "aside", "ul", "ol", "li", "form"]
 }
 PROPS__ */

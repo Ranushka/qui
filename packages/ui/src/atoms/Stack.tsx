@@ -53,6 +53,7 @@ DOC__ */
   "maxWidth": ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],
   "grow": "boolean",
   "shrink": "boolean",
+  "hideBelow / hideAbove": ["sm", "md", "lg"],
   "as": ["div", "section", "article", "header", "footer", "main", "nav", "aside", "ul", "ol", "li", "form"]
 }
 PROPS__ */
