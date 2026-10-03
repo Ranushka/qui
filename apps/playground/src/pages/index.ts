@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { BoardPage } from "./BoardPage";
 import { ComponentsPage } from "./ComponentsPage";
 import { IconsPage } from "./IconsPage";
 import { WorkItemsPage } from "./WorkItemsPage";
@@ -17,6 +18,7 @@ export const pages: PlaygroundPage[] = [
   { path: "/components", title: "Components", component: ComponentsPage },
   { path: "/icons", title: "Icons", component: IconsPage },
   { path: "/examples/work-items", title: "Work items", component: WorkItemsPage, fullBleed: true },
+  { path: "/examples/board", title: "Board", component: BoardPage, fullBleed: true },
 ];
 
 /** Old links that should keep working. */
