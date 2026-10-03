@@ -133,7 +133,7 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
-          <Section title="Box" align="block" props={{"background":["canvas","surface-1","surface-2","layer-1","layer-2","layer-3"],"border":["subtle","strong"],"borderEdge":["all","top","bottom","start","end"],"dashed":"boolean","radius":["sm","md","lg","xl","full"],"shadow":["raised-100","raised-200","raised-300","overlay-100","overlay-200"],"overflow":["hidden","auto"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+          <Section title="Box" align="block" props={{"background":["canvas","surface-1","surface-2","layer-1","layer-2","layer-3"],"border":["subtle","strong"],"borderEdge":["all","top","bottom","start","end"],"dashed":"boolean","radius":["sm","md","lg","xl","full"],"shadow":["raised-100","raised-200","raised-300","overlay-100","overlay-200"],"overflow":["hidden","auto"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
 <QUI.Grid columns={3} collapseBelow="md" gap="4" padding="4" width="full">
   <QUI.Box background="layer-1" border="subtle" radius="lg" padding="4">
     <QUI.Text>Card: layer-1, subtle border, lg radius</QUI.Text>
@@ -215,7 +215,7 @@ export function ComponentsPage() {
   <QUI.CircularProgress size="md" indeterminate />
 </div>
           </Section>
-          <Section title="Grid" align="block" props={{"columns":[1,2,3,4,5,6],"collapseBelow":["sm","md","lg"],"gap / rowGap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+          <Section title="Grid" align="block" props={{"columns":[1,2,3,4,5,6],"collapseBelow":["sm","md","lg"],"gap / rowGap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
 <QUI.Grid columns={3} collapseBelow="md" gap="4" padding="4" width="full">
   {["Open", "In progress", "Done"].map((title, i) => (
     <QUI.Box key={title} background="layer-1" border="subtle" radius="lg" padding="4">
@@ -274,7 +274,7 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
-          <Section title="Inline" align="block" props={{"gap / rowGap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"justify":["start","center","end","between"],"wrap":"boolean","padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+          <Section title="Inline" align="block" props={{"gap / rowGap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"justify":["start","center","end","between"],"wrap":"boolean","stackBelow":["sm","md","lg"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
 <QUI.Stack gap="6" padding="4" width="full">
   <QUI.Inline gap="3">
     <QUI.Button label="Create issue" />
@@ -408,7 +408,7 @@ export function ComponentsPage() {
   <QUI.Spinner />
 </div>
           </Section>
-          <Section title="Stack" align="block" props={{"gap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"justify":["start","center","end","between"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+          <Section title="Stack" align="block" props={{"gap":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"align":["start","center","end","stretch","baseline"],"justify":["start","center","end","between"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
 <QUI.Stack gap="6" padding="4" maxWidth="md">
   <QUI.Stack gap="1">
     <QUI.Heading level={3}>Project settings</QUI.Heading>

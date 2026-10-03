@@ -35,13 +35,15 @@ export function App() {
               <QUI.Box paddingBottom="2" shrink={false}>
                 <QUI.Text weight="semibold" color="primary">qui playground</QUI.Text>
               </QUI.Box>
-              <QUI.Tabs variant="underline" value={page.path} onValueChange={(path) => (window.location.hash = String(path))}>
-                <QUI.TabsList aria-label="Playground pages">
-                  {pages.map((p) => (
-                    <QUI.Tab key={p.path} value={p.path} label={p.title} />
-                  ))}
-                </QUI.TabsList>
-              </QUI.Tabs>
+              <QUI.Box grow overflow="auto">
+                <QUI.Tabs variant="underline" value={page.path} onValueChange={(path) => (window.location.hash = String(path))}>
+                  <QUI.TabsList aria-label="Playground pages">
+                    {pages.map((p) => (
+                      <QUI.Tab key={p.path} value={p.path} label={p.title} />
+                    ))}
+                  </QUI.TabsList>
+                </QUI.Tabs>
+              </QUI.Box>
             </QUI.Inline>
           </QUI.Box>
           {page.fullBleed ? (

@@ -109,3 +109,41 @@ export const groups: StateGroup[] = groupData.map((group) => ({ ...group, count:
 
 /** Every sample work item, sub-items included. */
 export const totalCount = groups.reduce((n, group) => n + group.count, 0);
+
+export type ActivityEntry = { who: string; what: string; when: string };
+
+export type WorkItemDetails = {
+  description: string[];
+  activity: ActivityEntry[];
+  comments: { who: string; text: string; when: string }[];
+};
+
+/** A work item with where it sits: its state group and, for sub-items, its parent. */
+export type WorkItemEntry = { item: WorkItem; parent?: WorkItem; group: StateGroup };
+
+/** Every work item in list order (sub-items right after their parent), for stepping through with ↑/↓. */
+export const entries: WorkItemEntry[] = groups.flatMap((group) =>
+  group.items.flatMap((item) => [{ item, group }, ...(item.children ?? []).map((child) => ({ item: child, parent: item, group }))])
+);
+
+/** Plausible sample details for any work item. */
+export function detailsFor({ item, group }: WorkItemEntry): WorkItemDetails {
+  const [owner, ...others] = item.assignees;
+  return {
+    description: [
+      `This ${item.type} covers “${item.title}” for Core product. The goal is a version we can ship behind a flag and test with a few workspaces first.`,
+      "Scope: the main flow on desktop and mobile, empty and error states, and keyboard access. Out of scope: migrations for existing data, which get their own work item.",
+    ],
+    activity: [
+      { who: "Ann Lee", what: `created ${item.id}`, when: "3 weeks ago" },
+      { who: "Ann Lee", what: `added the label ${item.label.name}`, when: "3 weeks ago" },
+      { who: "Ann Lee", what: `assigned ${item.assignees.join(", ")}`, when: "2 weeks ago" },
+      { who: owner ?? "Ann Lee", what: `set the due date to ${item.due}`, when: "6 days ago" },
+      { who: owner ?? "Ann Lee", what: `moved this to ${group.state}`, when: "yesterday" },
+    ],
+    comments: [
+      { who: owner ?? "Ann Lee", text: "First pass is up for review. Mobile layout still needs a look.", when: "2 days ago" },
+      ...(others.length ? [{ who: others[0]!, text: "Looks good on desktop. On a phone the actions wrap, I left notes in the design file.", when: "yesterday" }] : []),
+    ],
+  };
+}
