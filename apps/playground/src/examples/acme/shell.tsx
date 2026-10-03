@@ -56,7 +56,7 @@ function Rail() {
 function NavLink({ icon, label, current }: { icon: IconComponent; label: string; current?: boolean }) {
   return (
     <QUI.ListItem>
-      <QUI.ListItemLink href="#work-items" aria-current={current ? "page" : undefined} startIcon={<QUI.Icon icon={icon} />} label={label} />
+      <QUI.ListItemButton aria-current={current ? "page" : undefined} startIcon={<QUI.Icon icon={icon} />} label={label} />
     </QUI.ListItem>
   );
 }
@@ -132,11 +132,10 @@ function ProjectHeader() {
 
 export type ViewLayout = "list" | "board";
 
-const layoutRoute: Record<ViewLayout, string> = { list: "/examples/work-items", board: "/examples/board" };
 const layoutIcon: Record<ViewLayout, IconComponent> = { list: Icons.List, board: Icons.Kanban };
 const layoutLabel: Record<ViewLayout, string> = { list: "List", board: "Board" };
 
-/** "Work items 112" plus view controls; the layout menu switches between the list and board screens. */
+/** "Work items" count plus view controls. Static UI: each layout is its own example page, so the menu only shows the current one. */
 export function ViewToolbar({ layout }: { layout: ViewLayout }) {
   const total = groups.reduce((n, g) => n + countItems(g.items), 0);
   return (
@@ -152,7 +151,7 @@ export function ViewToolbar({ layout }: { layout: ViewLayout }) {
             render={<QUI.Button variant="secondary" icon={<QUI.Icon icon={layoutIcon[layout]} />} label={layoutLabel[layout]} />}
           />
           <QUI.MenuContent>
-            <QUI.MenuRadioGroup value={layout} onValueChange={(value) => (window.location.hash = layoutRoute[value as ViewLayout])}>
+            <QUI.MenuRadioGroup defaultValue={layout}>
               <QUI.MenuGroupLabel>Show as</QUI.MenuGroupLabel>
               <QUI.MenuRadioItem value="list">List</QUI.MenuRadioItem>
               <QUI.MenuRadioItem value="board">Board</QUI.MenuRadioItem>
