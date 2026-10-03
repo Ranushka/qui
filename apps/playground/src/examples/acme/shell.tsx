@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
-import { groups, countItems, type IconComponent } from "./data";
+import type { IconComponent } from "./data";
 
 /**
  * The "Acme Inc." app chrome shared by the example screens: top bar, app rail, sidebar and project
@@ -136,14 +136,13 @@ const layoutIcon: Record<ViewLayout, IconComponent> = { list: Icons.List, board:
 const layoutLabel: Record<ViewLayout, string> = { list: "List", board: "Board" };
 
 /** "Work items" count plus view controls. Static UI: each layout is its own example page, so the menu only shows the current one. */
-export function ViewToolbar({ layout }: { layout: ViewLayout }) {
-  const total = groups.reduce((n, g) => n + countItems(g.items), 0);
+export function ViewToolbar({ layout, count }: { layout: ViewLayout; count: number }) {
   return (
     <QUI.Inline justify="between" wrap={false} gap="4" paddingX="6" paddingY="3">
       <QUI.Inline gap="2" wrap={false}>
         <QUI.Icon icon={Icons.SquareStack} size="md" tint="secondary" />
         <QUI.Text size="md" weight="medium">Work items</QUI.Text>
-        <QUI.Badge size="sm" variant="brand" label={total} />
+        <QUI.Badge size="sm" variant="brand" label={count} />
       </QUI.Inline>
       <QUI.Inline gap="2" wrap={false}>
         <QUI.Menu>

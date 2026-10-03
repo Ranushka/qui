@@ -1,6 +1,6 @@
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
-import { countItems, groups, priorityIcon, typeIcon, type StateGroup, type WorkItem } from "../examples/acme/data";
+import { groups, totalCount, priorityIcon, typeIcon, type StateGroup, type WorkItem } from "../examples/acme/data";
 import { AcmeShell, ViewToolbar } from "../examples/acme/shell";
 
 /**
@@ -82,7 +82,7 @@ function Column({ group }: { group: StateGroup }) {
           <QUI.Inline gap="2" wrap={false}>
             <QUI.Icon icon={group.icon} size="md" tint="secondary" />
             <QUI.Text weight="medium" color="primary">{group.state}</QUI.Text>
-            <QUI.Badge size="xs" label={countItems(group.items)} />
+            <QUI.Badge size="xs" label={group.count} />
           </QUI.Inline>
           <QUI.IconButton variant="ghost" size="sm" aria-label={`Add to ${group.state}`} icon={<QUI.Icon icon={Icons.Plus} />} />
         </QUI.Inline>
@@ -99,10 +99,11 @@ function Column({ group }: { group: StateGroup }) {
   );
 }
 
-export function BoardPage() {
+/** The board view: dumb, renders whatever groups it's given. */
+export function Board({ groups, count }: { groups: StateGroup[]; count: number }) {
   return (
     <AcmeShell>
-      <ViewToolbar layout="board" />
+      <ViewToolbar layout="board" count={count} />
       <QUI.Box grow overflow="auto" paddingX="6" paddingBottom="4">
         <QUI.Inline height="full" wrap={false} align="stretch" gap="3">
           {groups.map((group) => (
@@ -112,4 +113,9 @@ export function BoardPage() {
       </QUI.Box>
     </AcmeShell>
   );
+}
+
+/** Playground page: the board filled with sample data. */
+export function BoardPage() {
+  return <Board groups={groups} count={totalCount} />;
 }

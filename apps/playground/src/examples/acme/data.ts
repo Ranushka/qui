@@ -16,7 +16,13 @@ export type WorkItem = {
   children?: WorkItem[];
 };
 
-export type StateGroup = { state: string; icon: IconComponent; items: WorkItem[] };
+export type StateGroup = {
+  state: string;
+  icon: IconComponent;
+  /** Items in this state, sub-items included. */
+  count: number;
+  items: WorkItem[];
+};
 
 export const typeIcon = {
   feature: Icons.Sparkles,
@@ -47,7 +53,7 @@ const label = {
   three: { name: "3 labels", color: "#22c55e" },
 };
 
-export const groups: StateGroup[] = [
+const groupData: Omit<StateGroup, "count">[] = [
   {
     state: "Backlog",
     icon: Icons.CircleDashed,
@@ -97,5 +103,9 @@ export const groups: StateGroup[] = [
   },
 ];
 
-/** Every work item in a state group, sub-items included. */
-export const countItems = (items: WorkItem[]): number => items.reduce((n, item) => n + 1 + countItems(item.children ?? []), 0);
+const countItems = (items: WorkItem[]): number => items.reduce((n, item) => n + 1 + countItems(item.children ?? []), 0);
+
+export const groups: StateGroup[] = groupData.map((group) => ({ ...group, count: countItems(group.items) }));
+
+/** Every sample work item, sub-items included. */
+export const totalCount = groups.reduce((n, group) => n + group.count, 0);

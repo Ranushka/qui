@@ -1,6 +1,6 @@
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
-import { groups, priorityIcon, typeIcon, type StateGroup as StateGroupData, type WorkItem } from "../examples/acme/data";
+import { groups, totalCount, priorityIcon, typeIcon, type StateGroup as StateGroupData, type WorkItem } from "../examples/acme/data";
 import { AcmeShell, ViewToolbar } from "../examples/acme/shell";
 
 /**
@@ -59,10 +59,11 @@ function StateGroup({ group }: { group: StateGroupData }) {
   );
 }
 
-export function WorkItemsPage() {
+/** The list view: dumb, renders whatever groups it's given. */
+export function WorkItemsList({ groups, count }: { groups: StateGroupData[]; count: number }) {
   return (
     <AcmeShell>
-      <ViewToolbar layout="list" />
+      <ViewToolbar layout="list" count={count} />
       <QUI.Box grow overflow="auto">
         {groups.map((group) => (
           <StateGroup key={group.state} group={group} />
@@ -70,4 +71,9 @@ export function WorkItemsPage() {
       </QUI.Box>
     </AcmeShell>
   );
+}
+
+/** Playground page: the list view filled with sample data. */
+export function WorkItemsPage() {
+  return <WorkItemsList groups={groups} count={totalCount} />;
 }
