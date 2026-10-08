@@ -108,22 +108,15 @@ export function ComponentsPage() {
   <QUI.Avatar alt="Erin Meyer" />
 </QUI.AvatarGroup>
           </Section>
-          <Section title="Badge" align="block" props={{"variant":["neutral","grey","brand","info","purple","indigo","success","emerald","warning","yellow","danger","crimson","orange"],"size":["xs","sm","md"]}}>
+          <Section title="Badge" align="block" props={{"variant":["neutral","brand","info","success","warning","danger"],"size":["xs","sm","md"]}}>
 <div className="flex flex-col gap-4 p-4">
   <div className="flex flex-wrap items-center gap-2">
     <QUI.Badge label="Neutral" />
-    <QUI.Badge variant="grey" label="Grey" />
     <QUI.Badge variant="brand" label="Brand" />
     <QUI.Badge variant="info" label="Info" />
-    <QUI.Badge variant="purple" label="Purple" />
-    <QUI.Badge variant="indigo" label="Indigo" />
     <QUI.Badge variant="success" label="Success" />
-    <QUI.Badge variant="emerald" label="Emerald" />
     <QUI.Badge variant="warning" label="Warning" />
-    <QUI.Badge variant="yellow" label="Yellow" />
     <QUI.Badge variant="danger" label="Danger" />
-    <QUI.Badge variant="crimson" label="Crimson" />
-    <QUI.Badge variant="orange" label="Orange" />
   </div>
   <div className="flex flex-wrap items-center gap-2">
     <QUI.Badge size="xs" variant="brand" label="xs" />
