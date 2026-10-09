@@ -46,7 +46,7 @@ function Section({
   props?: PropsSpec;
 }) {
   return (
-    <section className="flex flex-col gap-3">
+    <section id={`c-${title}`} className="flex scroll-mt-4 flex-col gap-3">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-tertiary">{title}</h2>
       <div className="flex overflow-hidden rounded-lg border border-subtle bg-layer-1">
         <div className={align === "row" ? "flex flex-1 flex-wrap items-center gap-4 p-4" : "flex-1 overflow-hidden"}>{children}</div>
@@ -56,7 +56,26 @@ function Section({
   );
 }
 
+/** Every component in the gallery, for the playground search. */
+export const componentNames = ["Accordion","AlertDialog","AnchorButton","Autocomplete","AutocompleteField","Avatar","AvatarGroup","Badge","Banner","Box","Breadcrumb","Button","ButtonGroup","Calendar","Charts","Checkbox","CheckboxField","CheckboxGroup","CheckboxGroupField","CircularProgress","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","Grid","Heading","Icon","IconButton","IconSplitButton","Inline","Input","InputField","LinearProgress","List","LogoSpinner","Menu","NavigationMenu","NumberField","OTPField","Pagination","Pill","Popover","PreviewCard","Radio","RadioGroup","RadioGroupField","ScrollArea","Select","SelectField","Separator","Shortcut","Skeleton","Slider","Spinner","SplitButton","Stack","SuggestionMenu","Swatch","Switch","SwitchField","Table","Tabs","Text","TextArea","TextAreaField","TextButton","Toast","Toggle","Toolbar","Tooltip","VirtualList","WorkspaceAvatar"];
+
+/** Opening #/components/Badge scrolls to that component section. */
+function useScrollToComponent() {
+  React.useEffect(() => {
+    const scroll = () => {
+      const name = decodeURIComponent(window.location.hash.split("/")[2] ?? "");
+      const target = name ? document.getElementById(`c-${name}`) : null;
+      const main = target?.closest("main");
+      if (target && main) main.scrollTop += target.getBoundingClientRect().top - main.getBoundingClientRect().top - 32;
+    };
+    scroll();
+    window.addEventListener("hashchange", scroll);
+    return () => window.removeEventListener("hashchange", scroll);
+  }, []);
+}
+
 export function ComponentsPage() {
+  useScrollToComponent();
   return (
     <div className="flex flex-col gap-8">
       <div>
