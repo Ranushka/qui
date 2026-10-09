@@ -25,6 +25,7 @@ const searchTargets: Record<string, string> = {
   ...Object.fromEntries(componentNames.map((name) => [name, `/components/${name}`])),
 };
 const searchItems = Object.keys(searchTargets);
+const examplePaths = new Set(pages.filter((p) => p.fullBleed).map((p) => p.path));
 
 function PlaygroundSearch() {
   const [value, setValue] = React.useState("");
@@ -33,8 +34,11 @@ function PlaygroundSearch() {
       items={searchItems}
       value={value}
       onValueChange={(next, details) => {
-        if (details.reason === "item-press" && searchTargets[next]) {
-          window.location.hash = searchTargets[next]!;
+        const target = searchTargets[next];
+        if (details.reason === "item-press" && target) {
+          // Example screens open in their own tab; everything else navigates in place.
+          if (examplePaths.has(target)) window.open(`${window.location.pathname}#${target}`, "_blank", "noopener");
+          else window.location.hash = target;
           setValue("");
         } else {
           setValue(next);
