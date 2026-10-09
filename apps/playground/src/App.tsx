@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
+import { ExternalLink } from "lucide-react";
 import { pages, redirects } from "./pages";
-import { componentNames } from "./pages/ComponentsPage";
+import { componentGroups, componentNames } from "./pages/ComponentsPage";
 
 /** The current route: the URL hash without its `#`, with old links redirected. */
 function useRoute() {
@@ -18,14 +19,20 @@ function useRoute() {
   return route;
 }
 
-/** Everything the header search can jump to: example screens, pages and every component. */
+const examplePages = pages.filter((p) => p.fullBleed);
+const toolPages = pages.filter((p) => !p.fullBleed);
+const examplePaths = new Set(examplePages.map((p) => p.path));
+
+/** Example screens open in their own tab, so they're shown exactly as an app would be. */
+const exampleUrl = (path: string) => `${window.location.pathname}#${path}`;
+
+/** Everything the search can jump to: example screens, pages and every component. */
 const searchTargets: Record<string, string> = {
-  ...Object.fromEntries(pages.filter((p) => p.fullBleed).map((p) => [`Example: ${p.title}`, p.path])),
-  ...Object.fromEntries(pages.filter((p) => !p.fullBleed && p.path !== "/components").map((p) => [p.title, p.path])),
+  ...Object.fromEntries(examplePages.map((p) => [`Example: ${p.title}`, p.path])),
+  ...Object.fromEntries(toolPages.filter((p) => p.path !== "/components").map((p) => [p.title, p.path])),
   ...Object.fromEntries(componentNames.map((name) => [name, `/components/${name}`])),
 };
 const searchItems = Object.keys(searchTargets);
-const examplePaths = new Set(pages.filter((p) => p.fullBleed).map((p) => p.path));
 
 function PlaygroundSearch() {
   const [value, setValue] = React.useState("");
@@ -36,8 +43,7 @@ function PlaygroundSearch() {
       onValueChange={(next, details) => {
         const target = searchTargets[next];
         if (details.reason === "item-press" && target) {
-          // Example screens open in their own tab; everything else navigates in place.
-          if (examplePaths.has(target)) window.open(`${window.location.pathname}#${target}`, "_blank", "noopener");
+          if (examplePaths.has(target)) window.open(exampleUrl(target), "_blank", "noopener");
           else window.location.hash = target;
           setValue("");
         } else {
@@ -46,13 +52,60 @@ function PlaygroundSearch() {
       }}
       openOnInputClick
     >
-      <QUI.Box width="sm" paddingBottom="2" shrink={false}>
-        <QUI.AutocompleteInputGroup aria-label="Search components and pages" placeholder="Search components, pages…" />
-      </QUI.Box>
+      <QUI.AutocompleteInputGroup aria-label="Search components and pages" placeholder="Search components, pages…" />
       <QUI.AutocompleteContent>
         {(item) => <QUI.AutocompleteItem key={item} value={item}>{item}</QUI.AutocompleteItem>}
       </QUI.AutocompleteContent>
     </QUI.Autocomplete>
+  );
+}
+
+function SidePanel({ route }: { route: string }) {
+  return (
+    <QUI.Stack gap="4" padding="3">
+      <QUI.Stack gap="3">
+        <QUI.Box paddingX="2" paddingTop="1">
+          <QUI.Text weight="semibold" color="primary">qui playground</QUI.Text>
+        </QUI.Box>
+        <PlaygroundSearch />
+      </QUI.Stack>
+
+      <QUI.List aria-label="Playground pages">
+        {toolPages.map((p) => (
+          <QUI.ListItem key={p.path}>
+            <QUI.ListItemLink href={`#${p.path}`} aria-current={route === p.path || route.startsWith(`${p.path}/`) ? "page" : undefined} label={p.title} />
+          </QUI.ListItem>
+        ))}
+      </QUI.List>
+
+      <QUI.ListSection label="Examples" defaultOpen>
+        <QUI.List aria-label="Example screens">
+          {examplePages.map((p) => (
+            <QUI.ListItem key={p.path}>
+              <QUI.ListItemLink
+                href={exampleUrl(p.path)}
+                target="_blank"
+                rel="noopener"
+                label={p.title}
+                endIcon={<QUI.Icon icon={ExternalLink} />}
+              />
+            </QUI.ListItem>
+          ))}
+        </QUI.List>
+      </QUI.ListSection>
+
+      {componentGroups.map((group) => (
+        <QUI.ListSection key={group.title} label={`${group.title} (${group.names.length})`} defaultOpen={route.startsWith("/components")}>
+          <QUI.List aria-label={group.title} gap="px">
+            {group.names.map((name) => (
+              <QUI.ListItem key={name} density="compact">
+                <QUI.ListItemLink href={`#/components/${name}`} aria-current={route === `/components/${name}` ? "page" : undefined} label={name} />
+              </QUI.ListItem>
+            ))}
+          </QUI.List>
+        </QUI.ListSection>
+      ))}
+    </QUI.Stack>
   );
 }
 
@@ -79,28 +132,19 @@ export function App() {
   return (
     <QUI.QuiProvider>
       <QUI.Box height="screen" background="canvas">
-        <QUI.Stack height="full">
-          <QUI.Box as="header" background="surface-1" border="subtle" borderEdge="bottom" paddingX="4" paddingTop="2" shrink={false}>
-            <QUI.Inline gap="6" wrap={false} align="end">
-              <QUI.Box paddingBottom="2" shrink={false}>
-                <QUI.Text weight="semibold" color="primary">qui playground</QUI.Text>
-              </QUI.Box>
-              <QUI.Box grow overflow="auto">
-                <QUI.Tabs variant="underline" value={page.path} onValueChange={(path) => (window.location.hash = String(path))}>
-                  <QUI.TabsList aria-label="Playground pages">
-                    {pages.filter((p) => !p.fullBleed).map((p) => (
-                      <QUI.Tab key={p.path} value={p.path} label={p.title} />
-                    ))}
-                  </QUI.TabsList>
-                </QUI.Tabs>
-              </QUI.Box>
+        <QUI.Inline gap="0" wrap={false} align="stretch" height="full">
+          <QUI.Box as="nav" aria-label="Playground" hideBelow="md" width="3xs" shrink={false} overflow="auto" background="surface-1" border="subtle" borderEdge="end">
+            <SidePanel route={route} />
+          </QUI.Box>
+          <QUI.Stack height="full" grow>
+            <QUI.Box hideAbove="md" background="surface-1" border="subtle" borderEdge="bottom" padding="3" shrink={false}>
               <PlaygroundSearch />
-            </QUI.Inline>
-          </QUI.Box>
-          <QUI.Box as="main" key={page.path} grow overflow="auto" padding="8">
-            <Page />
-          </QUI.Box>
-        </QUI.Stack>
+            </QUI.Box>
+            <QUI.Box as="main" key={page.path} grow overflow="auto" padding="8">
+              <Page />
+            </QUI.Box>
+          </QUI.Stack>
+        </QUI.Inline>
       </QUI.Box>
     </QUI.QuiProvider>
   );

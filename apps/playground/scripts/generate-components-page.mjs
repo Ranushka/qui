@@ -144,8 +144,9 @@ function Section({
   );
 }
 
-/** Every component in the gallery, for the playground search. */
-export const componentNames = ${JSON.stringify(categoriesWithComponents.flatMap(({ components }) => components.map((c) => c.moduleName)).sort((a, b) => a.localeCompare(b)))};
+/** Every component in the gallery by atomic level, for the playground side panel and search. */
+export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = ${JSON.stringify(categoriesWithComponents.map(({ cat, components }) => ({ title: cat.title, names: components.map((c) => c.moduleName) })))};
+export const componentNames: readonly string[] = componentGroups.flatMap((g) => g.names).sort((a, b) => a.localeCompare(b));
 
 /** Opening #/components/Badge scrolls to that component section. */
 function useScrollToComponent() {
