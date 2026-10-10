@@ -3,6 +3,7 @@ import { BoardPage } from "./BoardPage";
 import { ComponentsPage } from "./ComponentsPage";
 import { IconsPage } from "./IconsPage";
 import { WorkItemsPage } from "./WorkItemsPage";
+import { SpecPage } from "../spec/SpecPage";
 
 export type PlaygroundPage = {
   /** URL hash path, e.g. `/examples/work-items` → `#/examples/work-items`. */
@@ -17,6 +18,7 @@ export type PlaygroundPage = {
 export const pages: PlaygroundPage[] = [
   { path: "/components", title: "Components", component: ComponentsPage },
   { path: "/icons", title: "Icons", component: IconsPage },
+  { path: "/spec", title: "Spec sheet", component: SpecPage },
   { path: "/examples/work-items", title: "Work items", component: WorkItemsPage, fullBleed: true },
   { path: "/examples/board", title: "Board", component: BoardPage, fullBleed: true },
 ];
