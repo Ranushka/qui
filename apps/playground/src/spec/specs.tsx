@@ -389,6 +389,29 @@ export const specs: Spec[] = [
     },
   },
   {
+    name: "ProjectHeader",
+    level: "organisms",
+    axes: { Tab: ["overview", "work-items", "cycles", "modules"] },
+    cell: { width: 1024 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <QUI.ProjectHeader
+        data-spec-root=""
+        icon={Icons.Tractor}
+        title="Core product"
+        tabs={[
+          { value: "overview", label: "Overview" },
+          { value: "work-items", label: "Work items" },
+          { value: "cycles", label: "Cycles" },
+          { value: "modules", label: "Modules" },
+        ]}
+        value={v.Tab ?? "work-items"}
+      />
+    ),
+    canInstance: (p) => p.tabs.length === 4,
+    toVariant: (p) => ({ Tab: String(p.value) }),
+  },
+  {
     name: "WorkItemCard",
     level: "organisms",
     axes: { Parent: ["false", "true"], SubItems: ["false", "true"], Priority: ["normal", "urgent"], Assignees: ["1", "2", "3"] },

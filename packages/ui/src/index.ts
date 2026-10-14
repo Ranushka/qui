@@ -86,6 +86,7 @@ export * from "./molecules/Property";
 export * from "./molecules/ViewToolbar";
 export * from "./molecules/RailItem";
 export * from "./organisms/NavSidebar";
+export * from "./organisms/ProjectHeader";
 export * from "./organisms/NavigationMenu";
 export * from "./organisms/Calendar";
 export * from "./organisms/VirtualList";

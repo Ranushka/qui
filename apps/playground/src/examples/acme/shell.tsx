@@ -129,38 +129,15 @@ function Sidebar() {
   );
 }
 
-function ProjectHeader() {
-  return (
-    <QUI.Box as="header" border="subtle" borderEdge="bottom" paddingX="4" paddingY="2">
-      <QUI.Inline justify="between" align="start" wrap={false} gap="4">
-        <QUI.Inline grow gap="6" wrap={false} stackBelow="md">
-          <QUI.Inline gap="2" wrap={false} shrink={false}>
-            <QUI.Icon icon={Icons.Tractor} size="lg" />
-            <QUI.Heading level={1} size={5}>Core product</QUI.Heading>
-          </QUI.Inline>
-          <QUI.Box overflow="auto">
-            <QUI.Tabs variant="underline" defaultValue="work-items">
-              <QUI.TabsList>
-                <QUI.Tab value="overview" label="Overview" />
-                <QUI.Tab value="work-items" label="Work items" />
-                <QUI.Tab value="cycles" label="Cycles" />
-                <QUI.Tab value="modules" label="Modules" />
-              </QUI.TabsList>
-            </QUI.Tabs>
-          </QUI.Box>
-          <QUI.Box hideBelow="md" shrink={false}>
-            <QUI.IconButton variant="ghost" size="sm" aria-label="More tabs" icon={<QUI.Icon icon={Icons.Ellipsis} />} />
-          </QUI.Box>
-        </QUI.Inline>
-        <QUI.Inline gap="2" wrap={false} shrink={false}>
-          <QUI.Box hideBelow="sm">
-            <QUI.IconButton variant="ghost" aria-label="Copy link" icon={<QUI.Icon icon={Icons.Link} />} />
-          </QUI.Box>
-          <QUI.IconButton variant="ghost" aria-label="Project actions" icon={<QUI.Icon icon={Icons.Ellipsis} />} />
-        </QUI.Inline>
-      </QUI.Inline>
-    </QUI.Box>
-  );
+const projectTabs = [
+  { value: "overview", label: "Overview" },
+  { value: "work-items", label: "Work items" },
+  { value: "cycles", label: "Cycles" },
+  { value: "modules", label: "Modules" },
+];
+
+function CoreProductHeader() {
+  return <QUI.ProjectHeader icon={Icons.Tractor} title="Core product" tabs={projectTabs} value="work-items" />;
 }
 
 export const ViewToolbar = QUI.ViewToolbar;
@@ -177,7 +154,7 @@ export function AcmeShell({ children }: { children: React.ReactNode }) {
             <QUI.Inline height="full" wrap={false} align="stretch" gap="0">
               <Sidebar />
               <QUI.Stack grow>
-                <ProjectHeader />
+                <CoreProductHeader />
                 {children}
               </QUI.Stack>
             </QUI.Inline>
