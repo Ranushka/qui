@@ -281,6 +281,29 @@ export const specs: Spec[] = [
     }),
   },
   {
+    name: "Property",
+    level: "molecules",
+    axes: { Content: ["pill", "people"] },
+    cell: { width: 150 },
+    rootSelector: "[data-spec-root]",
+    render: (v) =>
+      v.Content === "pill" ? (
+        <QUI.Property data-spec-root="" icon={Icons.CalendarDays} label="Due date">
+          <QUI.Pill size="sm" startIcon={<QUI.Icon icon={Icons.CalendarDays} />} label="03 Mar" />
+        </QUI.Property>
+      ) : (
+        <QUI.Property data-spec-root="" icon={Icons.UsersRound} label="Assignees">
+          <QUI.AvatarGroup size="sm" max={3}>
+            <QUI.Avatar alt="Ranu P" />
+            <QUI.Avatar alt="Mia C" />
+          </QUI.AvatarGroup>
+          <QUI.Text size="xs" color="secondary" maxLines={1}>Ranu P, Mia C</QUI.Text>
+        </QUI.Property>
+      ),
+    canInstance: () => true,
+    toVariant: (p) => ({ Content: (React.Children.toArray(p.children)[0] as React.ReactElement | undefined)?.type === QUI.Pill ? "pill" : "people" }),
+  },
+  {
     name: "WorkItemCard",
     level: "organisms",
     axes: { Parent: ["false", "true"], SubItems: ["false", "true"], Priority: ["normal", "urgent"], Assignees: ["1", "2", "3"] },

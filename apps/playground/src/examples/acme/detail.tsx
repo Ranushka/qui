@@ -1,4 +1,3 @@
-import type * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { priorityIcon, typeIcon, type IconComponent, type WorkItem, type WorkItemDetails, type WorkItemEntry } from "./data";
@@ -11,49 +10,37 @@ import { priorityIcon, typeIcon, type IconComponent, type WorkItem, type WorkIte
 
 const priorityLabel: Record<WorkItem["priority"], string> = { urgent: "Urgent", high: "High", medium: "Medium", low: "Low" };
 
-function Property({ icon, label, children }: { icon: IconComponent; label: string; children: React.ReactNode }) {
-  return (
-    <QUI.Stack gap="1.5">
-      <QUI.Inline gap="1.5" wrap={false}>
-        <QUI.Icon icon={icon} size="xs" tint="tertiary" />
-        <QUI.Text variant="caption" color="tertiary">{label}</QUI.Text>
-      </QUI.Inline>
-      <QUI.Inline gap="1.5">{children}</QUI.Inline>
-    </QUI.Stack>
-  );
-}
-
 function Properties({ entry }: { entry: WorkItemEntry }) {
   const { item, group } = entry;
   return (
     <QUI.Grid columns={3} collapseBelow="sm" gap="4" rowGap="5">
-      <Property icon={Icons.CircleDashed} label="State">
+      <QUI.Property icon={Icons.CircleDashed} label="State">
         <QUI.Pill size="sm" startIcon={<QUI.Icon icon={group.icon} />} label={group.state} />
-      </Property>
-      <Property icon={Icons.SignalHigh} label="Priority">
+      </QUI.Property>
+      <QUI.Property icon={Icons.SignalHigh} label="Priority">
         <QUI.Pill
           size="sm"
           startIcon={<QUI.Icon icon={priorityIcon[item.priority]} tint={item.priority === "urgent" ? "danger" : "inherit"} />}
           label={priorityLabel[item.priority]}
         />
-      </Property>
-      <Property icon={Icons.UsersRound} label="Assignees">
+      </QUI.Property>
+      <QUI.Property icon={Icons.UsersRound} label="Assignees">
         <QUI.AvatarGroup size="sm" max={3}>
           {item.assignees.map((name) => (
             <QUI.Avatar key={name} alt={name} />
           ))}
         </QUI.AvatarGroup>
         <QUI.Text size="xs" color="secondary" maxLines={1}>{item.assignees.join(", ")}</QUI.Text>
-      </Property>
-      <Property icon={Icons.Tag} label="Labels">
+      </QUI.Property>
+      <QUI.Property icon={Icons.Tag} label="Labels">
         <QUI.Pill size="sm" startIcon={<QUI.Swatch fill={item.label.color} />} label={item.label.name} />
-      </Property>
-      <Property icon={Icons.CalendarDays} label="Due date">
+      </QUI.Property>
+      <QUI.Property icon={Icons.CalendarDays} label="Due date">
         <QUI.Pill size="sm" startIcon={<QUI.Icon icon={Icons.CalendarDays} />} label={item.due} />
-      </Property>
-      <Property icon={Icons.Shapes} label="Type">
+      </QUI.Property>
+      <QUI.Property icon={Icons.Shapes} label="Type">
         <QUI.Pill size="sm" startIcon={<QUI.Icon icon={typeIcon[item.type]} />} label={item.type[0]!.toUpperCase() + item.type.slice(1)} />
-      </Property>
+      </QUI.Property>
     </QUI.Grid>
   );
 }
