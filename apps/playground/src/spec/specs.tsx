@@ -30,7 +30,7 @@ const has = (node: unknown) => node != null && node !== false;
 const iconSlots = (props: Record<string, unknown>, a = "startIcon", b = "endIcon") =>
   has(props[a]) && has(props[b]) ? "both" : has(props[a]) ? "start" : has(props[b]) ? "end" : "none";
 const stateOf = (props: Record<string, unknown>) => (props.loading ? "loading" : props.disabled ? "disabled" : "default");
-const STATES = ["default", "hover", "focus", "pressed", "disabled", "loading"] as const;
+const STATES = ["default", "hover", "disabled"] as const;
 const SIZES4 = ["xs", "sm", "md", "lg"] as const;
 const BUTTON_VARIANTS = ["primary", "secondary", "tertiary", "ghost", "danger", "danger-outline"] as const;
 const AVATAR_SIZES = ["2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl"] as const;
@@ -48,19 +48,18 @@ export const specs: Spec[] = [
   {
     name: "Button",
     level: "atoms",
-    axes: { Variant: BUTTON_VARIANTS, Size: SIZES4, Icon: ["none", "start", "end"], State: STATES },
+    axes: { Variant: BUTTON_VARIANTS, Size: SIZES4, Icon: ["false", "true"], State: STATES },
     render: (v) => (
       <QUI.Button
         variant={v.Variant as "primary"}
         size={v.Size as "md"}
         label="Label"
-        icon={v.Icon !== "none" ? <QUI.Icon icon={Icons.Plus} /> : undefined}
-        iconPosition={v.Icon === "end" ? "end" : "start"}
+        icon={v.Icon === "true" ? <QUI.Icon icon={Icons.Plus} /> : undefined}
         disabled={v.State === "disabled"}
         loading={v.State === "loading"}
       />
     ),
-    toVariant: (p) => ({ Variant: String(p.variant ?? "primary"), Size: String(p.size ?? "md"), Icon: has(p.icon) ? (p.iconPosition === "end" ? "end" : "start") : "none", State: stateOf(p) }),
+    toVariant: (p) => ({ Variant: String(p.variant ?? "primary"), Size: String(p.size ?? "md"), Icon: has(p.icon) ? "true" : "false", State: stateOf(p) }),
   },
   {
     name: "IconButton",
@@ -241,6 +240,76 @@ export const specs: Spec[] = [
         State: cp["aria-current"] === "page" ? "selected" : "default",
       };
     },
+  },
+  {
+    name: "StateGroupHeader",
+    level: "molecules",
+    axes: { Layout: ["list", "column"] },
+    cell: (v) => ({ width: v.Layout === "list" ? 880 : 240 }),
+    rootSelector: "[data-spec-root]",
+    render: (v) => <QUI.StateGroupHeader data-spec-root="" layout={v.Layout as "list"} icon={Icons.CircleDashed} state="Backlog" count={8} />,
+    canInstance: () => true,
+    toVariant: (p) => ({ Layout: String(p.layout ?? "list") }),
+  },
+  {
+    name: "WorkItemRow",
+    level: "molecules",
+    axes: { Level: ["1", "2"], Priority: ["normal", "urgent"], Assignees: ["1", "2"] },
+    cell: { width: 880 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <QUI.List aria-label="Spec">
+        <QUI.WorkItemRow
+          data-spec-root=""
+          itemId="ACME-45"
+          title="Embed pages in nested wiki views"
+          typeIcon={Icons.Sparkles}
+          label={{ name: "Editor", color: "#22c55e" }}
+          due="03 Mar"
+          priority={v.Priority as "normal"}
+          priorityIcon={v.Priority === "urgent" ? Icons.CircleAlert : Icons.SignalHigh}
+          assignees={["Ranu P", "Mia C"].slice(0, Number(v.Assignees))}
+          level={Number(v.Level) as 1}
+        />
+      </QUI.List>
+    ),
+    canInstance: () => true,
+    toVariant: (p) => ({
+      Level: String(p.level ?? 1),
+      Priority: p.priority === "urgent" ? "urgent" : "normal",
+      Assignees: String(Math.min(p.assignees.length, 2)),
+    }),
+  },
+  {
+    name: "WorkItemCard",
+    level: "organisms",
+    axes: { Parent: ["false", "true"], SubItems: ["false", "true"], Priority: ["normal", "urgent"], Assignees: ["1", "2", "3"] },
+    cell: { width: 240 },
+    render: (v) => (
+      <ul>
+        <QUI.WorkItemCard
+          itemId="ACME-45"
+          parentId={v.Parent === "true" ? "ACME-12" : undefined}
+          typeIcon={Icons.Sparkles}
+          title="Embed pages in nested wiki views"
+          label={{ name: "Editor", color: "#22c55e" }}
+          due="03 Mar"
+          priority={v.Priority as "normal"}
+          priorityIcon={v.Priority === "urgent" ? Icons.CircleAlert : Icons.SignalHigh}
+          assignees={["Ranu P", "Mia C", "Tom F"].slice(0, Number(v.Assignees))}
+          subItems={v.SubItems === "true" ? 3 : 0}
+          actions={<QUI.IconButton variant="ghost" size="xs" aria-label="Actions" icon={<QUI.Icon icon={Icons.Ellipsis} />} />}
+        />
+      </ul>
+    ),
+    rootSelector: "li",
+    canInstance: () => true,
+    toVariant: (p) => ({
+      Parent: p.parentId ? "true" : "false",
+      SubItems: p.subItems > 0 ? "true" : "false",
+      Priority: p.priority === "urgent" ? "urgent" : "normal",
+      Assignees: String(Math.min(p.assignees.length, 3)),
+    }),
   },
 ];
 

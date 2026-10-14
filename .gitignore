@@ -5,3 +5,7 @@ dist/
 .DS_Store
 
 .claude/worktrees/
+tools/design-sync/store-*.json
+tools/design-sync/spec-*.json
+tools/design-sync/tokens.json
+tools/design-sync/icons.json

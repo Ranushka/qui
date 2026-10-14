@@ -7,6 +7,37 @@
 
   const inter = () => penpot.fonts.all.find((f) => f.name === "Inter");
   const fill = (o) => [{ fillColor: o.c, fillOpacity: o.a }];
+
+  // ---------- design tokens ----------
+  // Every paint that the code draws from a token variable (bg-layer-2, txt-secondary ...) is bound to the matching Penpot
+  // token instead of a hex value. B.stat counts what was bound and what had to stay a literal colour.
+  B.stat = B.stat || { bound: 0, hex: 0, hexSamples: {} };
+  B._tokens = null;
+  B.token = function (cssName) {
+    if (!B._tokens) { B._tokens = {}; for (const set of penpot.library.local.tokens.sets) if (/^(semantic|primitives-light)$/.test(set.name)) for (const t of set.tokens) B._tokens[t.name] = t; }
+    return B._tokens[cssName.replace("-", ".")] || B._tokens[cssName.replace(/-(\d+)$/, ".$1")] || null;
+  };
+  /** Queues colour object `o` ({ c, a, tk }) to be bound to `shape`'s fill or stroke; counts a literal when it has no token. */
+  B.queue = B.queue || {};
+  B.bind = function (shape, o, prop) {
+    const t = o && o.tk ? B.token(o.tk) : null;
+    if (!t) { B.stat.hex++; const k = o ? o.c + "/" + o.a : "none"; B.stat.hexSamples[k] = (B.stat.hexSamples[k] || 0) + 1; return false; }
+    B.bindToken(shape, t, prop); return true;
+  };
+  B.bindToken = function (shape, token, prop) {
+    const k = token.name + "|" + prop; (B.queue[k] = B.queue[k] || { token, prop, ids: [] }).ids.push(shape.id); B.stat.bound++;
+  };
+  /** Applies every queued binding, one call per (token, property): applying shape by shape costs ~200 ms each, in bulk it is almost free. */
+  B.flushTokens = function () {
+    const page = penpot.currentPage; let calls = 0, shapes = 0;
+    for (const q of Object.values(B.queue)) {
+      const list = q.ids.map((id) => page.getShapeById(id)).filter(Boolean);
+      if (list.length) { q.token.applyToShapes(list, [q.prop]); calls++; shapes += list.length; }
+    }
+    B.queue = {};
+    return { calls, shapes };
+  };
+
   const AI = { "flex-start": "start", start: "start", "self-start": "start", center: "center", "flex-end": "end", end: "end", "self-end": "end", stretch: "stretch", normal: "stretch", baseline: "start" };
   const JC = { "flex-start": "start", start: "start", normal: "start", left: "start", center: "center", "flex-end": "end", end: "end", "space-between": "space-between", "space-around": "space-around", "space-evenly": "space-evenly", stretch: "start" };
   const DIR = { row: "row", "row-reverse": "row-reverse", column: "column", "column-reverse": "column-reverse" };
@@ -34,6 +65,7 @@
       g.name = it.icon; g.resize(it.size, it.size);
       const col = (row[it.size] = (row[it.size] || 0) + 1) - 1;
       g.x = gx + col * (it.size + 12); g.y = (it.size > 20 ? 200 : it.size > 14 ? 100 : it.size > 12 ? 50 : 0);
+      B.tint(g, { tk: "txt-icon-secondary", c: "#313435", a: 1 });
       const comp = penpot.library.local.createComponent([g]);
       comp.name = it.icon; comp.path = "Icons / " + it.size;
       made.push(it.icon + "@" + it.size);
@@ -46,9 +78,15 @@
     return comp.instance();
   };
   B.tint = function (shape, color) {
+    const want = color && color.tk ? B.token(color.tk) : null;
     const walk = (s) => {
-      if (s.strokes && s.strokes.length) s.strokes = s.strokes.map((k) => ({ ...k, strokeColor: color.c, strokeOpacity: color.a }));
-      if (s.fills && s.fills.length && s.type === "path") s.fills = s.fills.map((k) => (k.fillColor ? { ...k, fillColor: color.c, fillOpacity: color.a } : k));
+      if (s.strokes && s.strokes.length) {
+        if (want) { if (!s.tokens || s.tokens.strokeColor !== want.name) B.bindToken(s, want, "strokeColor"); }
+        else { s.strokes = s.strokes.map((k) => ({ ...k, strokeColor: color.c, strokeOpacity: color.a })); B.stat.hex++; }
+      }
+      if (s.fills && s.fills.length && s.type === "path" && s.fills.some((k) => k.fillColor)) {
+        if (want) B.bindToken(s, want, "fill"); else s.fills = s.fills.map((k) => (k.fillColor ? { ...k, fillColor: color.c, fillOpacity: color.a } : k));
+      }
       if (s.children) s.children.forEach(walk);
     };
     walk(shape);
@@ -62,10 +100,11 @@
   function applyPaint(b, n) {
     const st = n.st;
     b.fills = st.bg ? fill(st.bg) : [];
+    if (st.bg) B.bind(b, st.bg, "fill");
     if (st.rad) { b.borderRadiusTopLeft = st.rad[0]; b.borderRadiusTopRight = st.rad[1]; b.borderRadiusBottomRight = st.rad[2]; b.borderRadiusBottomLeft = st.rad[3]; }
     if (st.bd) {
-      const uniform = st.bd.every((s, i) => s && st.bw[i] === st.bw[0] && s.c === st.bd[0].c && s.a === st.bd[0].a);
-      if (uniform) b.strokes = [{ strokeColor: st.bd[0].c, strokeOpacity: st.bd[0].a, strokeWidth: st.bw[0], strokeAlignment: "inner", strokeStyle: "solid" }];
+      const uniform = st.bd.every((s, i) => s && st.bw[i] === st.bw[0] && s.c === st.bd[0].c && s.a === st.bd[0].a && s.tk === st.bd[0].tk);
+      if (uniform) { b.strokes = [{ strokeColor: st.bd[0].c, strokeOpacity: st.bd[0].a, strokeWidth: st.bw[0], strokeAlignment: "inner", strokeStyle: "solid" }]; B.bind(b, st.bd[0], "strokeColor"); }
       else n._sideBorders = true;
     }
     if (st.sh) b.shadows = st.sh.map((s) => ({ style: s.inset ? "inner-shadow" : "drop-shadow", offsetX: s.x, offsetY: s.y, blur: s.blur, spread: s.spread, hidden: false, color: { color: s.c, opacity: s.a } }));
@@ -86,12 +125,13 @@
     let lhPx = f.lh || f.fs * 1.21; if (lhPx - Math.floor(lhPx) > 0 && lhPx - Math.floor(lhPx) <= 0.06) lhPx = Math.floor(lhPx);
     t.lineHeight = String(+(lhPx / f.fs).toFixed(4));
     t.letterSpacing = String(f.ls || 0);
-    t.fills = fill(f);
+    t.fills = fill(f); B.bind(t, f, "fill");
     if (f.td) t.textDecoration = f.td.includes("underline") ? "underline" : "line-through";
     // Penpot measures text asynchronously (and not for free-standing shapes), so seed the size the browser measured and
     // only then hand sizing back to Penpot (auto-width / auto-height). Layout resolves immediately with the right sizes.
     t.resize(Math.max(n.r.w, 1), Math.max(n.r.h, 1));
-    t.growType = n.lines > 1 ? "auto-height" : "auto-width";
+    // screens pin single-line text to the size the browser measured; library components keep Penpot hugging the text
+    t.growType = n.lines > 1 ? "auto-height" : B.pinText ? "fixed" : "auto-width";
     return t;
   }
 
@@ -175,9 +215,11 @@
         const t = d.node;
         if (s.characters !== t.s) s.characters = t.s;
         s.resize(Math.max(t.r.w, 1), Math.max(t.r.h, 1)); s.growType = t.lines > 1 ? "auto-height" : "auto-width";
-        const cur = s.fills && s.fills[0] && s.fills[0].fillColor; if (cur && cur.toLowerCase() !== t.f.c.toLowerCase()) s.fills = fill(t.f);
+        const curTok = s.tokens && s.tokens.fill; const wantTok = t.f.tk ? B.token(t.f.tk) : null;
+        if (wantTok) { if (curTok !== wantTok.name) { B.bindToken(s, wantTok, "fill"); B.stat.overrides = (B.stat.overrides || 0) + 1; } }
+        else { const cur = s.fills && s.fills[0] && s.fills[0].fillColor; if (cur && cur.toLowerCase() !== t.f.c.toLowerCase()) { s.fills = fill(t.f); B.stat.hex++; } }
       } else if (d.k === "sv") B.tint(s, d.node.color);
-      else if (d.k === "ps") s.fills = fill(d.node.bg);
+      else if (d.k === "ps") { s.fills = fill(d.node.bg); B.bind(s, d.node.bg, "fill"); }
       else if (d.k === "comp") B.override(s, d.node, warn);
     });
     return true;
@@ -193,7 +235,7 @@
       ctx.map.push({ n, id: s.id }); return s;
     }
     if (n.t === "ps") {
-      const r = penpot.createRectangle(); r.name = "decor"; r.resize(n.r.w, n.r.h); r.fills = fill(n.bg);
+      const r = penpot.createRectangle(); r.name = "decor"; r.resize(n.r.w, n.r.h); r.fills = fill(n.bg); B.bind(r, n.bg, "fill");
       r.borderRadiusTopLeft = n.rad[0]; r.borderRadiusTopRight = n.rad[1]; r.borderRadiusBottomRight = n.rad[2]; r.borderRadiusBottomLeft = n.rad[3];
       ctx.map.push({ n, id: r.id }); return r;
     }
@@ -234,7 +276,7 @@
     if (n._sideBorders) {
       st.bd.forEach((col, i) => {
         if (!col) return; const w = st.bw[i], W = n.r.w, H = n.r.h;
-        const bar = penpot.createRectangle(); bar.name = "border"; bar.fills = fill(col);
+        const bar = penpot.createRectangle(); bar.name = "border"; bar.fills = fill(col); B.bind(bar, col, "fill");
         const dim = i === 0 || i === 2 ? [W, w] : [w, H]; bar.resize(dim[0], dim[1]);
         b.appendChild(bar); if (flex) bar.layoutChild.absolute = true;
         ctx.abs.push({ shape: bar, rel: { x: n.r.x + (i === 1 ? W - w : 0), y: n.r.y + (i === 2 ? H - w : 0) } });
@@ -363,6 +405,57 @@
       if (F.vi >= F.comps.length) { page.getShapeById(L.container).name = name; F.phase = "done"; }
     }
     return { phase: F.phase, comps: F.comps.length, values: F.vi, container: L.container };
+  };
+
+
+  // ---------- driver helpers (each call stays under the MCP 120 s limit) ----------
+  /** Opens (creating when needed) the page `name` and waits until Penpot really switched. */
+  B.page = async function (name, fresh) {
+    let p = penpot.currentFile.pages.find((x) => x.name === name);
+    if (!p) { p = penpot.createPage(); p.name = name; }
+    await penpot.openPage(p);
+    for (let i = 0; i < 40 && penpot.currentPage.id !== p.id; i++) await B.sleep(250);
+    if (penpot.currentPage.id !== p.id) throw new Error("page switch failed: " + name);
+    if (fresh) penpot.currentPage.findShapes().filter((s) => s.parent && s.parent.type === "root").forEach((s) => s.remove());
+    return penpot.currentPage.name;
+  };
+  /** Removes every existing component set called `name` (removing its container on whichever page holds it removes the components). */
+  B.dropOld = async function (name, ms = 90000) {
+    const t0 = Date.now(); let n = 0;
+    for (const c of penpot.library.local.components.filter((x) => x.name === name)) {
+      const id = c.mainInstance().parent.id;
+      const p = penpot.currentFile.pages.find((x) => x.getShapeById(id)); if (!p) continue;
+      await B.page(p.name); const sh = penpot.currentPage.getShapeById(id); if (sh) { sh.remove(); n++; }
+    }
+    while (penpot.library.local.components.some((x) => x.name === name) && Date.now() - t0 < ms) await B.sleep(500);
+    return { removed: n, left: penpot.library.local.components.filter((x) => x.name === name).length, ms: Date.now() - t0 };
+  };
+  /** Starts a set: fresh page named like the spec, data fetched from /qui-tmp/spec-<name>.js. */
+  B.start = async function (name) {
+    B.stat = { bound: 0, hex: 0, hexSamples: {} }; B.queue = {};
+    await B.page(name, true);
+    const d = JSON.parse(await (await fetch("/qui-tmp/spec-" + name + ".js?" + Date.now())).text());
+    return B.libBegin(name, d.cells);
+  };
+  /** Builds variants for up to `ms` milliseconds, binding tokens after every small batch. */
+  B.pump = function (name, ms = 80000, batch = 6) {
+    const L = LIB[name]; const t0 = Date.now();
+    while (L.idx < L.cells.length && Date.now() - t0 < ms) { B.libStep(name, batch, 0, 0); B.flushTokens(); }
+    return { built: L.idx, of: L.cells.length, ms: Date.now() - t0, stat: B.stat };
+  };
+  /** Runs the finishing phases (components, combine, properties, values) within a time budget. */
+  B.finish = function (name, ms = 80000) {
+    const t0 = Date.now(); let r;
+    do { r = B.libFinishStep(name, 40); } while (r.phase !== "done" && Date.now() - t0 < ms);
+    return r;
+  };
+  /** Token audit of a finished set: how many paints exist and how many are bound to a token. */
+  B.audit = function (name) {
+    const c = penpot.library.local.components.find((x) => x.name === name); if (!c) return null;
+    const vcs = c.variants ? c.variants.variantComponents() : [c]; let paints = 0, bound = 0; const hex = {};
+    const walk = (s) => { for (const k of ["fills", "strokes"]) (s[k] || []).forEach((f) => { if (f.fillColor || f.strokeColor) { paints++; const prop = k === "fills" ? "fill" : "strokeColor"; if (s.tokens && s.tokens[prop]) bound++; else { const h = f.fillColor || f.strokeColor; hex[h] = (hex[h] || 0) + 1; } } }); (s.children || []).forEach(walk); };
+    vcs.forEach((v) => walk(v.mainInstance()));
+    return { variants: vcs.length, paints, bound, unbound: paints - bound, hex };
   };
 
   // ---------- validation: compare Penpot geometry with the browser's ----------

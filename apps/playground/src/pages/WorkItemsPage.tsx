@@ -12,43 +12,23 @@ import { AcmeShell, ViewToolbar } from "../examples/acme/shell";
 
 type OpenItem = (id: string) => void;
 
-function WorkItemRow({ item, level = 0, onOpen }: { item: WorkItem; level?: number; onOpen: OpenItem }) {
+function ItemRow({ item, level = 1, onOpen }: { item: WorkItem; level?: 1 | 2; onOpen: OpenItem }) {
   return (
     <>
-      <QUI.ListItem level={level ? 3 : 1}>
-        <QUI.ListItemButton
-          startIcon={<QUI.Icon icon={typeIcon[item.type]} />}
-          label={
-            <>
-              <QUI.Text color="tertiary" tabularNums>{item.id}</QUI.Text>{"  "}
-              <QUI.Text color="primary">{item.title}</QUI.Text>
-            </>
-          }
-          onClick={() => onOpen(item.id)}
-        />
-        <QUI.Inline gap="2" wrap={false} shrink={false}>
-          <QUI.Box hideBelow="md">
-            <QUI.AvatarGroup size="sm" max={2}>
-              {item.assignees.map((name) => (
-                <QUI.Avatar key={name} alt={name} />
-              ))}
-            </QUI.AvatarGroup>
-          </QUI.Box>
-          <QUI.Box hideBelow="md">
-            <QUI.Pill size="sm" startIcon={<QUI.Swatch fill={item.label.color} />} label={item.label.name} />
-          </QUI.Box>
-          <QUI.Box hideBelow="sm">
-            <QUI.Pill size="sm" startIcon={<QUI.Icon icon={Icons.CalendarDays} />} label={item.due} />
-          </QUI.Box>
-          <QUI.IconButton
-            variant="secondary"
-            size="sm"
-            aria-label={`Priority: ${item.priority}`}
-            icon={<QUI.Icon icon={priorityIcon[item.priority]} tint={item.priority === "urgent" ? "danger" : "secondary"} />}
-          />
-        </QUI.Inline>
-      </QUI.ListItem>
-      {item.children?.map((child) => <WorkItemRow key={child.id} item={child} level={level + 1} onOpen={onOpen} />)}
+      <QUI.WorkItemRow
+        itemId={item.id}
+        title={item.title}
+        typeIcon={typeIcon[item.type]}
+        label={item.label}
+        due={item.due}
+        priority={item.priority === "urgent" ? "urgent" : "normal"}
+        priorityIcon={priorityIcon[item.priority]}
+        priorityLabel={`Priority: ${item.priority}`}
+        assignees={item.assignees}
+        level={level}
+        onClick={() => onOpen(item.id)}
+      />
+      {item.children?.map((child) => <ItemRow key={child.id} item={child} level={2} onOpen={onOpen} />)}
     </>
   );
 }
@@ -56,17 +36,11 @@ function WorkItemRow({ item, level = 0, onOpen }: { item: WorkItem; level?: numb
 function StateGroup({ group, onOpen }: { group: StateGroupData; onOpen: OpenItem }) {
   return (
     <QUI.Stack as="section" aria-label={group.state}>
-      <QUI.Box background="layer-1" paddingX="4" paddingY="2">
-        <QUI.Inline gap="2" wrap={false}>
-          <QUI.Icon icon={group.icon} size="md" tint="secondary" />
-          <QUI.Text size="md" weight="medium">{group.state}</QUI.Text>
-          <QUI.Text variant="caption" color="tertiary">{group.count}</QUI.Text>
-        </QUI.Inline>
-      </QUI.Box>
+      <QUI.StateGroupHeader icon={group.icon} state={group.state} count={group.count} />
       <QUI.Box paddingX="2" paddingY="1">
         <QUI.List aria-label={`${group.state} work items`}>
           {group.items.map((item) => (
-            <WorkItemRow key={item.id} item={item} onOpen={onOpen} />
+            <ItemRow key={item.id} item={item} onOpen={onOpen} />
           ))}
         </QUI.List>
       </QUI.Box>

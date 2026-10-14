@@ -35,6 +35,40 @@
       return { inset, x: n[0] || 0, y: n[1] || 0, blur: n[2] || 0, spread: n[3] || 0, ...hex(rgba(tok), k) };
     });
   };
+
+  // ---- token resolution: which design-token variable paints an element ----
+  // Rules that declare a colour through var(--token); a match only counts when the variable really resolves to the
+  // element's computed colour, so a stale or overridden rule can never bind the wrong token.
+  const COLOR_PROPS = ["background-color", "color", "border-color", "border-top-color", "border-right-color", "border-bottom-color", "border-left-color", "fill", "stroke"];
+  const tokRules = [];
+  const collect = (rules) => { for (const r of rules) { if (r.cssRules && !r.selectorText) { collect(r.cssRules); continue; } if (!r.selectorText) continue; const hits = []; for (const p of COLOR_PROPS) { const v = r.style.getPropertyValue(p); const m = v && v.match(/^var\((--[a-z0-9-]+)\)$/); if (m) hits.push([p, m[1]]); else if (/^currentcolor$/i.test(v) && p !== "color" && p !== "border-color") hits.push([p, "@current"]); } if (hits.length) tokRules.push({ sel: r.selectorText, hits }); } };
+  for (const ss of document.styleSheets) { try { collect(ss.cssRules); } catch (e) {} }
+  const probe = document.createElement("div"); probe.style.cssText = "position:fixed;left:-99px;top:0;width:1px;height:1px"; document.body.appendChild(probe);
+  const varCol = new Map();
+  const varRgba = (name) => { if (!varCol.has(name)) { probe.style.color = ""; probe.style.color = "var(" + name + ")"; varCol.set(name, rgba(getComputedStyle(probe).color)); } return varCol.get(name); };
+  const same = (a, b) => Math.abs(a[0] - b[0]) <= 1 && Math.abs(a[1] - b[1]) <= 1 && Math.abs(a[2] - b[2]) <= 1 && Math.abs(a[3] - b[3]) <= 0.01;
+  const matchSel = (el, sel, which) => { try { if (which && sel.includes(which)) return el.matches(sel.split(which).join("")); if (/::/.test(sel)) return false; return el.matches(sel); } catch (e) { return false; } };
+  const famNames = {};
+  const allVars = [...new Set([...document.styleSheets].flatMap((ss) => { try { return [...ss.cssRules]; } catch (e) { return []; } }).flatMap((r) => (r.cssText.match(/--(?:txt|bg|border)-[a-z0-9-]+(?=\s*:)/g) || [])))];
+  const tokFor = (el, props, value, which) => {
+    const want = rgba(value); if (want[3] === 0) return null;
+    for (let e = el, depth = 0; e && depth < (props[0] === "color" ? 40 : 1); e = e.parentElement, depth++) {
+      let found = null;
+      for (const r of tokRules) {
+        const h = r.hits.find((x) => props.includes(x[0])); if (!h) continue;
+        if (!matchSel(e, r.sel, depth === 0 ? which : null)) continue;
+        if (h[1] === "@current") { const t = tokFor(e, ["color"], getComputedStyle(e).color, null); if (t && same(rgba(getComputedStyle(e).color), want)) found = "--" + t; }
+        else if (same(varRgba(h[1]), want)) found = h[1];
+      }
+      if (found) return found.slice(2);
+    }
+    // fallback: the semantic token of the right family whose resolved colour equals this exact colour
+    const fam = props[0] === "background-color" ? "--bg-" : props[0].startsWith("border") ? "--border-" : "--txt-";
+    if (!famNames[fam]) famNames[fam] = [...new Set(tokRules.flatMap((r) => r.hits.map((h) => h[1])).concat(allVars).filter((n) => n.startsWith(fam)))];
+    const hit = famNames[fam].find((n) => same(varRgba(n), want));
+    return hit ? hit.slice(2) : null;
+  };
+  const H = (el, props, value, k = 1, which) => { const o = hex(rgba(value), k); const t = tokFor(el, props, value, which); if (t) o.tk = t; return o; };
   const px = (v) => { const n = parseFloat(v); return Number.isNaN(n) ? 0 : n; };
   const quad = (cs, p, suffix = "") => ["Top", "Right", "Bottom", "Left"].map((s) => px(cs[p + s + suffix]));
 
@@ -67,7 +101,7 @@
     else if (pcol && stretch && !hw) out.w = "fill";
     else if (hw) out.w = "hug";
     else if (pk !== "flex" && pk !== "none" && Math.abs(rect.width - innerW) < 0.6) out.w = "fill";
-    else if (prow && Math.abs(rect.width - innerW) < 0.6) out.w = "fill";
+    else if (prow && Math.abs(rect.width - innerW) < 0.6 && !(parent && hugW(parent, prect.width))) out.w = "fill";
     // height
     if (pcol && grow) out.h = "fill";
     else if (prow && stretch && !hh) out.h = "fill";
@@ -97,7 +131,7 @@
     if (tag === "svg") {
       const clone = el.cloneNode(true); clone.removeAttribute("class"); clone.removeAttribute("style");
       clone.setAttribute("width", R(rect.width)); clone.setAttribute("height", R(rect.height));
-      return { t: "sv", icon: lucideName(el), svg: new XMLSerializer().serializeToString(clone), r: rel, color: hex(rgba(cs.color)), sw: cs.strokeWidth, op: +cs.opacity };
+      return { t: "sv", icon: lucideName(el), svg: new XMLSerializer().serializeToString(clone), r: rel, color: H(el, ["color"], cs.color), sw: cs.strokeWidth, op: +cs.opacity };
     }
 
     const comp = compOf(el);
@@ -127,8 +161,8 @@
     st.grow = px(cs.flexGrow); st.shrink = px(cs.flexShrink); st.as = cs.alignSelf;
     st.minW = cs.minWidth === "auto" || cs.minWidth === "0px" ? null : px(cs.minWidth);
     st.maxW = cs.maxWidth === "none" ? null : px(cs.maxWidth);
-    const bg = rgba(cs.backgroundColor); if (bg[3] > 0) st.bg = hex(bg, op);
-    const bds = ["Top", "Right", "Bottom", "Left"].map((s, i) => (st.bw[i] > 0 ? hex(rgba(cs["border" + s + "Color"]), op) : null)); if (st.bw.some((w) => w > 0)) st.bd = bds;
+    const bg = rgba(cs.backgroundColor); if (bg[3] > 0) st.bg = H(el, ["background-color"], cs.backgroundColor, op);
+    const bds = ["Top", "Right", "Bottom", "Left"].map((s, i) => (st.bw[i] > 0 && rgba(cs["border" + s + "Color"])[3] > 0 ? H(el, ["border-" + s.toLowerCase() + "-color", "border-color"], cs["border" + s + "Color"], op) : null)); if (st.bw.some((w) => w > 0)) st.bd = bds;
     const rad = ["TopLeft", "TopRight", "BottomRight", "BottomLeft"].map((c) => { const v = cs["border" + c + "Radius"]; const n = v.endsWith("%") ? (parseFloat(v) / 100) * Math.min(rect.width, rect.height) : px(v); return R(Math.min(n, Math.min(rect.width, rect.height) / 2)); });
     if (rad.some((x) => x > 0)) st.rad = rad;
     const sh = shadows(cs.boxShadow, op); if (sh.length) st.sh = sh;
@@ -146,7 +180,7 @@
       const pr = ["TopLeft", "TopRight", "BottomRight", "BottomLeft"].map((c) => { const v = ps["border" + c + "Radius"]; const n = v.endsWith("%") ? (parseFloat(v) / 100) * Math.min(pw, ph) : px(v); return R(Math.min(n, Math.min(pw, ph) / 2)); });
       const centred = ps.position !== "absolute";
       const x = centred ? rect.x + (rect.width - pw) / 2 : rect.x + px(ps.left), y = centred ? rect.y + (rect.height - ph) / 2 : rect.y + px(ps.top);
-      const pn = { t: "ps", which, r: { x: R(x - origin.x), y: R(y - origin.y), w: R(pw), h: R(ph) }, rad: pr, bg: hex(pbg, op) };
+      const pn = { t: "ps", which, r: { x: R(x - origin.x), y: R(y - origin.y), w: R(pw), h: R(ph) }, rad: pr, bg: H(el, ["background-color"], ps.backgroundColor, op, which) };
       (which === "::before" ? ch.unshift(pn) : ch.push(pn));
     }
     const trimAll = kind === "flex" || kind === "grid";
@@ -173,7 +207,7 @@
             if (wrects.length) {
               const fs0 = px(cs.fontSize); const lh0 = cs.lineHeight === "normal" ? fs0 * 1.21 : px(cs.lineHeight);
               const q = wrects[0];
-              ch.push({ t: "tx", s: "\u00A0", lines: 1, r: { x: R(q.left - origin.x), y: R(q.top + q.height / 2 - lh0 / 2 - origin.y), w: R(q.width), h: R(lh0) }, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs: fs0, fw: cs.fontWeight, fst: cs.fontStyle, lh: lh0, ls: px(cs.letterSpacing), al: cs.textAlign, ...hex(rgba(cs.color), op) }, space: true });
+              ch.push({ t: "tx", s: "\u00A0", lines: 1, r: { x: R(q.left - origin.x), y: R(q.top + q.height / 2 - lh0 / 2 - origin.y), w: R(q.width), h: R(lh0) }, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs: fs0, fw: cs.fontWeight, fst: cs.fontStyle, lh: lh0, ls: px(cs.letterSpacing), al: cs.textAlign, ...H(el, ["color"], cs.color, op) }, space: true });
             }
           }
           return;
@@ -189,7 +223,7 @@
         const lhPx = cs.lineHeight === "normal" ? fs * 1.21 : px(cs.lineHeight);
         const firstRect = rects.slice().sort((a, b2) => a.top - b2.top)[0];
         const lineTop = firstRect.top + firstRect.height / 2 - lhPx / 2;
-        const tn = { t: "tx", s, r: { x: R(l - origin.x), y: R(lineTop - origin.y), w: R(r2 - l), h: R(lhPx * lines) }, lines, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs, fw: cs.fontWeight, fst: cs.fontStyle, lh: cs.lineHeight === "normal" ? null : px(cs.lineHeight), ls: px(cs.letterSpacing), td: cs.textDecorationLine !== "none" ? cs.textDecorationLine : undefined, al: cs.textAlign, ...hex(rgba(cs.color), op) } };
+        const tn = { t: "tx", s, r: { x: R(l - origin.x), y: R(lineTop - origin.y), w: R(r2 - l), h: R(lhPx * lines) }, lines, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs, fw: cs.fontWeight, fst: cs.fontStyle, lh: cs.lineHeight === "normal" ? null : px(cs.lineHeight), ls: px(cs.letterSpacing), td: cs.textDecorationLine !== "none" ? cs.textDecorationLine : undefined, al: cs.textAlign, ...H(el, ["color"], cs.color, op) } };
         if (lines > 1 && c.nodes.length === 1) {
           // wrapped text: keep the real line breaks
           const runs = [];
@@ -213,7 +247,7 @@
       const ps = getComputedStyle(el, "::placeholder"); const fs = px(cs.fontSize); const lh = px(cs.lineHeight) || fs * 1.2;
       cx.font = cs.fontWeight + " " + fs + "px " + cs.fontFamily;
       const w = cx.measureText(el.placeholder).width; const padL = px(cs.paddingLeft) + px(cs.borderLeftWidth);
-      ch.push({ t: "tx", s: el.placeholder, placeholder: true, lines: 1, r: { x: R(rect.x - origin.x + padL), y: R(rect.y - origin.y + (rect.height - lh) / 2), w: R(w), h: R(lh) }, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs, fw: cs.fontWeight, fst: "normal", lh, ls: px(cs.letterSpacing), al: "left", ...hex(rgba(ps.color), op) } });
+      ch.push({ t: "tx", s: el.placeholder, placeholder: true, lines: 1, r: { x: R(rect.x - origin.x + padL), y: R(rect.y - origin.y + (rect.height - lh) / 2), w: R(w), h: R(lh) }, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs, fw: cs.fontWeight, fst: "normal", lh, ls: px(cs.letterSpacing), al: "left", ...H(el, ["color"], ps.color, op, "::placeholder") } });
     }
     return node;
   }
