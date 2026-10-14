@@ -88,15 +88,11 @@ function NavLink({ icon, label, current }: { icon: IconComponent; label: string;
 /** Sidebar navigation; shown docked from lg up and in the ☰ drawer below that, where `endAction` is its close button. */
 function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
   return (
-    <QUI.Stack gap="4" padding="3">
-      <QUI.Inline justify="between" wrap={false} paddingStart="2">
-        <QUI.Heading level={2} size={5}>Work</QUI.Heading>
-        <QUI.Inline gap="1" wrap={false}>
-          <QUI.IconButton variant="ghost" size="sm" aria-label="Customize" icon={<QUI.Icon icon={Icons.SlidersHorizontal} />} />
-          {endAction ?? <QUI.IconButton variant="ghost" size="sm" aria-label="Collapse sidebar" icon={<QUI.Icon icon={Icons.PanelLeft} />} />}
-        </QUI.Inline>
-      </QUI.Inline>
-      <QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />
+    <QUI.NavSidebar
+      title="Work"
+      endAction={endAction}
+      action={<QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />}
+    >
       <QUI.List aria-label="Main">
         <NavLink icon={Icons.House} label="Home" />
         <NavLink icon={Icons.UserRound} label="Your work" />
@@ -121,7 +117,7 @@ function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
           <NavLink icon={Icons.Ellipsis} label="More" />
         </QUI.List>
       </QUI.ListSection>
-    </QUI.Stack>
+    </QUI.NavSidebar>
   );
 }
 

@@ -26,6 +26,10 @@ export interface Spec {
   canInstance?: (props: Record<string, any>, el: HTMLElement) => boolean;
 }
 
+/** Rows in a section body (a `List` of `ListItem`s). */
+const rowCount = (body: React.ReactNode) => React.Children.count((React.Children.toArray(body)[0] as React.ReactElement<{ children?: React.ReactNode }> | undefined)?.props.children);
+const sectionsOf = (children: React.ReactNode) =>
+  React.Children.toArray(children).filter((c): c is React.ReactElement<{ defaultOpen?: boolean; open?: boolean; children?: React.ReactNode }> => React.isValidElement(c) && c.type === QUI.ListSection);
 const has = (node: unknown) => node != null && node !== false;
 const iconSlots = (props: Record<string, unknown>, a = "startIcon", b = "endIcon") =>
   has(props[a]) && has(props[b]) ? "both" : has(props[a]) ? "start" : has(props[b]) ? "end" : "none";
@@ -326,6 +330,63 @@ export const specs: Spec[] = [
     ),
     canInstance: () => true,
     toVariant: (p) => ({ Current: p.current ? "true" : "false" }),
+  },
+  {
+    name: "ListSection",
+    level: "molecules",
+    axes: { Open: ["true", "false"] },
+    cell: { width: 232 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <QUI.ListSection data-spec-root="" label="Workspace" defaultOpen={v.Open === "true"}>
+        <QUI.List aria-label="Spec">
+          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.BriefcaseBusiness} />} label="Projects" /></QUI.ListItem>
+          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Lightbulb} />} label="Initiatives" /></QUI.ListItem>
+          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Layers} />} label="Views" /></QUI.ListItem>
+        </QUI.List>
+      </QUI.ListSection>
+    ),
+    canInstance: (p) => rowCount(p.children) === 3,
+    toVariant: (p) => ({ Open: p.defaultOpen || p.open ? "true" : "false" }),
+  },
+  {
+    name: "NavSidebar",
+    level: "organisms",
+    axes: { Workspace: ["open", "closed"], Projects: ["open", "closed"] },
+    cell: { width: 255 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <QUI.NavSidebar
+        data-spec-root=""
+        title="Work"
+        action={<QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />}
+      >
+        <QUI.List aria-label="Main">
+          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.House} />} label="Home" /></QUI.ListItem>
+          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.UserRound} />} label="Your work" /></QUI.ListItem>
+        </QUI.List>
+        <QUI.ListSection label="Workspace" defaultOpen={v.Workspace === "open"}>
+          <QUI.List aria-label="Workspace">
+            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.BriefcaseBusiness} />} label="Projects" /></QUI.ListItem>
+            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Lightbulb} />} label="Initiatives" /></QUI.ListItem>
+            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Layers} />} label="Views" /></QUI.ListItem>
+          </QUI.List>
+        </QUI.ListSection>
+        <QUI.ListSection label="Projects" defaultOpen={v.Projects === "open"}>
+          <QUI.List aria-label="Projects">
+            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Tractor} />} label="Core product" /></QUI.ListItem>
+            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Rocket} />} label="Plane Pro" /></QUI.ListItem>
+            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Compass} />} label="Discover" /></QUI.ListItem>
+          </QUI.List>
+        </QUI.ListSection>
+      </QUI.NavSidebar>
+    ),
+    canInstance: (p) => sectionsOf(p.children).every((c) => rowCount(c.props.children) === 3),
+    toVariant: (p) => {
+      const sections = sectionsOf(p.children);
+      const state = (i: number) => (sections[i]?.props.defaultOpen || sections[i]?.props.open ? "open" : "closed");
+      return { Workspace: state(0), Projects: state(1) };
+    },
   },
   {
     name: "WorkItemCard",
