@@ -314,6 +314,20 @@ export const specs: Spec[] = [
     toVariant: (p) => ({ Layout: String(p.layout ?? "list") }),
   },
   {
+    name: "RailItem",
+    level: "molecules",
+    axes: { Current: ["false", "true"] },
+    cell: { width: 56 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <ul>
+        <QUI.RailItem data-spec-root="" icon={Icons.SquareStack} label="Work" current={v.Current === "true"} />
+      </ul>
+    ),
+    canInstance: () => true,
+    toVariant: (p) => ({ Current: p.current ? "true" : "false" }),
+  },
+  {
     name: "WorkItemCard",
     level: "organisms",
     axes: { Parent: ["false", "true"], SubItems: ["false", "true"], Priority: ["normal", "urgent"], Assignees: ["1", "2", "3"] },

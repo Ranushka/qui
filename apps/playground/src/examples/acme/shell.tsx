@@ -63,24 +63,15 @@ function TopBar() {
   );
 }
 
-function RailItem({ icon, label, current }: { icon: IconComponent; label: string; current?: boolean }) {
-  return (
-    <QUI.Stack as="li" align="center" gap="1">
-      <QUI.IconButton variant={current ? "secondary" : "ghost"} aria-label={label} showTooltip={false} icon={<QUI.Icon icon={icon} />} />
-      <QUI.Text variant="caption" size="sm" color={current ? "primary" : "secondary"}>{label}</QUI.Text>
-    </QUI.Stack>
-  );
-}
-
 function Rail() {
   return (
     <QUI.Stack as="nav" aria-label="Apps" paddingX="2" paddingY="3" shrink={false} hideBelow="md">
       <QUI.Stack as="ul" gap="4">
-        <RailItem icon={Icons.SquareStack} label="Work" current />
-        <RailItem icon={Icons.BookOpen} label="Wiki" />
-        <RailItem icon={Icons.Bot} label="AI" />
-        <RailItem icon={Icons.Monitor} label="Desk" />
-        <RailItem icon={Icons.Settings} label="Settings" />
+        <QUI.RailItem icon={Icons.SquareStack} label="Work" current />
+        <QUI.RailItem icon={Icons.BookOpen} label="Wiki" />
+        <QUI.RailItem icon={Icons.Bot} label="AI" />
+        <QUI.RailItem icon={Icons.Monitor} label="Desk" />
+        <QUI.RailItem icon={Icons.Settings} label="Settings" />
       </QUI.Stack>
     </QUI.Stack>
   );
