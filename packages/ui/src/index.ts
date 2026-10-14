@@ -83,6 +83,7 @@ export * from "./organisms/WorkItemCard";
 export * from "./molecules/StateGroupHeader";
 export * from "./molecules/WorkItemRow";
 export * from "./molecules/Property";
+export * from "./molecules/ViewToolbar";
 export * from "./organisms/NavigationMenu";
 export * from "./organisms/Calendar";
 export * from "./organisms/VirtualList";

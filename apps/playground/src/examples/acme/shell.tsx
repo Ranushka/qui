@@ -176,50 +176,7 @@ function ProjectHeader() {
   );
 }
 
-export type ViewLayout = "list" | "board";
-
-const layoutIcon: Record<ViewLayout, IconComponent> = { list: Icons.List, board: Icons.Kanban };
-const layoutLabel: Record<ViewLayout, string> = { list: "List", board: "Board" };
-
-/** "Work items" count plus view controls. Static UI: each layout is its own example page, so the menu only shows the current one. */
-export function ViewToolbar({ layout, count }: { layout: ViewLayout; count: number }) {
-  return (
-    <QUI.Inline justify="between" wrap={false} gap="4" paddingX="4" paddingY="3">
-      <QUI.Inline gap="2" wrap={false}>
-        <QUI.Icon icon={Icons.SquareStack} size="md" tint="secondary" />
-        <QUI.Text size="md" weight="medium">Work items</QUI.Text>
-        <QUI.Badge size="sm" variant="brand" label={count} />
-      </QUI.Inline>
-      <QUI.Inline gap="2" wrap={false}>
-        <QUI.Menu>
-          <QUI.MenuTrigger
-            render={<QUI.Button variant="secondary" icon={<QUI.Icon icon={layoutIcon[layout]} />} label={layoutLabel[layout]} />}
-          />
-          <QUI.MenuContent>
-            <QUI.MenuRadioGroup defaultValue={layout}>
-              <QUI.MenuGroupLabel>Show as</QUI.MenuGroupLabel>
-              <QUI.MenuRadioItem value="list">List</QUI.MenuRadioItem>
-              <QUI.MenuRadioItem value="board">Board</QUI.MenuRadioItem>
-            </QUI.MenuRadioGroup>
-          </QUI.MenuContent>
-        </QUI.Menu>
-        <QUI.IconButton variant="secondary" aria-label="Filters" icon={<QUI.Icon icon={Icons.ListFilter} />} />
-        <QUI.Box hideBelow="sm">
-          <QUI.IconButton variant="secondary" aria-label="Display" icon={<QUI.Icon icon={Icons.SlidersHorizontal} />} />
-        </QUI.Box>
-        <QUI.Box hideBelow="sm">
-          <QUI.IconButton variant="secondary" aria-label="Analytics" icon={<QUI.Icon icon={Icons.ChartColumn} />} />
-        </QUI.Box>
-        <QUI.Box hideBelow="sm">
-          <QUI.Button label="Add work item" />
-        </QUI.Box>
-        <QUI.Box hideAbove="sm">
-          <QUI.IconButton aria-label="Add work item" icon={<QUI.Icon icon={Icons.Plus} />} />
-        </QUI.Box>
-      </QUI.Inline>
-    </QUI.Inline>
-  );
-}
+export const ViewToolbar = QUI.ViewToolbar;
 
 /** Top bar, rail, sidebar and project header around a screen's content, which fills the rest. */
 export function AcmeShell({ children }: { children: React.ReactNode }) {

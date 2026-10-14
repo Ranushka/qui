@@ -304,6 +304,16 @@ export const specs: Spec[] = [
     toVariant: (p) => ({ Content: (React.Children.toArray(p.children)[0] as React.ReactElement | undefined)?.type === QUI.Pill ? "pill" : "people" }),
   },
   {
+    name: "ViewToolbar",
+    level: "molecules",
+    axes: { Layout: ["list", "board"] },
+    cell: { width: 880 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => <QUI.ViewToolbar data-spec-root="" layout={v.Layout as "list"} count={19} />,
+    canInstance: () => true,
+    toVariant: (p) => ({ Layout: String(p.layout ?? "list") }),
+  },
+  {
     name: "WorkItemCard",
     level: "organisms",
     axes: { Parent: ["false", "true"], SubItems: ["false", "true"], Priority: ["normal", "urgent"], Assignees: ["1", "2", "3"] },
