@@ -34,3 +34,18 @@ export function NavSidebar({ title, endAction, action, children, ...props }: Nav
     </Stack>
   );
 }
+
+/* __DOC
+<div className="w-64 rounded-lg border border-subtle">
+  <QUI.NavSidebar title="Work" action={<QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />}>
+    <QUI.List aria-label="Main">
+      <QUI.ListItem>
+        <QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.House} />} label="Home" />
+      </QUI.ListItem>
+      <QUI.ListItem>
+        <QUI.ListItemButton aria-current="page" startIcon={<QUI.Icon icon={Icons.UserRound} />} label="Your work" />
+      </QUI.ListItem>
+    </QUI.List>
+  </QUI.NavSidebar>
+</div>
+DOC__ */

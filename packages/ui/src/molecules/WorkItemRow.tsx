@@ -87,3 +87,28 @@ export function WorkItemRow({
     </ListItem>
   );
 }
+
+/* __DOC_BLOCK
+<div className="flex flex-col">
+  <QUI.WorkItemRow
+    itemId="ACME-23"
+    title="Design empty state illustrations"
+    typeIcon={Icons.Sun}
+    label={{ name: "Enhancement", color: "var(--label-purple-icon)" }}
+    due="22 Dec"
+    priorityIcon={Icons.SignalHigh}
+    assignees={["Ann Lee"]}
+  />
+  <QUI.WorkItemRow
+    itemId="ACME-56"
+    title="Product Tour"
+    typeIcon={Icons.Sparkles}
+    label={{ name: "Product", color: "var(--label-indigo-icon)" }}
+    due="27 Apr"
+    priorityIcon={Icons.CircleAlert}
+    priority="urgent"
+    assignees={["Kim Moss", "Ben Ray"]}
+    level={2}
+  />
+</div>
+DOC__ */

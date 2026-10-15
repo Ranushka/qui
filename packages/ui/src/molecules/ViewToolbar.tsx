@@ -63,3 +63,10 @@ export function ViewToolbar({ layout, count, title = "Work items", actionLabel =
     </Inline>
   );
 }
+
+/* __DOC_BLOCK
+<div className="flex flex-col gap-2">
+  <QUI.ViewToolbar layout="list" count={19} />
+  <QUI.ViewToolbar layout="board" count={19} title="Board" actionLabel="New item" />
+</div>
+DOC__ */

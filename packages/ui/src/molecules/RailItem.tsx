@@ -22,3 +22,11 @@ export function RailItem({ icon, label, current, ...props }: RailItemProps) {
     </Stack>
   );
 }
+
+/* __DOC
+<ul className="flex flex-col gap-4">
+  <QUI.RailItem icon={Icons.SquareStack} label="Work" current />
+  <QUI.RailItem icon={Icons.BookOpen} label="Wiki" />
+  <QUI.RailItem icon={Icons.Settings} label="Settings" />
+</ul>
+DOC__ */

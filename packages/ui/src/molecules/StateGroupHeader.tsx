@@ -47,3 +47,10 @@ export function StateGroupHeader({ icon, state, count, layout = "list", ...props
     </Box>
   );
 }
+
+/* __DOC_BLOCK
+<div className="flex flex-col gap-2">
+  <QUI.StateGroupHeader icon={Icons.CircleDashed} state="Backlog" count={8} />
+  <QUI.StateGroupHeader icon={Icons.CircleDot} state="In Progress" count={3} layout="column" />
+</div>
+DOC__ */

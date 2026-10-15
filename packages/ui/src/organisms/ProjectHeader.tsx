@@ -56,3 +56,16 @@ export function ProjectHeader({ icon, title, tabs, value, ...props }: ProjectHea
     </Box>
   );
 }
+
+/* __DOC_BLOCK
+<QUI.ProjectHeader
+  icon={Icons.Tractor}
+  title="Core product"
+  value="work-items"
+  tabs={[
+    { value: "overview", label: "Overview" },
+    { value: "work-items", label: "Work items" },
+    { value: "cycles", label: "Cycles" },
+  ]}
+/>
+DOC__ */

@@ -99,3 +99,19 @@ export function WorkItemCard({
     </Box>
   );
 }
+
+/* __DOC
+<ul className="w-80">
+  <QUI.WorkItemCard
+    itemId="ACME-65"
+    parentId="ACME-12"
+    typeIcon={Icons.Box}
+    title="UX/UI for Figma integration"
+    label={{ name: "Authentication", color: "var(--label-purple-icon)" }}
+    due="19 Dec"
+    priorityIcon={Icons.SignalHigh}
+    assignees={["Gil Lane", "Ann Lee"]}
+    subItems={2}
+  />
+</ul>
+DOC__ */

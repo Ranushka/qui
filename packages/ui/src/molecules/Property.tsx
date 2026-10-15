@@ -26,3 +26,14 @@ export function Property({ icon, label, children, ...props }: PropertyProps) {
     </Stack>
   );
 }
+
+/* __DOC
+<div className="flex w-80 flex-col gap-2">
+  <QUI.Property icon={Icons.CircleDot} label="State">
+    <QUI.Pill size="sm" startIcon={<QUI.Icon icon={Icons.CircleDot} />} label="In Progress" />
+  </QUI.Property>
+  <QUI.Property icon={Icons.CalendarDays} label="Due date">
+    <QUI.Pill size="sm" startIcon={<QUI.Icon icon={Icons.CalendarDays} />} label="19 Dec" />
+  </QUI.Property>
+</div>
+DOC__ */

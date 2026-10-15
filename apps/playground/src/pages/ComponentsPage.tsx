@@ -57,7 +57,7 @@ function Section({
 }
 
 /** Every component in the gallery by atomic level, for the playground side panel and search. */
-export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","RadioGroupField","ScrollArea","Select","SelectField","SplitButton","SuggestionMenu","SwitchField","Tabs","TextAreaField","Toast"]},{"title":"Organisms","names":["Banner","Calendar","Charts","NavigationMenu","Table","Toolbar","VirtualList"]}];
+export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","SuggestionMenu","SwitchField","Tabs","TextAreaField","Toast","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","Toolbar","VirtualList","WorkItemCard"]}];
 export const componentNames: readonly string[] = componentGroups.flatMap((g) => g.names).sort((a, b) => a.localeCompare(b));
 
 /** Opening #/components/Badge scrolls to that component section. */
@@ -189,6 +189,9 @@ export function ComponentsPage() {
     <QUI.Button label="Loading" loading />
     <QUI.Button label="Disabled" disabled />
     <QUI.Button variant="secondary" label="Loading" loading />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Button variant="ghost" icon={<QUI.Icon icon={Icons.BookOpen} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label="Wiki" />
   </div>
 </div>
           </Section>
@@ -1024,6 +1027,16 @@ export function ComponentsPage() {
   .
 </p>
           </Section>
+          <Section title="Property" align="row">
+<div className="flex w-80 flex-col gap-2">
+  <QUI.Property icon={Icons.CircleDot} label="State">
+    <QUI.Pill size="sm" startIcon={<QUI.Icon icon={Icons.CircleDot} />} label="In Progress" />
+  </QUI.Property>
+  <QUI.Property icon={Icons.CalendarDays} label="Due date">
+    <QUI.Pill size="sm" startIcon={<QUI.Icon icon={Icons.CalendarDays} />} label="19 Dec" />
+  </QUI.Property>
+</div>
+          </Section>
           <Section title="RadioGroupField" align="block" props={{"size":["md","lg","xl","2xl"],"density":["comfortable","compact"],"required":"boolean","disabled":"boolean"}}>
 <div className="flex max-w-md flex-col gap-6 p-4">
   <QUI.RadioGroupField label="Issue visibility" description="Who can see new issues in this project." hint="Admins always have access." defaultValue="members">
@@ -1036,6 +1049,13 @@ export function ComponentsPage() {
     <QUI.RadioGroupFieldOption value="tshirt" label="T-shirt sizes" />
   </QUI.RadioGroupField>
 </div>
+          </Section>
+          <Section title="RailItem" align="row">
+<ul className="flex flex-col gap-4">
+  <QUI.RailItem icon={Icons.SquareStack} label="Work" current />
+  <QUI.RailItem icon={Icons.BookOpen} label="Wiki" />
+  <QUI.RailItem icon={Icons.Settings} label="Settings" />
+</ul>
           </Section>
           <Section title="ScrollArea" align="block" props={{"orientation":["vertical","horizontal","both"],"visibility":["auto","always"],"size":["sm","md","lg"]}}>
 <div className="flex flex-wrap gap-6 p-4">
@@ -1137,6 +1157,12 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
+          <Section title="StateGroupHeader" align="block">
+<div className="flex flex-col gap-2">
+  <QUI.StateGroupHeader icon={Icons.CircleDashed} state="Backlog" count={8} />
+  <QUI.StateGroupHeader icon={Icons.CircleDot} state="In Progress" count={3} layout="column" />
+</div>
+          </Section>
           <Section title="SuggestionMenu" align="row" props={{"width":["fixed","fit"],"loopFocus":"boolean"}}>
 <QUI.SuggestionMenu aria-label="Insert block">
   <QUI.SuggestionMenuGroup label="Basic blocks">
@@ -1192,6 +1218,36 @@ export function ComponentsPage() {
 <QUI.ToastProvider>
   <QUI.ToastLauncher />
 </QUI.ToastProvider>
+          </Section>
+          <Section title="ViewToolbar" align="block">
+<div className="flex flex-col gap-2">
+  <QUI.ViewToolbar layout="list" count={19} />
+  <QUI.ViewToolbar layout="board" count={19} title="Board" actionLabel="New item" />
+</div>
+          </Section>
+          <Section title="WorkItemRow" align="block">
+<div className="flex flex-col">
+  <QUI.WorkItemRow
+    itemId="ACME-23"
+    title="Design empty state illustrations"
+    typeIcon={Icons.Sun}
+    label={{ name: "Enhancement", color: "var(--label-purple-icon)" }}
+    due="22 Dec"
+    priorityIcon={Icons.SignalHigh}
+    assignees={["Ann Lee"]}
+  />
+  <QUI.WorkItemRow
+    itemId="ACME-56"
+    title="Product Tour"
+    typeIcon={Icons.Sparkles}
+    label={{ name: "Product", color: "var(--label-indigo-icon)" }}
+    due="27 Apr"
+    priorityIcon={Icons.CircleAlert}
+    priority="urgent"
+    assignees={["Kim Moss", "Ben Ray"]}
+    level={2}
+  />
+</div>
           </Section>
         </div>
       </div>
@@ -1357,6 +1413,32 @@ export function ComponentsPage() {
   </QUI.NavigationMenu>
 </div>
           </Section>
+          <Section title="NavSidebar" align="row">
+<div className="w-64 rounded-lg border border-subtle">
+  <QUI.NavSidebar title="Work" action={<QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />}>
+    <QUI.List aria-label="Main">
+      <QUI.ListItem>
+        <QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.House} />} label="Home" />
+      </QUI.ListItem>
+      <QUI.ListItem>
+        <QUI.ListItemButton aria-current="page" startIcon={<QUI.Icon icon={Icons.UserRound} />} label="Your work" />
+      </QUI.ListItem>
+    </QUI.List>
+  </QUI.NavSidebar>
+</div>
+          </Section>
+          <Section title="ProjectHeader" align="block">
+<QUI.ProjectHeader
+  icon={Icons.Tractor}
+  title="Core product"
+  value="work-items"
+  tabs={[
+    { value: "overview", label: "Overview" },
+    { value: "work-items", label: "Work items" },
+    { value: "cycles", label: "Cycles" },
+  ]}
+/>
+          </Section>
           <Section title="Table" align="block" props={{"density":["comfortable","compact"]}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Table>
@@ -1453,6 +1535,21 @@ export function ComponentsPage() {
     )}
   />
 </div>
+          </Section>
+          <Section title="WorkItemCard" align="row">
+<ul className="w-80">
+  <QUI.WorkItemCard
+    itemId="ACME-65"
+    parentId="ACME-12"
+    typeIcon={Icons.Box}
+    title="UX/UI for Figma integration"
+    label={{ name: "Authentication", color: "var(--label-purple-icon)" }}
+    due="19 Dec"
+    priorityIcon={Icons.SignalHigh}
+    assignees={["Gil Lane", "Ann Lee"]}
+    subItems={2}
+  />
+</ul>
           </Section>
         </div>
       </div>
