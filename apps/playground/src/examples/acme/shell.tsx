@@ -4,7 +4,7 @@ import * as Icons from "lucide-react";
 import type { IconComponent } from "./data";
 
 /**
- * The "Acme Inc." app chrome shared by the example screens: top bar, app rail, sidebar and project
+ * The "Acme Inc." app chrome shared by the example screens: top bar with the app switcher, sidebar and project
  * header. Built only from qui components — no className or style.
  */
 
@@ -26,12 +26,43 @@ function MobileNav() {
   );
 }
 
+const apps: { icon: IconComponent; label: string; current?: boolean }[] = [
+  { icon: Icons.SquareStack, label: "Work", current: true },
+  { icon: Icons.BookOpen, label: "Wiki" },
+  { icon: Icons.Bot, label: "AI" },
+  { icon: Icons.Monitor, label: "Desk" },
+];
+
+/** The workspace logo, and the app switcher (Work, Wiki, AI, Desk, Settings) as a dropdown under the workspace name. */
+function AppSwitcher() {
+  return (
+    <QUI.Inline gap="1" wrap={false}>
+      <QUI.WorkspaceAvatar size="lg" alt="Acme Inc." />
+      <QUI.Menu>
+        <QUI.MenuTrigger render={<QUI.Button variant="ghost" size="lg" icon={<QUI.Icon icon={Icons.ChevronDown} />} iconPosition="end" label="Acme Inc." />} />
+        <QUI.MenuContent align="start">
+          <QUI.MenuGroup>
+            <QUI.MenuGroupLabel>Apps</QUI.MenuGroupLabel>
+            {apps.map((app) => (
+              <QUI.MenuItem key={app.label} icon={<QUI.Icon icon={app.icon} />} selected={!!app.current}>
+                {app.label}
+              </QUI.MenuItem>
+            ))}
+          </QUI.MenuGroup>
+          <QUI.MenuSeparator />
+          <QUI.MenuItem icon={<QUI.Icon icon={Icons.Settings} />}>Settings</QUI.MenuItem>
+        </QUI.MenuContent>
+      </QUI.Menu>
+    </QUI.Inline>
+  );
+}
+
 function TopBar() {
   return (
     <QUI.Inline as="header" justify="between" wrap={false} gap="4" paddingX="3" paddingY="2">
       <QUI.Inline gap="1" wrap={false}>
         <MobileNav />
-        <QUI.Button variant="ghost" icon={<QUI.WorkspaceAvatar size="xs" alt="Acme Inc." />} label="Acme Inc." />
+        <AppSwitcher />
       </QUI.Inline>
       <QUI.Box width="md" hideBelow="md">
         <QUI.Input
@@ -60,20 +91,6 @@ function TopBar() {
         <QUI.Avatar size="md" alt="Ranu" />
       </QUI.Inline>
     </QUI.Inline>
-  );
-}
-
-function Rail() {
-  return (
-    <QUI.Stack as="nav" aria-label="Apps" paddingX="2" paddingY="3" shrink={false} hideBelow="md">
-      <QUI.Stack as="ul" gap="4">
-        <QUI.RailItem icon={Icons.SquareStack} label="Work" current />
-        <QUI.RailItem icon={Icons.BookOpen} label="Wiki" />
-        <QUI.RailItem icon={Icons.Bot} label="AI" />
-        <QUI.RailItem icon={Icons.Monitor} label="Desk" />
-        <QUI.RailItem icon={Icons.Settings} label="Settings" />
-      </QUI.Stack>
-    </QUI.Stack>
   );
 }
 
@@ -142,14 +159,13 @@ function CoreProductHeader() {
 
 export const ViewToolbar = QUI.ViewToolbar;
 
-/** Top bar, rail, sidebar and project header around a screen's content, which fills the rest. */
+/** Top bar (with the app switcher), sidebar and project header around a screen's content, which fills the rest. */
 export function AcmeShell({ children }: { children: React.ReactNode }) {
   return (
     <QUI.Box height="full" background="canvas">
       <QUI.Stack height="full">
         <TopBar />
-        <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingEnd="2" paddingBottom="2">
-          <Rail />
+        <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
           <QUI.Box as="section" aria-label="Core product" grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
             <QUI.Inline height="full" wrap={false} align="stretch" gap="0">
               <Sidebar />

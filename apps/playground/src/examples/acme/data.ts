@@ -40,17 +40,17 @@ export const priorityIcon = {
 };
 
 const label = {
-  enhancement: { name: "Enhancement", color: "#8b5cf6" },
-  editor: { name: "Editor", color: "#10b981" },
-  mobile: { name: "Mobile", color: "#0ea5e9" },
-  ai: { name: "AI", color: "#10b981" },
-  product: { name: "Product", color: "#3b82f6" },
-  engineering: { name: "Engineering", color: "#f59e0b" },
-  bug: { name: "Bug", color: "#f59e0b" },
-  wiki: { name: "Wiki", color: "#8b5cf6" },
-  auth: { name: "Authentication", color: "#8b5cf6" },
-  billing: { name: "Billing", color: "#8b5cf6" },
-  three: { name: "3 labels", color: "#22c55e" },
+  enhancement: { name: "Enhancement", color: "var(--label-purple-icon)" },
+  editor: { name: "Editor", color: "var(--label-emerald-icon)" },
+  mobile: { name: "Mobile", color: "var(--label-indigo-icon)" },
+  ai: { name: "AI", color: "var(--label-emerald-icon)" },
+  product: { name: "Product", color: "var(--label-indigo-icon)" },
+  engineering: { name: "Engineering", color: "var(--label-orange-icon)" },
+  bug: { name: "Bug", color: "var(--label-orange-icon)" },
+  wiki: { name: "Wiki", color: "var(--label-purple-icon)" },
+  auth: { name: "Authentication", color: "var(--label-purple-icon)" },
+  billing: { name: "Billing", color: "var(--label-purple-icon)" },
+  three: { name: "3 labels", color: "var(--label-emerald-icon)" },
 };
 
 const groupData: Omit<StateGroup, "count">[] = [
@@ -60,7 +60,7 @@ const groupData: Omit<StateGroup, "count">[] = [
     items: [
       { id: "ACME-23", title: "Design empty state illustrations", type: "idea", assignees: ["Ann Lee"], label: label.enhancement, due: "22 Dec", priority: "high" },
       { id: "ACME-45", title: "Embed pages in nested wiki views", type: "feature", assignees: ["Raj Patel", "Mia Chen"], label: label.editor, due: "03 Mar", priority: "medium" },
-      { id: "ACME-67", title: "Improve Stickies drag-and-drop behavior", type: "task", assignees: ["Ann Lee"], label: { ...label.enhancement, color: "#ef4444" }, due: "18 Aug", priority: "low" },
+      { id: "ACME-67", title: "Improve Stickies drag-and-drop behavior", type: "task", assignees: ["Ann Lee"], label: { ...label.enhancement, color: "var(--label-crimson-icon)" }, due: "18 Aug", priority: "low" },
       { id: "ACME-89", title: "Redesign nested pages list for mobile", type: "bug", assignees: ["Tom Ford"], label: label.mobile, due: "29 Nov", priority: "high" },
       {
         id: "ACME-12", title: "Add voice input to AI chat", type: "epic", assignees: ["Sara Kim"], label: label.three, due: "11 Feb", priority: "low",
@@ -69,7 +69,7 @@ const groupData: Omit<StateGroup, "count">[] = [
           { id: "ACME-76", title: "Redesign create work item modal", type: "task", assignees: ["Bot"], label: label.ai, due: "03 Mar", priority: "medium" },
         ],
       },
-      { id: "ACME-34", title: "Add password protection for pages and wiki", type: "feature", assignees: ["Ben Ray", "Bot"], label: { ...label.three, color: "#64748b" }, due: "01 Jan", priority: "medium" },
+      { id: "ACME-34", title: "Add password protection for pages and wiki", type: "feature", assignees: ["Ben Ray", "Bot"], label: { ...label.three, color: "var(--label-grey-icon)" }, due: "01 Jan", priority: "medium" },
     ],
   },
   {
