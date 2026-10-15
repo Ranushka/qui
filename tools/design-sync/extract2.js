@@ -49,7 +49,7 @@
   const same = (a, b) => Math.abs(a[0] - b[0]) <= 1 && Math.abs(a[1] - b[1]) <= 1 && Math.abs(a[2] - b[2]) <= 1 && Math.abs(a[3] - b[3]) <= 0.01;
   const matchSel = (el, sel, which) => { try { if (which && sel.includes(which)) return el.matches(sel.split(which).join("")); if (/::/.test(sel)) return false; return el.matches(sel); } catch (e) { return false; } };
   const famNames = {};
-  const allVars = [...new Set([...document.styleSheets].flatMap((ss) => { try { return [...ss.cssRules]; } catch (e) { return []; } }).flatMap((r) => (r.cssText.match(/--(?:txt|bg|border)-[a-z0-9-]+(?=\s*:)/g) || [])))];
+  const allVars = [...new Set([...document.styleSheets].flatMap((ss) => { try { return [...ss.cssRules]; } catch (e) { return []; } }).flatMap((r) => (r.cssText.match(/--(?:txt|bg|border|label)-[a-z0-9-]+(?=\s*:)/g) || [])))];
   const tokFor = (el, props, value, which) => {
     const want = rgba(value); if (want[3] === 0) return null;
     for (let e = el, depth = 0; e && depth < (props[0] === "color" ? 40 : 1); e = e.parentElement, depth++) {
@@ -65,7 +65,16 @@
     // fallback: the semantic token of the right family whose resolved colour equals this exact colour
     const fam = props[0] === "background-color" ? "--bg-" : props[0].startsWith("border") ? "--border-" : "--txt-";
     if (!famNames[fam]) famNames[fam] = [...new Set(tokRules.flatMap((r) => r.hits.map((h) => h[1])).concat(allVars).filter((n) => n.startsWith(fam)))];
-    const hit = famNames[fam].find((n) => same(varRgba(n), want));
+    // data colours (a label's swatch) come from the label palette: any token whose colour is exactly this one
+    const hit = famNames[fam].find((n) => same(varRgba(n), want)) || allVars.filter((n) => n.startsWith("--label-") && same(varRgba(n), want)).sort((a, b) => b.endsWith("-icon") - a.endsWith("-icon"))[0];
+    return hit ? hit.slice(2) : null;
+  };
+  /** Token of an svg part's paint: a var named in its classes when it resolves to the colour, else the family it hints at. */
+  const svgTok = (el, value) => {
+    const want = rgba(value); const cls = el.getAttribute("class") || "";
+    const named = (cls.match(/--[a-z0-9-]+/g) || []).map((n) => n.replace(/^--(bg|border|text)-color-/, "--$1-").replace(/^--text-/, "--txt-"));
+    const pool = allVars.filter((n) => same(varRgba(n), want));
+    const hit = pool.find((n) => named.includes(n)) || pool.find((n) => named.some((x) => x.startsWith(n.split("-").slice(0, 3).join("-")))) || pool.find((n) => named.some((x) => n.startsWith(x.split("-").slice(0, 3).join("-")))) || pool[0];
     return hit ? hit.slice(2) : null;
   };
   const H = (el, props, value, k = 1, which) => { const o = hex(rgba(value), k); const t = tokFor(el, props, value, which); if (t) o.tk = t; return o; };
@@ -131,7 +140,26 @@
     if (tag === "svg") {
       const clone = el.cloneNode(true); clone.removeAttribute("class"); clone.removeAttribute("style");
       clone.setAttribute("width", R(rect.width)); clone.setAttribute("height", R(rect.height));
-      return { t: "sv", icon: lucideName(el), svg: new XMLSerializer().serializeToString(clone), r: rel, color: H(el, ["color"], cs.color), sw: cs.strokeWidth, op: +cs.opacity };
+      // non-lucide svgs (progress rings, spinners) colour their parts through classes the svg import cannot see:
+      // inline each part's computed paint and rotation, and record its token so the builder can bind it
+      let parts;
+      if (!lucideName(el)) {
+        const SHAPES = "path,circle,ellipse,rect,line,polyline,polygon";
+        const src = [...el.querySelectorAll(SHAPES)], dst = [...clone.querySelectorAll(SHAPES)];
+        const vb = el.viewBox && el.viewBox.baseVal; const cx = vb ? vb.x + vb.width / 2 : 0, cy = vb ? vb.y + vb.height / 2 : 0;
+        parts = src.map((p, i) => {
+          const pcs = getComputedStyle(p); const d = dst[i]; d.removeAttribute("class");
+          const paint = (prop) => { const v = pcs[prop]; if (!v || v === "none" || /url\(/.test(v)) return null; const o = hex(rgba(v)); if (!o.a) return null; const t = svgTok(p, v); if (t) o.tk = t; d.setAttribute(prop, o.c); if (o.a < 1) d.setAttribute(prop + "-opacity", o.a); return o; };
+          const out = { stroke: paint("stroke"), fill: paint("fill") };
+          const m = pcs.transform && pcs.transform.match(/^matrix\(([^)]+)\)$/);
+          let ang = 0;
+          if (m) { const [a, b] = m[1].split(",").map(Number); ang = Math.round((Math.atan2(b, a) * 180) / Math.PI); }
+          if (pcs.rotate && pcs.rotate !== "none") ang += parseFloat(pcs.rotate) || 0; // Tailwind v4 rotate-* uses the rotate property
+          if (ang) d.setAttribute("transform", `rotate(${ang} ${cx} ${cy})`);
+          return out;
+        });
+      }
+      return { t: "sv", icon: lucideName(el), svg: new XMLSerializer().serializeToString(clone), r: rel, color: H(el, ["color"], cs.color), parts, sw: cs.strokeWidth, op: +cs.opacity };
     }
 
     const comp = compOf(el);
@@ -165,6 +193,8 @@
     const bds = ["Top", "Right", "Bottom", "Left"].map((s, i) => (st.bw[i] > 0 && rgba(cs["border" + s + "Color"])[3] > 0 ? H(el, ["border-" + s.toLowerCase() + "-color", "border-color"], cs["border" + s + "Color"], op) : null)); if (st.bw.some((w) => w > 0)) st.bd = bds;
     const rad = ["TopLeft", "TopRight", "BottomRight", "BottomLeft"].map((c) => { const v = cs["border" + c + "Radius"]; const n = v.endsWith("%") ? (parseFloat(v) / 100) * Math.min(rect.width, rect.height) : px(v); return R(Math.min(n, Math.min(rect.width, rect.height) / 2)); });
     if (rad.some((x) => x > 0)) st.rad = rad;
+    // rounded-full computes to an effectively infinite radius: keep that intent (radius.full) rather than half the height
+    if (["TopLeft", "TopRight", "BottomRight", "BottomLeft"].every((c) => { const v = cs["border" + c + "Radius"]; return v.endsWith("%") ? parseFloat(v) >= 50 : px(v) >= 999; })) st.radFull = true;
     const sh = shadows(cs.boxShadow, op); if (sh.length) st.sh = sh;
     if (op < 1) st.op = op;
     if (cs.backgroundImage && cs.backgroundImage !== "none") st.bgImg = cs.backgroundImage.slice(0, 120);
@@ -252,12 +282,14 @@
     return node;
   }
 
+  // browser zoom snaps borders to device pixels (1px reads back as 0.8 at 125%), so only measure at 100%
+  if (Math.abs(devicePixelRatio - Math.round(devicePixelRatio)) > 0.01) throw new Error("page zoom is not 100% (devicePixelRatio " + devicePixelRatio + "); reset it with cmd+0");
   const t0 = performance.now();
   const out = { dpr: devicePixelRatio, vw: innerWidth, vh: innerHeight };
   if (cfg.cells) {
     out.cells = [...document.querySelectorAll(cfg.cells)].map((cell) => {
-      const sel = cell.getAttribute("data-root-sel"); const root = (sel && cell.querySelector(sel)) || cell.firstElementChild; const o = root.getBoundingClientRect();
-      return { spec: cell.getAttribute("data-spec"), v: JSON.parse(cell.getAttribute("data-v") || "{}"), tree: walk(root, { x: o.x, y: o.y }, null, null, null) };
+      const sel = cell.getAttribute("data-root-sel"); const root = (sel && (sel.startsWith("doc:") ? document.querySelector(sel.slice(4)) : cell.querySelector(sel))) || cell.firstElementChild; const o = root.getBoundingClientRect();
+      return { spec: cell.getAttribute("data-spec"), level: cell.getAttribute("data-level"), v: JSON.parse(cell.getAttribute("data-v") || "{}"), tree: walk(root, { x: o.x, y: o.y }, null, null, null) };
     });
   } else {
     const root = typeof cfg.root === "string" ? document.querySelector(cfg.root) : cfg.root || document.getElementById("root");

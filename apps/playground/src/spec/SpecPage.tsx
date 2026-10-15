@@ -17,7 +17,7 @@ function Cell({ spec, v }: { spec: Spec; v: Variant }) {
     applyForcedState(ref.current, (v.State as ForcedState) ?? "default");
   }, [v.State]);
   return (
-    <div ref={ref} data-spec={spec.name} data-v={JSON.stringify(v)} data-root-sel={spec.rootSelector} style={{ display: "inline-block", margin: 12, verticalAlign: "top", ...(typeof spec.cell === "function" ? spec.cell(v) : spec.cell) }}>
+    <div ref={ref} data-spec={spec.name} data-level={spec.level} data-v={JSON.stringify(v)} data-root-sel={spec.rootSelector} style={{ display: "inline-block", margin: 12, verticalAlign: "top", ...(typeof spec.cell === "function" ? spec.cell(v) : spec.cell) }}>
       {spec.render(v)}
     </div>
   );

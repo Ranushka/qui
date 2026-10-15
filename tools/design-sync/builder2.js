@@ -25,7 +25,36 @@
     B.bindToken(shape, t, prop); return true;
   };
   B.bindToken = function (shape, token, prop) {
-    const k = token.name + "|" + prop; (B.queue[k] = B.queue[k] || { token, prop, ids: [] }).ids.push(shape.id); B.stat.bound++;
+    const k = token.name + "|" + prop; (B.queue[k] = B.queue[k] || { token, prop, ids: [] }).ids.push(shape.id);
+    if (token.type === "color") B.stat.bound++;
+  };
+  /** Dimension tokens of the core set by kind and value: space (padding / gap / margin), radius, border width, control height. */
+  B._dims = null;
+  B.dims = function () {
+    if (B._dims) return B._dims;
+    const D = { space: {}, padx: {}, radius: {}, bw: {}, height: {} };
+    const core = penpot.library.local.tokens.sets.find((s) => s.name === "core");
+    const kind = (n) => (/^space\./.test(n) ? "space" : /^control\.padding-x\./.test(n) ? "padx" : /^radius\./.test(n) ? "radius" : /^border-width\./.test(n) ? "bw" : /^control\.height\./.test(n) ? "height" : null);
+    for (const t of core.tokens) { const k = kind(t.name); const v = +t.value; if (k && !(v in D[k])) D[k][v] = t; }
+    return (B._dims = D);
+  };
+  /** Binds dimension `v` of `shape` to the core token of that kind and value; literal values are counted like hex colours. */
+  B.bindDim = function (shape, kind, v, props) {
+    if (v == null || v === 0) return;
+    const D = B.dims(); const key = +(+v).toFixed(2);
+    const t = D[kind][key] || (kind === "space" && D.padx[key]) || null;
+    const s = (B.stat.dim = B.stat.dim || { bound: 0, literal: 0, samples: {} });
+    // only control heights are tokens; any other fixed height (a 12px swatch) is the component's own size, not a miss
+    if (!t && kind === "height") return;
+    if (!t) { s.literal += props.length; s.samples[kind + ":" + key] = (s.samples[kind + ":" + key] || 0) + props.length; return; }
+    for (const p of props) B.bindToken(shape, t, p);
+    s.bound += props.length;
+  };
+  /** Corner radii: radius.full for pills / circles, else each corner by value. */
+  B.bindRadius = function (shape, rad, full) {
+    const P = ["borderRadiusTopLeft", "borderRadiusTopRight", "borderRadiusBottomRight", "borderRadiusBottomLeft"];
+    if (full) { const t = B.dims().radius[9999]; if (t) { P.forEach((p) => B.bindToken(shape, t, p)); (B.stat.dim = B.stat.dim || { bound: 0, literal: 0, samples: {} }).bound += 4; return; } }
+    rad.forEach((r, i) => B.bindDim(shape, "radius", r, [P[i]]));
   };
   /** Applies every queued binding, one call per (token, property): applying shape by shape costs ~200 ms each, in bulk it is almost free. */
   B.flushTokens = function () {
@@ -43,7 +72,7 @@
   const DIR = { row: "row", "row-reverse": "row-reverse", column: "column", "column-reverse": "column-reverse" };
   const SIZE = { fix: "fix", hug: "auto", fill: "fill" };
 
-  // ---------- icons: one component per (lucide name, px size), all living on the "Icons" page ----------
+  // ---------- icons: one component per (lucide name, px size), all living on the Foundations page ----------
   // They must be created up front, on that page: a freshly created main instance gets pulled into whichever board is
   // being built, so building and component creation never mix.
   B.collectIcons = function (n, acc = {}) {
@@ -52,25 +81,35 @@
     (n.ch || []).forEach((c) => B.collectIcons(c, acc));
     return acc;
   };
-  B.iconComponent = (name, size) => penpot.library.local.components.find((c) => c.path === "Icons / " + size && c.name === name);
+  B._ic = null;
+  B.iconComponent = (name, size) => {
+    if (!B._ic) { B._ic = {}; for (const c of penpot.library.local.components) if (c.path.startsWith("Icons / ")) B._ic[c.name + "@" + c.path.slice(8)] = c; }
+    return B._ic[name + "@" + size] || null;
+  };
   B.makeIcons = function (list) {
-    if (penpot.currentPage.name !== "Icons") throw new Error("open the Icons page first");
+    if (penpot.currentPage.name !== "Foundations") throw new Error("open the Foundations page first");
     const made = [], have = [];
-    let i = 0;
-    const gx = 0; let row = {};
+    // one row per icon size, laid out on a free canvas area below everything else on Foundations
+    const top = (penpot.currentPage.root.children || []).filter((s) => s.name !== "Icons").reduce((m, s) => Math.max(m, s.y + s.height), 0) + 160;
+    const row = {}; const sizes = [...new Set(list.map((i) => i.size))].sort((a, b) => a - b);
     for (const it of list) {
       if (B.iconComponent(it.icon, it.size)) { have.push(it.icon + "@" + it.size); continue; }
       const g = penpot.createShapeFromSvg(it.svg.replace(/currentColor/g, "#313435"));
       if (!g) throw new Error("svg import failed: " + it.icon);
       g.name = it.icon; g.resize(it.size, it.size);
+      penpot.currentPage.root.appendChild(g); // new shapes land in whatever board sits under the viewport centre
       const col = (row[it.size] = (row[it.size] || 0) + 1) - 1;
-      g.x = gx + col * (it.size + 12); g.y = (it.size > 20 ? 200 : it.size > 14 ? 100 : it.size > 12 ? 50 : 0);
+      g.x = 48 + col * 48; g.y = top + 96 + sizes.indexOf(it.size) * 64;
+      // lucide strokes are centred; Penpot imports closed shapes with inner strokes (a 1px ellipsis dot then vanishes)
+      const centre = (s) => { if (s.strokes && s.strokes.length) s.strokes = s.strokes.map((k) => ({ ...k, strokeAlignment: "center" })); (s.children || []).forEach(centre); };
+      centre(g);
       B.tint(g, { tk: "txt-icon-secondary", c: "#313435", a: 1 });
       const comp = penpot.library.local.createComponent([g]);
-      comp.name = it.icon; comp.path = "Icons / " + it.size;
+      comp.name = it.icon; comp.path = "Icons / " + it.size; (B._ic = B._ic || {})[it.icon + "@" + it.size] = comp;
       made.push(it.icon + "@" + it.size);
     }
-    return { made, have };
+    B.flushTokens();
+    return { made: made.length, have: have.length, top };
   };
   B.icon = function (name, svg, w, h) {
     const comp = B.iconComponent(name, Math.round(w));
@@ -92,6 +131,17 @@
     walk(shape);
   };
 
+  /** Binds the imported shapes of a non-icon svg, in document order, to the tokens recorded per part by extract2. */
+  B.bindParts = function (g, parts, color) {
+    const leaves = []; const walk = (x) => { if (x.children && x.children.length) x.children.forEach(walk); else if (x.type !== "group" && x.type !== "board") leaves.push(x); };
+    walk(g);
+    leaves.forEach((sh, i) => {
+      const p = parts[i] || {};
+      if (sh.strokes && sh.strokes.length) { if (p.stroke) { if (!B.bind(sh, p.stroke, "strokeColor")) sh.strokes = sh.strokes.map((k) => ({ ...k, strokeColor: p.stroke.c, strokeOpacity: p.stroke.a })); } else B.bind(sh, color, "strokeColor"); }
+      if (sh.fills && sh.fills.length && p.fill) B.bind(sh, p.fill, "fill");
+    });
+  };
+
   // ---------- helpers ----------
   const isText = (n) => n.t === "tx";
   const hasPaint = (st) => st.bg || st.bd || (st.sh && st.sh.length) || st.rad || st.bgImg;
@@ -101,10 +151,10 @@
     const st = n.st;
     b.fills = st.bg ? fill(st.bg) : [];
     if (st.bg) B.bind(b, st.bg, "fill");
-    if (st.rad) { b.borderRadiusTopLeft = st.rad[0]; b.borderRadiusTopRight = st.rad[1]; b.borderRadiusBottomRight = st.rad[2]; b.borderRadiusBottomLeft = st.rad[3]; }
+    if (st.rad) { b.borderRadiusTopLeft = st.rad[0]; b.borderRadiusTopRight = st.rad[1]; b.borderRadiusBottomRight = st.rad[2]; b.borderRadiusBottomLeft = st.rad[3]; B.bindRadius(b, st.rad, st.radFull); }
     if (st.bd) {
       const uniform = st.bd.every((s, i) => s && st.bw[i] === st.bw[0] && s.c === st.bd[0].c && s.a === st.bd[0].a && s.tk === st.bd[0].tk);
-      if (uniform) { b.strokes = [{ strokeColor: st.bd[0].c, strokeOpacity: st.bd[0].a, strokeWidth: st.bw[0], strokeAlignment: "inner", strokeStyle: "solid" }]; B.bind(b, st.bd[0], "strokeColor"); }
+      if (uniform) { b.strokes = [{ strokeColor: st.bd[0].c, strokeOpacity: st.bd[0].a, strokeWidth: st.bw[0], strokeAlignment: "inner", strokeStyle: "solid" }]; B.bind(b, st.bd[0], "strokeColor"); B.bindDim(b, "bw", st.bw[0], ["strokeWidth"]); }
       else n._sideBorders = true;
     }
     if (st.sh) b.shadows = st.sh.map((s) => ({ style: s.inset ? "inner-shadow" : "drop-shadow", offsetX: s.x, offsetY: s.y, blur: s.blur, spread: s.spread, hidden: false, color: { color: s.c, opacity: s.a } }));
@@ -112,6 +162,13 @@
   }
 
   // ---------- text ----------
+  /** The library text style (Foundations typographies) with this size / line height / weight, or null. */
+  B._typos = null;
+  B.typoFor = function (fs, lh, wt) {
+    if (!B._typos) B._typos = penpot.library.local.typographies.map((t) => ({ t, fs: +t.fontSize, lh: +t.lineHeight, w: +t.fontWeight }));
+    const hit = B._typos.find((x) => x.fs === fs && Math.abs(x.lh - lh) < 0.01 && x.w === wt);
+    return hit ? hit.t : null;
+  };
   function makeText(n) {
     const f = n.f;
     const t = penpot.createText(n.breaks && n.breaks.length > 1 ? n.breaks.join(" ") : n.s);
@@ -125,6 +182,10 @@
     let lhPx = f.lh || f.fs * 1.21; if (lhPx - Math.floor(lhPx) > 0 && lhPx - Math.floor(lhPx) <= 0.06) lhPx = Math.floor(lhPx);
     t.lineHeight = String(+(lhPx / f.fs).toFixed(4));
     t.letterSpacing = String(f.ls || 0);
+    // text that matches a qui text style uses it (Text / Heading become styles, not components)
+    const ty = f.fst !== "italic" && !f.ls ? B.typoFor(+f.fs, +(lhPx / f.fs).toFixed(4), wt) : null;
+    // applyTypography leaves the line height at Penpot's default, so restate the style's own value
+    if (ty) { t.applyTypography(ty); t.lineHeight = ty.lineHeight; B.stat.styled = (B.stat.styled || 0) + 1; } else B.stat.unstyled = (B.stat.unstyled || 0) + 1;
     t.fills = fill(f); B.bind(t, f, "fill");
     if (f.td) t.textDecoration = f.td.includes("underline") ? "underline" : "line-through";
     // Penpot measures text asynchronously (and not for free-standing shapes), so seed the size the browser measured and
@@ -175,13 +236,14 @@
     return B._vc[name].find((vc) => Object.entries(variant).every(([k, v]) => vc.variantProps && vc.variantProps[k] === v)) || null;
   };
   /** The overridable pieces of a DOM node, in order: text runs, icons, nested component instances, decor dots. */
-  B.domLeaves = function (n, out = [], top = true) {
+  // a node tagged with its own owner's component (Input's inner <input> element) is part of that component, not a nested one
+  B.domLeaves = function (n, out = [], top = true, owner = n.comp) {
     if (n.t === "tx") out.push({ k: "tx", node: n });
     else if (n.t === "sv") out.push({ k: "sv", node: n });
     else if (n.t === "ps") out.push({ k: "ps", node: n });
     else if (n.t === "el") {
-      if (!top && n.comp && n.inst !== false && n.variant && B.variantComponent(n.comp, n.variant)) out.push({ k: "comp", node: n });
-      else if (n.st.d !== "contents" || true) for (const c of expand(n.ch)) B.domLeaves(c, out, false);
+      if (!top && n.comp && n.comp !== owner && n.inst !== false && n.variant && B.variantComponent(n.comp, n.variant)) out.push({ k: "comp", node: n });
+      else for (const c of expand(n.ch)) B.domLeaves(c, out, false, owner);
     }
     return out;
   };
@@ -219,7 +281,11 @@
         if (wantTok) { if (curTok !== wantTok.name) { B.bindToken(s, wantTok, "fill"); B.stat.overrides = (B.stat.overrides || 0) + 1; } }
         else { const cur = s.fills && s.fills[0] && s.fills[0].fillColor; if (cur && cur.toLowerCase() !== t.f.c.toLowerCase()) { s.fills = fill(t.f); B.stat.hex++; } }
       } else if (d.k === "sv") B.tint(s, d.node.color);
-      else if (d.k === "ps") { s.fills = fill(d.node.bg); B.bind(s, d.node.bg, "fill"); }
+      else if (d.k === "ps") {
+        // re-setting an identical fill on a copy drops its token, so only touch decor whose colour really differs
+        const want = d.node.bg.tk ? B.token(d.node.bg.tk) : null; const cur = s.tokens && s.tokens.fill;
+        if (want ? cur !== want.name : true) { s.fills = fill(d.node.bg); B.bind(s, d.node.bg, "fill"); }
+      }
       else if (d.k === "comp") B.override(s, d.node, warn);
     });
     return true;
@@ -227,16 +293,23 @@
 
   // creates the shape for node n (detached from any parent) with its whole subtree built
   function make(n, ctx) {
+    // a subtree already built by B.screenStep: reuse its board (it sits at its final screen position)
+    if (n._pre) { const s = penpot.currentPage.getShapeById(n._pre); if (s) { ctx.map.push(...n._preMap); return s; } }
     if (n.t === "tx") { const t = makeText(n); ctx.map.push({ n, id: t.id }); return t; }
     if (n.t === "sv") {
       let s;
       if (n.icon) { s = B.icon(n.icon, n.svg, n.r.w, n.r.h); B.tint(s, n.color); }
-      else { s = penpot.createShapeFromSvg(n.svg.replace(/currentColor/g, n.color.c)); s.name = "svg"; s.resize(n.r.w, n.r.h); }
+      else {
+        s = penpot.createShapeFromSvg(n.svg.replace(/currentColor/g, n.color.c)); s.name = "svg"; s.resize(n.r.w, n.r.h);
+        if (n.parts) B.bindParts(s, n.parts, n.color);
+        else B.tint(s, n.color);
+      }
       ctx.map.push({ n, id: s.id }); return s;
     }
     if (n.t === "ps") {
       const r = penpot.createRectangle(); r.name = "decor"; r.resize(n.r.w, n.r.h); r.fills = fill(n.bg); B.bind(r, n.bg, "fill");
       r.borderRadiusTopLeft = n.rad[0]; r.borderRadiusTopRight = n.rad[1]; r.borderRadiusBottomRight = n.rad[2]; r.borderRadiusBottomLeft = n.rad[3];
+      B.bindRadius(r, n.rad, n.rad.every((x) => x >= Math.min(n.r.w, n.r.h) / 2 - 0.01));
       ctx.map.push({ n, id: r.id }); return r;
     }
     const st = n.st;
@@ -264,7 +337,12 @@
       flex = b.addFlexLayout();
       flex.dir = L.dir; flex.wrap = L.wrap ? "wrap" : "nowrap"; flex.alignItems = L.ai; flex.justifyContent = L.jc;
       flex.rowGap = L.gap[0]; flex.columnGap = L.gap[1];
-      flex.topPadding = st.pad[0] + st.bw[0]; flex.rightPadding = st.pad[1] + st.bw[1]; flex.bottomPadding = st.pad[2] + st.bw[2]; flex.leftPadding = st.pad[3] + st.bw[3];
+      // padding is the CSS padding (a space token); Penpot strokes never take layout room, so the border is not added in
+      // and a hugging bordered box comes out 2 x border narrower than the browser's
+      flex.topPadding = st.pad[0]; flex.rightPadding = st.pad[1]; flex.bottomPadding = st.pad[2]; flex.leftPadding = st.pad[3];
+      ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"].forEach((p, i) => B.bindDim(b, "space", st.pad[i], [p]));
+      B.bindDim(b, "space", L.gap[0], ["rowGap"]); B.bindDim(b, "space", L.gap[1], ["columnGap"]);
+      if (n.comp && n.sz.h === "fix") B.bindDim(b, "height", n.r.h, ["height"]);
       flex.horizontalSizing = n.sz.w === "hug" ? "auto" : "fix"; flex.verticalSizing = n.sz.h === "hug" ? "auto" : "fix";
     }
     for (const k of kids) {
@@ -279,6 +357,9 @@
         const bar = penpot.createRectangle(); bar.name = "border"; bar.fills = fill(col); B.bind(bar, col, "fill");
         const dim = i === 0 || i === 2 ? [W, w] : [w, H]; bar.resize(dim[0], dim[1]);
         b.appendChild(bar); if (flex) bar.layoutChild.absolute = true;
+        // stretch with the board when an instance is resized (top / bottom bars span the width, side bars the height)
+        if (i === 0 || i === 2) bar.constraintsHorizontal = "leftright"; else bar.constraintsVertical = "topbottom";
+        if (i === 2) bar.constraintsVertical = "bottom"; if (i === 1) bar.constraintsHorizontal = "right";
         ctx.abs.push({ shape: bar, rel: { x: n.r.x + (i === 1 ? W - w : 0), y: n.r.y + (i === 2 ? H - w : 0) } });
       });
     }
@@ -295,7 +376,7 @@
     if (st.abs) { lc.absolute = true; return; }
     if (k.sz.w === "fill") lc.horizontalSizing = "fill";
     if (k.sz.h === "fill") lc.verticalSizing = "fill";
-    const m = st.mar; if (m.some((x) => x)) { lc.topMargin = m[0]; lc.rightMargin = m[1]; lc.bottomMargin = m[2]; lc.leftMargin = m[3]; }
+    const m = st.mar; if (m.some((x) => x)) { lc.topMargin = m[0]; lc.rightMargin = m[1]; lc.bottomMargin = m[2]; lc.leftMargin = m[3]; ["marginTop", "marginRight", "marginBottom", "marginLeft"].forEach((p, i) => B.bindDim(c, "space", m[i], [p])); }
     if (st.minW) lc.minWidth = st.minW;
     if (st.maxW) lc.maxWidth = st.maxW;
   }
@@ -313,6 +394,43 @@
     return { shape: root, map: ctx.map, tree, warn: ctx.warn, instances: ctx.instances || 0 };
   };
 
+
+  // ---------- screens: too big for one call, so subtrees are built first (one call each) and the skeleton last ----------
+  /** Plans screen `key`: post-order list of the largest subtrees of at most `max` nodes (whole screen = last part). */
+  B.screenPlan = function (key, tree, X, Y, max = 120) {
+    const count = (n) => (n._n = 1 + (n.ch || []).reduce((a, c) => a + count(c), 0));
+    count(tree);
+    const parts = [];
+    const walk = (n, top) => {
+      if (n.t !== "el") return;
+      if (!top && n._n <= max) { if (n._n > 8) parts.push(n); return; }
+      if (!(n.comp && n.inst !== false && n.variant)) (n.ch || []).forEach((c) => walk(c, false));
+      if (n._n > max && !top) parts.push(n);
+    };
+    walk(tree, true);
+    SCR[key] = { tree, X, Y, parts, idx: 0 };
+    return { parts: parts.length, sizes: parts.map((p) => p._n) };
+  };
+  const SCR = (globalThis.__scr = globalThis.__scr || {});
+  /** Builds the next parts of screen `key` for up to `ms`; the final step builds the root board from them. */
+  B.screenStep = function (key, ms = 40000) {
+    const S = SCR[key]; const t0 = Date.now(); B.pinText = true;
+    while (S.idx < S.parts.length && Date.now() - t0 < ms) {
+      const n = S.parts[S.idx++];
+      const ctx = { map: [], abs: [], depth: 1, warn: [] };
+      const s = make(n, ctx);
+      penpot.currentPage.root.appendChild(s);
+      s.x = S.X + n.r.x; s.y = S.Y + n.r.y;
+      for (const a of ctx.abs) { a.shape.x = S.X + a.rel.x; a.shape.y = S.Y + a.rel.y; }
+      n._pre = s.id; n._preMap = ctx.map; (S.warn = S.warn || []).push(...ctx.warn);
+      B.flushTokens();
+    }
+    let root = null;
+    if (S.idx >= S.parts.length && !S.root) {
+      const r = B.buildRoot(S.tree, S.X, S.Y); S.root = r.shape.id; S.map = r.map; S.warn.push(...r.warn); B.flushTokens(); root = r.shape.id;
+    }
+    return { built: S.idx, of: S.parts.length, root: S.root || null, ms: Date.now() - t0, warn: (S.warn || []).slice(0, 5) };
+  };
 
   // ---------- settling ----------
   B.sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -355,6 +473,7 @@
     const L = LIB[name]; const end = Math.min(L.cells.length, L.idx + count);
     while (L.idx < end) {
       const i = L.idx++; const cell = L.cells[i];
+      ox = L.ox || ox; oy = L.oy || oy;
       const r = B.buildRoot(cell.tree, ox + (i % L.cols) * (L.maxW + 32), oy + Math.floor(i / L.cols) * (L.maxH + 32));
       L.items.push({ shape: r.shape.id, map: r.map, tree: r.tree, v: cell.v });
     }
@@ -409,6 +528,14 @@
 
 
   // ---------- driver helpers (each call stays under the MCP 120 s limit) ----------
+  /** A pushed file: from globalThis.__files when it was handed over inline (see pack.mjs), else /qui-tmp/<name>. */
+  B.readFile = async function (name) {
+    const inline = globalThis.__files && globalThis.__files[name];
+    if (inline) return inline;
+    const r = await fetch("/qui-tmp/" + name + "?" + Date.now());
+    if (!r.ok) throw new Error("fetch " + name + ": " + r.status + " (Cloudflare? hand it over with pack.mjs)");
+    return r.text();
+  };
   /** Opens (creating when needed) the page `name` and waits until Penpot really switched. */
   B.page = async function (name, fresh) {
     let p = penpot.currentFile.pages.find((x) => x.name === name);
@@ -430,18 +557,38 @@
     while (penpot.library.local.components.some((x) => x.name === name) && Date.now() - t0 < ms) await B.sleep(500);
     return { removed: n, left: penpot.library.local.components.filter((x) => x.name === name).length, ms: Date.now() - t0 };
   };
-  /** Starts a set: fresh page named like the spec, data fetched from /qui-tmp/spec-<name>.js. */
+  /** Library level of every set: sets live on the Atoms / Molecules / Organisms page, never on a page of their own. */
+  B.LEVEL = { Button: "Atoms", IconButton: "Atoms", Pill: "Atoms", Badge: "Atoms", Avatar: "Atoms", AvatarGroup: "Atoms", Swatch: "Atoms", Shortcut: "Atoms", Heading: "Atoms", WorkspaceAvatar: "Atoms", Input: "Atoms",
+    Tab: "Molecules", ListItem: "Molecules", ListSection: "Molecules", StateGroupHeader: "Molecules", WorkItemRow: "Molecules", Property: "Molecules", ViewToolbar: "Molecules", RailItem: "Molecules",
+    NavSidebar: "Organisms", ProjectHeader: "Organisms", WorkItemCard: "Organisms" };
+  // sets added after the first 22 take their level from the spec sheet (cell.level), see B.start
+  B.levelOf = (name, cells) => B.LEVEL[name] || ({ atoms: "Atoms", molecules: "Molecules", organisms: "Organisms" })[cells && cells[0] && cells[0].level];
+  /** Starts a set: drops any old copy, opens its level page and builds below whatever is already there. Data from /qui-tmp/spec-<name>.js. */
   B.start = async function (name) {
     B.stat = { bound: 0, hex: 0, hexSamples: {} }; B.queue = {};
-    await B.page(name, true);
-    const d = JSON.parse(await (await fetch("/qui-tmp/spec-" + name + ".js?" + Date.now())).text());
-    return B.libBegin(name, d.cells);
+    const d = JSON.parse(await B.readFile("spec-" + name + ".js"));
+    const lvl = B.levelOf(name, d.cells); if (!lvl) throw new Error("no level for " + name);
+    await B.dropOld(name);
+    await B.page(lvl, false);
+    const roots = (penpot.currentPage.root.children || []).flatMap((s) => (s.type === "board" && s.name === "Root Frame" ? s.children || [] : [s]));
+    const bottom = roots.reduce((m, s) => Math.max(m, s.y + s.height), 0);
+    const r = B.libBegin(name, d.cells);
+    LIB[name].ox = 0; LIB[name].oy = roots.length ? bottom + 160 : 0;
+    return r;
   };
   /** Builds variants for up to `ms` milliseconds, binding tokens after every small batch. */
   B.pump = function (name, ms = 80000, batch = 6) {
     const L = LIB[name]; const t0 = Date.now();
     while (L.idx < L.cells.length && Date.now() - t0 < ms) { B.libStep(name, batch, 0, 0); B.flushTokens(); }
     return { built: L.idx, of: L.cells.length, ms: Date.now() - t0, stat: B.stat };
+  };
+  /** One whole set in one MCP call (start, build, finish) within `budget` ms; call again if it reports an unfinished phase. */
+  B.run = async function (name, budget = 50000) {
+    const t0 = Date.now(); B._vc = {}; B._typos = null; B._dims = null;
+    const s = await B.start(name); const p = B.pump(name, budget * 0.6, 6); let f = null;
+    if (p.built >= p.of) { await B.sleep(1500); do { f = B.libFinishStep(name, 40); } while (f.phase !== "done" && Date.now() - t0 < budget); }
+    const d = B.stat.dim || { bound: 0, literal: 0, samples: {} };
+    return { name, variants: s.variants, built: p.built, finish: f && f.phase, colours: B.stat.bound, hex: B.stat.hex, dims: d.bound, literal: d.literal, samples: d.samples, ms: Date.now() - t0 };
   };
   /** Runs the finishing phases (components, combine, properties, values) within a time budget. */
   B.finish = function (name, ms = 80000) {

@@ -9,3 +9,5 @@ tools/design-sync/store-*.json
 tools/design-sync/spec-*.json
 tools/design-sync/tokens.json
 tools/design-sync/icons.json
+tools/design-sync/foundations.json
+tools/design-sync/icons.js
