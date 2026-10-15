@@ -13,7 +13,7 @@ function MobileNav() {
   return (
     <QUI.Box hideAbove="lg">
       <QUI.Drawer>
-        <QUI.DrawerTrigger render={<QUI.IconButton variant="ghost" aria-label="Open navigation" icon={<QUI.Icon icon={Icons.Menu} />} />} />
+        <QUI.DrawerTrigger render={<QUI.IconButton variant="ghost" size="lg" aria-label="Open navigation" icon={<QUI.Icon icon={Icons.Menu} />} />} />
         <QUI.DrawerContent side="start" hideClose aria-label="Navigation">
           <QUI.Box grow overflow="auto">
             <SidebarContent
@@ -73,6 +73,7 @@ function TopBar() {
       </QUI.Inline>
       <QUI.Box width="md" hideBelow="md">
         <QUI.Input
+          size="lg"
           aria-label="Search"
           placeholder="Search Acme Inc."
           startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />}
@@ -81,21 +82,21 @@ function TopBar() {
       </QUI.Box>
       <QUI.Inline gap="2" wrap={false}>
         <QUI.Box hideAbove="md">
-          <QUI.IconButton variant="ghost" aria-label="Search" icon={<QUI.Icon icon={Icons.Search} />} />
+          <QUI.IconButton variant="ghost" size="lg" aria-label="Search" icon={<QUI.Icon icon={Icons.Search} />} />
         </QUI.Box>
         <QUI.Box hideBelow="sm">
-          <QUI.IconButton variant="ghost" aria-label="Inbox" icon={<QUI.Icon icon={Icons.Inbox} />} />
+          <QUI.IconButton variant="ghost" size="lg" aria-label="Inbox" icon={<QUI.Icon icon={Icons.Inbox} />} />
         </QUI.Box>
         <QUI.Box hideBelow="sm">
-          <QUI.IconButton variant="ghost" aria-label="Help" icon={<QUI.Icon icon={Icons.CircleHelp} />} />
+          <QUI.IconButton variant="ghost" size="lg" aria-label="Help" icon={<QUI.Icon icon={Icons.CircleHelp} />} />
         </QUI.Box>
         <QUI.Box hideBelow="md">
-          <QUI.Button variant="ghost" icon={<QUI.Icon icon={Icons.Sparkles} />} label="AI Assistant" />
+          <QUI.Button variant="ghost" size="lg" icon={<QUI.Icon icon={Icons.Sparkles} />} label="AI Assistant" />
         </QUI.Box>
         <QUI.Box hideAbove="md">
-          <QUI.IconButton variant="ghost" aria-label="AI Assistant" icon={<QUI.Icon icon={Icons.Sparkles} />} />
+          <QUI.IconButton variant="ghost" size="lg" aria-label="AI Assistant" icon={<QUI.Icon icon={Icons.Sparkles} />} />
         </QUI.Box>
-        <QUI.Avatar size="md" alt="Ranu" />
+        <QUI.Avatar size="lg" alt="Ranu" />
       </QUI.Inline>
     </QUI.Inline>
   );
