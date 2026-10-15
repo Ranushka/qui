@@ -54,7 +54,7 @@ const seedFor = (color: string) => {
 };
 const AVATAR_SEEDS = Object.fromEntries(AVATAR_VARIANTS.map((c) => [c, seedFor(c)]));
 /** Person avatars the app renders at xs / sm in groups, rows and cards, one per colour it uses. */
-const AVATAR_IN_APP: Variant[] = ["purple", "indigo", "emerald", "crimson", "pink"].flatMap((Color) => [{ Size: "xs", Color }, { Size: "sm", Color }]);
+const AVATAR_IN_APP: Variant[] = ["purple", "indigo", "emerald", "crimson", "pink"].flatMap((Color) => [{ Size: "xs", Color }, { Size: "sm", Color }]).concat([{ Size: "lg", Color: "pink" }]);
 /** Swatch colours are data; the spec draws them from qui's label palette so the design file binds them to tokens. */
 const SWATCH_FILL: Record<string, string> = { emerald: "var(--label-emerald-icon)", crimson: "var(--label-crimson-icon)", indigo: "var(--label-indigo-icon)" };
 
@@ -68,6 +68,7 @@ export const specs: Spec[] = [
       { Variant: "secondary", Icon: "start" },
       { Variant: "ghost", Icon: "start" },
       { Variant: "ghost", Size: "lg", Icon: "both" },
+      { Variant: "ghost", Size: "lg", Icon: "start" },
     ]),
     render: (v) => (
       <QUI.Button
@@ -87,7 +88,7 @@ export const specs: Spec[] = [
     name: "IconButton",
     level: "atoms",
     axes: { Variant: BUTTON_VARIANTS, Size: SIZES4, State: STATES },
-    valid: oneAtATime({ Variant: "primary", Size: "md", State: "default" }, [{ Variant: "ghost", Size: "sm" }, { Variant: "ghost", Size: "xs" }, { Variant: "secondary", Size: "sm" }, { Variant: "secondary", Size: "xs" }, { Variant: "ghost", Size: "sm", State: "disabled" }]),
+    valid: oneAtATime({ Variant: "primary", Size: "md", State: "default" }, [{ Variant: "ghost", Size: "sm" }, { Variant: "ghost", Size: "xs" }, { Variant: "secondary", Size: "sm" }, { Variant: "secondary", Size: "xs" }, { Variant: "ghost", Size: "sm", State: "disabled" }, { Variant: "ghost", Size: "lg" }]),
     render: (v) => (
       <QUI.IconButton
         variant={v.Variant as "primary"}
@@ -222,7 +223,7 @@ export const specs: Spec[] = [
     name: "Input",
     level: "atoms",
     axes: { Size: ["md", "lg"], Slots: ["none", "start", "both"], Value: ["placeholder", "filled"], State: ["default", "disabled", "invalid"] },
-    valid: oneAtATime({ Size: "md", Slots: "none", Value: "placeholder", State: "default" }),
+    valid: oneAtATime({ Size: "md", Slots: "none", Value: "placeholder", State: "default" }, [{ Size: "lg", Slots: "both" }]),
     cell: { width: 320 },
     render: (v) => (
       <QUI.Input
