@@ -62,25 +62,26 @@ export const specs: Spec[] = [
   {
     name: "Button",
     level: "atoms",
-    // Icon follows Button's iconPosition: an end icon is a dropdown chevron (the Acme app switcher)
-    axes: { Variant: BUTTON_VARIANTS, Size: SIZES4, Icon: ["false", "start", "end"], State: STATES },
+    // Icon follows Button's iconPosition / endIcon: "both" is an icon plus a dropdown chevron (the Acme app switcher)
+    axes: { Variant: BUTTON_VARIANTS, Size: SIZES4, Icon: ["false", "start", "end", "both"], State: STATES },
     valid: oneAtATime({ Variant: "primary", Size: "md", Icon: "false", State: "default" }, [
       { Variant: "secondary", Icon: "start" },
       { Variant: "ghost", Icon: "start" },
-      { Variant: "ghost", Size: "lg", Icon: "end" },
+      { Variant: "ghost", Size: "lg", Icon: "both" },
     ]),
     render: (v) => (
       <QUI.Button
         variant={v.Variant as "primary"}
         size={v.Size as "md"}
         label="Label"
-        icon={v.Icon === "start" ? <QUI.Icon icon={Icons.Plus} /> : v.Icon === "end" ? <QUI.Icon icon={Icons.ChevronDown} /> : undefined}
+        icon={v.Icon === "start" || v.Icon === "both" ? <QUI.Icon icon={Icons.Plus} /> : v.Icon === "end" ? <QUI.Icon icon={Icons.ChevronDown} /> : undefined}
         iconPosition={v.Icon === "end" ? "end" : "start"}
+        endIcon={v.Icon === "both" ? <QUI.Icon icon={Icons.ChevronDown} /> : undefined}
         disabled={v.State === "disabled"}
         loading={v.State === "loading"}
       />
     ),
-    toVariant: (p) => ({ Variant: String(p.variant ?? "primary"), Size: String(p.size ?? "md"), Icon: !has(p.icon) ? "false" : p.iconPosition === "end" ? "end" : "start", State: stateOf(p) }),
+    toVariant: (p) => ({ Variant: String(p.variant ?? "primary"), Size: String(p.size ?? "md"), Icon: has(p.icon) && has(p.endIcon) ? "both" : !has(p.icon) ? "false" : p.iconPosition === "end" ? "end" : "start", State: stateOf(p) }),
   },
   {
     name: "IconButton",

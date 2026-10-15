@@ -26,25 +26,32 @@ function MobileNav() {
   );
 }
 
-const apps: { icon: IconComponent; label: string; current?: boolean }[] = [
-  { icon: Icons.SquareStack, label: "Work", current: true },
+const apps: { icon: IconComponent; label: string }[] = [
+  { icon: Icons.SquareStack, label: "Work" },
   { icon: Icons.BookOpen, label: "Wiki" },
   { icon: Icons.Bot, label: "AI" },
   { icon: Icons.Monitor, label: "Desk" },
 ];
+type App = (typeof apps)[number];
 
-/** The workspace logo, and the app switcher (Work, Wiki, AI, Desk, Settings) as a dropdown under the workspace name. */
+/** The app the shell is showing; the switcher changes it and the sidebar is titled after it. */
+const AppContext = React.createContext<{ app: App; setApp: (app: App) => void }>({ app: apps[0]!, setApp: () => {} });
+
+/** The workspace logo, and the app switcher: the current app's icon and name, opening a dropdown of the apps. */
 function AppSwitcher() {
+  const { app: current, setApp } = React.useContext(AppContext);
   return (
     <QUI.Inline gap="1" wrap={false}>
       <QUI.WorkspaceAvatar size="lg" alt="Acme Inc." />
       <QUI.Menu>
-        <QUI.MenuTrigger render={<QUI.Button variant="ghost" size="lg" icon={<QUI.Icon icon={Icons.ChevronDown} />} iconPosition="end" label="Acme Inc." />} />
+        <QUI.MenuTrigger
+          render={<QUI.Button variant="ghost" size="lg" icon={<QUI.Icon icon={current.icon} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label={current.label} />}
+        />
         <QUI.MenuContent align="start">
           <QUI.MenuGroup>
             <QUI.MenuGroupLabel>Apps</QUI.MenuGroupLabel>
             {apps.map((app) => (
-              <QUI.MenuItem key={app.label} icon={<QUI.Icon icon={app.icon} />} selected={!!app.current}>
+              <QUI.MenuItem key={app.label} icon={<QUI.Icon icon={app.icon} />} selected={app === current} onClick={() => setApp(app)}>
                 {app.label}
               </QUI.MenuItem>
             ))}
@@ -104,9 +111,10 @@ function NavLink({ icon, label, current }: { icon: IconComponent; label: string;
 
 /** Sidebar navigation; shown docked from lg up and in the ☰ drawer below that, where `endAction` is its close button. */
 function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
+  const { app } = React.useContext(AppContext);
   return (
     <QUI.NavSidebar
-      title="Work"
+      title={app.label}
       endAction={endAction}
       action={<QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />}
     >
@@ -161,23 +169,26 @@ export const ViewToolbar = QUI.ViewToolbar;
 
 /** Top bar (with the app switcher), sidebar and project header around a screen's content, which fills the rest. */
 export function AcmeShell({ children }: { children: React.ReactNode }) {
+  const [app, setApp] = React.useState<App>(apps[0]!);
   return (
-    <QUI.Box height="full" background="canvas">
-      <QUI.Stack height="full">
-        <TopBar />
-        <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
-          <QUI.Box as="section" aria-label="Core product" grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
-            <QUI.Inline height="full" wrap={false} align="stretch" gap="0">
-              <Sidebar />
-              <QUI.Stack grow>
-                <CoreProductHeader />
-                {children}
-              </QUI.Stack>
-            </QUI.Inline>
-          </QUI.Box>
-        </QUI.Inline>
-      </QUI.Stack>
-    </QUI.Box>
+    <AppContext.Provider value={{ app, setApp }}>
+      <QUI.Box height="full" background="canvas">
+        <QUI.Stack height="full">
+          <TopBar />
+          <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
+            <QUI.Box as="section" aria-label="Core product" grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
+              <QUI.Inline height="full" wrap={false} align="stretch" gap="0">
+                <Sidebar />
+                <QUI.Stack grow>
+                  <CoreProductHeader />
+                  {children}
+                </QUI.Stack>
+              </QUI.Inline>
+            </QUI.Box>
+          </QUI.Inline>
+        </QUI.Stack>
+      </QUI.Box>
+    </AppContext.Provider>
   );
 }
 

@@ -33,6 +33,11 @@ export interface ButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef
    * @default "start"
    */
   iconPosition?: "start" | "end";
+  /**
+   * A second icon after the label, alongside `icon` — e.g. a `ChevronDown` on a button that opens a
+   * menu, while `icon` names what the button is.
+   */
+  endIcon?: React.ReactNode;
   /** Shows a spinner in the icon slot, sets `aria-busy`, and makes the button non-interactive. */
   loading?: boolean;
 }
@@ -43,7 +48,7 @@ export interface ButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef
  * `label` — icon-only buttons are `IconButton`, not this with an empty label.
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "primary", size = "md", stretch, label, icon, iconPosition = "start", loading = false, disabled, ...props }, ref) => {
+  ({ variant = "primary", size = "md", stretch, label, icon, iconPosition = "start", endIcon, loading = false, disabled, ...props }, ref) => {
     const iconSlot = icon != null && loading ? <Spinner /> : (icon ?? <Spinner active={loading} />);
 
     return (
@@ -58,6 +63,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {iconPosition === "start" ? iconSlot : null}
         <span className="truncate">{label}</span>
         {iconPosition === "end" ? iconSlot : null}
+        {endIcon}
       </BaseButton>
     );
   }
@@ -84,6 +90,9 @@ Button.displayName = "Button";
     <QUI.Button label="Loading" loading />
     <QUI.Button label="Disabled" disabled />
     <QUI.Button variant="secondary" label="Loading" loading />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
+    <QUI.Button variant="ghost" icon={<QUI.Icon icon={Icons.BookOpen} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label="Wiki" />
   </div>
 </div>
 DOC__ */
