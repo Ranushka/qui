@@ -102,10 +102,25 @@ function TopBar() {
   );
 }
 
-function NavLink({ icon, label, current }: { icon: IconComponent; label: string; current?: boolean }) {
+/** Sidebar entries that open another example screen. */
+const navHrefs: Record<string, string> = {
+  Dashboards: "#/examples/dashboard",
+  "Core product": "#/examples/work-items",
+};
+
+/** The nav entry the current screen belongs to; the shell sets it and `NavLink` marks it. */
+const CurrentNavContext = React.createContext("Core product");
+
+function NavLink({ icon, label }: { icon: IconComponent; label: string }) {
+  const current = React.useContext(CurrentNavContext) === label ? "page" : undefined;
+  const href = navHrefs[label];
   return (
     <QUI.ListItem>
-      <QUI.ListItemButton aria-current={current ? "page" : undefined} startIcon={<QUI.Icon icon={icon} />} label={label} />
+      {href ? (
+        <QUI.ListItemLink href={href} aria-current={current} startIcon={<QUI.Icon icon={icon} />} label={label} />
+      ) : (
+        <QUI.ListItemButton aria-current={current} startIcon={<QUI.Icon icon={icon} />} label={label} />
+      )}
     </QUI.ListItem>
   );
 }
@@ -114,11 +129,7 @@ function NavLink({ icon, label, current }: { icon: IconComponent; label: string;
 function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
   const { app } = React.useContext(AppContext);
   return (
-    <QUI.NavSidebar
-      title={app.label}
-      endAction={endAction}
-      action={<QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />}
-    >
+    <QUI.NavSidebar title={app.label} endAction={endAction}>
       <QUI.List aria-label="Main">
         <NavLink icon={Icons.House} label="Home" />
         <NavLink icon={Icons.UserRound} label="Your work" />
@@ -136,7 +147,7 @@ function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
       </QUI.ListSection>
       <QUI.ListSection label="Projects" defaultOpen>
         <QUI.List aria-label="Projects">
-          <NavLink icon={Icons.Tractor} label="Core product" current />
+          <NavLink icon={Icons.Tractor} label="Core product" />
           <NavLink icon={Icons.Puzzle} label="Wed Development" />
           <NavLink icon={Icons.Rocket} label="Plane Pro" />
           <NavLink icon={Icons.Compass} label="Discover" />
@@ -168,25 +179,30 @@ function CoreProductHeader() {
 
 export const ViewToolbar = QUI.ViewToolbar;
 
-/** Top bar (with the app switcher), sidebar and project header around a screen's content, which fills the rest. */
-export function AcmeShell({ children }: { children: React.ReactNode }) {
+/**
+ * Top bar (with the app switcher), sidebar and a header around a screen's content, which fills the rest. `current`
+ * is the sidebar entry to mark and names the content region; `header` defaults to the Core product project header.
+ */
+export function AcmeShell({ current = "Core product", header = <CoreProductHeader />, children }: { current?: string; header?: React.ReactNode; children: React.ReactNode }) {
   const [app, setApp] = React.useState<App>(apps[0]!);
   return (
     <AppContext.Provider value={{ app, setApp }}>
-      <QUI.Box height="full" background="canvas">
-        <QUI.Stack height="full">
-          <TopBar />
-          <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
-            <Sidebar />
-            <QUI.Box as="section" aria-label="Core product" grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
-              <QUI.Stack height="full">
-                <CoreProductHeader />
-                {children}
-              </QUI.Stack>
-            </QUI.Box>
-          </QUI.Inline>
-        </QUI.Stack>
-      </QUI.Box>
+      <CurrentNavContext.Provider value={current}>
+        <QUI.Box height="full" background="canvas">
+          <QUI.Stack height="full">
+            <TopBar />
+            <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
+              <Sidebar />
+              <QUI.Box as="section" aria-label={current} grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
+                <QUI.Stack height="full">
+                  {header}
+                  {children}
+                </QUI.Stack>
+              </QUI.Box>
+            </QUI.Inline>
+          </QUI.Stack>
+        </QUI.Box>
+      </CurrentNavContext.Provider>
     </AppContext.Provider>
   );
 }

@@ -1,6 +1,7 @@
 import type * as React from "react";
 import { BoardPage } from "./BoardPage";
 import { ComponentsPage } from "./ComponentsPage";
+import { DashboardPage } from "./DashboardPage";
 import { IconsPage } from "./IconsPage";
 import { WorkItemsPage } from "./WorkItemsPage";
 import { SpecPage } from "../spec/SpecPage";
@@ -21,6 +22,7 @@ export const pages: PlaygroundPage[] = [
   { path: "/spec", title: "Spec sheet", component: SpecPage },
   { path: "/examples/work-items", title: "Work items", component: WorkItemsPage, fullBleed: true },
   { path: "/examples/board", title: "Board", component: BoardPage, fullBleed: true },
+  { path: "/examples/dashboard", title: "Dashboard", component: DashboardPage, fullBleed: true },
 ];
 
 /** Old links that should keep working. */
