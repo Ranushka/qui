@@ -10,10 +10,10 @@ import { Spinner } from "./Spinner";
 const buttonGeometryVariants = cva("whitespace-nowrap", {
   variants: {
     size: {
-      xs: "h-(--control-height-xs) min-w-10 gap-(--control-gap-xs) px-(--control-padding-x-xs) rounded-(--control-radius-xs) text-xs font-medium [--node-size:var(--control-glyph-xs)]",
-      sm: "h-(--control-height-sm) min-w-10 gap-(--control-gap-sm) px-(--control-padding-x-sm) rounded-(--control-radius-sm) text-xs font-medium [--node-size:var(--control-glyph-sm)]",
-      md: "h-(--control-height-md) min-w-12 gap-(--control-gap-md) px-(--control-padding-x-md) rounded-(--control-radius-md) text-xs font-medium [--node-size:var(--control-glyph-md)]",
-      lg: "h-(--control-height-lg) min-w-13 gap-(--control-gap-lg) px-(--control-padding-x-lg) rounded-(--control-radius-lg) text-sm font-medium [--node-size:var(--control-glyph-lg)]",
+      xs: "h-(--control-height-xs) min-w-10 gap-(--control-gap-xs) px-(--control-padding-x-xs) rounded-(--control-radius-xs) text-body-xs-medium [--node-size:var(--control-glyph-xs)]",
+      sm: "h-(--control-height-sm) min-w-10 gap-(--control-gap-sm) px-(--control-padding-x-sm) rounded-(--control-radius-sm) text-body-xs-medium [--node-size:var(--control-glyph-sm)]",
+      md: "h-(--control-height-md) min-w-12 gap-(--control-gap-md) px-(--control-padding-x-md) rounded-(--control-radius-md) text-body-xs-medium [--node-size:var(--control-glyph-md)]",
+      lg: "h-(--control-height-lg) min-w-13 gap-(--control-gap-lg) px-(--control-padding-x-lg) rounded-(--control-radius-lg) text-body-sm-medium [--node-size:var(--control-glyph-lg)]",
     },
     stretch: {
       auto: "",

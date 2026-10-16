@@ -112,7 +112,7 @@ export const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltip
           <li key={i} className="flex items-center gap-2 text-caption-md-regular">
             <span aria-hidden className="size-2 shrink-0 rounded-xs" style={{ background: item.color }} />
             <span className="flex-1 text-secondary">{item.name}</span>
-            <span className="font-medium text-primary tabular-nums">{item.value}</span>
+            <span className="text-caption-md-medium text-primary tabular-nums">{item.value}</span>
           </li>
         ))}
       </ul>
