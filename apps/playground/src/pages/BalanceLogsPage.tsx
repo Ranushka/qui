@@ -23,7 +23,7 @@ type Log = {
 const accounts = ["Customer Service", "Nesto Trading", "Blue Harbor LLC", "Falcon Logistics"];
 
 /** Deterministic sample rows, newest first. */
-const logs: Log[] = Array.from({ length: 120 }, (_, i) => {
+const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
   const seed = (i * 7919 + 104729) % 100000;
   const amount = Math.round(((seed * 13) % 2500000) + 1500) / 100;
   const ledgerAmount = Math.round((amount + ((seed * 31) % 4000000) / 100) * 100) / 100;
@@ -59,7 +59,7 @@ const columns: { key: SortKey | null; label: string }[] = [
   { key: null, label: "Ledger currency" },
 ];
 
-const pageSize = 25;
+const pageSize = 50;
 
 function sortLogs(rows: Log[], sort: Sort) {
   const sign = sort.direction === "ascending" ? 1 : -1;
@@ -176,7 +176,7 @@ function Toolbar({ query, onQuery, view, onView }: { query: string; onQuery: (q:
 function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; sort: Sort; onSort: (key: SortKey) => void; selected: Set<number>; onSelect: (ids: number[], checked: boolean) => void }) {
   const selectedOnPage = rows.filter((row) => selected.has(row.id)).length;
   return (
-    <QUI.Table density="compact" aria-label="Account balance logs">
+    <QUI.Table aria-label="Account balance logs">
       <QUI.TableHeader>
         <QUI.TableRow>
           <QUI.TableHead>
