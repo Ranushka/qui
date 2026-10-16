@@ -110,7 +110,7 @@ const amountRanges = [
 const count = new Intl.NumberFormat("en-US");
 
 /** A filter pill opening a single-select menu; shows `name: value` once something other than `all` is chosen. */
-function FilterMenu({ name, value, options, onChange }: { name: string; value: string; options: { value: string; label: string }[]; onChange: (value: string) => void }) {
+export function FilterMenu({ name, value, options, onChange }: { name: string; value: string; options: { value: string; label: string }[]; onChange: (value: string) => void }) {
   const chosen = options.find((o) => o.value === value);
   const active = value !== options[0]!.value;
   return (

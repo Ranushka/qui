@@ -5,6 +5,7 @@ import { AcmeShell } from "../examples/acme/shell";
 import { AdminNavigation, adminItems, type AdminItem } from "../examples/acme/admin-nav";
 import { ApprovalRequestsPage } from "./ApprovalRequestsPage";
 import { BalanceLogsPage } from "./BalanceLogsPage";
+import { UsdAccountSummaryPage } from "./UsdAccountSummaryPage";
 
 const placeholderColumns = ["Name", "Status", "Owner", "Created", "Updated"];
 
@@ -74,10 +75,11 @@ function useSlug() {
   return slug;
 }
 
-/** The table screens, switched by the admin sidebar: balance logs, approval requests, and an empty screen for every other entry. */
+/** The table screens, switched by the admin sidebar: balance logs, approval requests, the USD account summary, and an empty screen for every other entry. */
 export function TablesPage() {
   const slug = useSlug();
   if (slug === "approval-requests") return <ApprovalRequestsPage />;
+  if (slug === "usd-account-summary") return <UsdAccountSummaryPage />;
   const entry = adminItems.find((e) => e.item.slug === slug);
   return entry ? <AdminPlaceholderPage key={slug} item={entry.item} section={entry.section} /> : <BalanceLogsPage />;
 }

@@ -23,7 +23,7 @@ export const adminSections: AdminSection[] = [
       item("Accounts", Icons.Landmark),
       item("Account balance logs", Icons.WalletCards),
       item("Approval requests", Icons.ListChecks),
-      item("Account details", Icons.IdCard),
+      item("USD account summary", Icons.CircleDollarSign),
       item("Account managers", Icons.UserRound),
       item("Account statements", Icons.FileText),
       item("Balances", Icons.Wallet),
