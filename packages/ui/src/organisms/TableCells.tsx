@@ -37,9 +37,9 @@ export interface TextCellProps {
 export function TextCell({ primary, secondary, tone = "default" }: TextCellProps) {
   if (primary == null || primary === "") return <EmptyCell />;
   return (
-    <span className="flex min-w-0 flex-col gap-0.5">
+    <span className="flex min-w-0 flex-col">
       <span className={cn("truncate text-body-sm-medium", tone === "link" ? "text-link-primary" : "text-primary")}>{primary}</span>
-      {secondary != null ? <span className="truncate text-body-xs-regular text-tertiary">{secondary}</span> : null}
+      {secondary != null ? <span className="truncate text-caption-md-regular text-tertiary">{secondary}</span> : null}
     </span>
   );
 }
