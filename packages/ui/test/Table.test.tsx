@@ -27,6 +27,18 @@ describe("Table", () => {
     expect(onSort).toHaveBeenCalledOnce();
   });
 
+  it("pins the header by default and not with stickyHeader={false}", () => {
+    const header = (sticky?: boolean) => (
+      <Table stickyHeader={sticky}>
+        <TableHeader><TableRow><TableHead>Name</TableHead></TableRow></TableHeader>
+      </Table>
+    );
+    const { rerender, container } = render(header());
+    expect(container.querySelector("thead")!.className).toContain("sticky");
+    rerender(header(false));
+    expect(container.querySelector("thead")!.className).not.toContain("sticky");
+  });
+
   it("marks selected rows", () => {
     render(<Table><TableBody><TableRow selected><TableCell>x</TableCell></TableRow></TableBody></Table>);
     expect(screen.getByRole("row").getAttribute("aria-selected")).toBe("true");

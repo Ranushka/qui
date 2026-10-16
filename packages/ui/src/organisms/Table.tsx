@@ -8,25 +8,40 @@ type SortDirection = "ascending" | "descending";
 
 /** Shares the table's `density` with its cells so rows size consistently without repeating the prop. */
 const TableDensityContext = React.createContext<TableDensity>("comfortable");
+/** Tells `TableHeader` whether to pin itself to the top of the table's scroll frame. */
+const TableStickyHeaderContext = React.createContext(true);
 
 export interface TableProps extends NoClass<React.ComponentPropsWithoutRef<"table">> {
   /** Row height: roomy default or a tighter data-dense layout. @default "comfortable" */
   density?: TableDensity;
+  /**
+   * Keeps the header row pinned while the rows scroll. The table scrolls inside its own frame, which takes at
+   * most its parent's height — give the parent a bounded height (e.g. a growing flex child) for it to scroll.
+   * @default true
+   */
+  stickyHeader?: boolean;
 }
 
-/** A semantic `<table>` in a horizontally scrollable, bordered frame. `density` flows down to every cell. */
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", ...props }, ref) => (
+/**
+ * A semantic `<table>` in a scrollable, bordered frame. `density` flows down to every cell; with `stickyHeader`
+ * (the default) the frame scrolls both ways within its parent's height and the header stays on top.
+ */
+export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", stickyHeader = true, ...props }, ref) => (
   <TableDensityContext.Provider value={density}>
-    <div className="w-full overflow-x-auto rounded-lg border-sm border-subtle bg-layer-2">
-      <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
-    </div>
+    <TableStickyHeaderContext.Provider value={stickyHeader}>
+      <div className={cn("w-full rounded-lg border-sm border-subtle bg-layer-2", stickyHeader ? "max-h-full overflow-auto" : "overflow-x-auto")}>
+        <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
+      </div>
+    </TableStickyHeaderContext.Provider>
   </TableDensityContext.Provider>
 ));
 Table.displayName = "Table";
 
-export const TableHeader = React.forwardRef<HTMLTableSectionElement, NoClass<React.ComponentPropsWithoutRef<"thead">>>(({ ...props }, ref) => (
-  <thead ref={ref} className={cn("bg-layer-1")} {...props} />
-));
+export const TableHeader = React.forwardRef<HTMLTableSectionElement, NoClass<React.ComponentPropsWithoutRef<"thead">>>(({ ...props }, ref) => {
+  const sticky = React.useContext(TableStickyHeaderContext);
+  // A pinned header keeps its bottom rule as an inset shadow: collapsed row borders scroll away with the body.
+  return <thead ref={ref} className={cn("bg-layer-1", sticky && "sticky top-0 z-10 shadow-[inset_0_-1px_0_var(--border-subtle)]")} {...props} />;
+});
 TableHeader.displayName = "TableHeader";
 
 export const TableBody = React.forwardRef<HTMLTableSectionElement, NoClass<React.ComponentPropsWithoutRef<"tbody">>>(({ ...props }, ref) => (
@@ -130,5 +145,5 @@ TableCaption.displayName = "TableCaption";
 DOC__ */
 
 /* __PROPS
-{ "density": ["comfortable", "compact"] }
+{ "density": ["comfortable", "compact"], "stickyHeader": "boolean" }
 PROPS__ */

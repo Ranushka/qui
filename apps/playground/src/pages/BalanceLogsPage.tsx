@@ -263,7 +263,7 @@ export function BalanceLogsPage() {
           setPage(1);
         }}
       />
-      <QUI.Box grow overflow="auto" paddingX="4">
+      <QUI.Box grow overflow="hidden" paddingX="4">
         <LogsTable rows={rows} sort={sort} onSort={toggleSort} selected={selected} onSelect={select} />
       </QUI.Box>
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
