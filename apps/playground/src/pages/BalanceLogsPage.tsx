@@ -1,0 +1,278 @@
+import * as React from "react";
+import * as QUI from "@qui/ui";
+import * as Icons from "lucide-react";
+import { AcmeShell, NavLink } from "../examples/acme/shell";
+
+/**
+ * An admin records table — "Account balance logs" — in the Acme shell with an admin navigation tree:
+ * search, filters, saved views, sortable columns, row selection and pagination. Built only from qui
+ * components — no className or style anywhere in this file.
+ */
+
+type Log = {
+  id: number;
+  account: string | null;
+  amount: number;
+  currency: string;
+  balanceUpdatedAt: string;
+  createdAt: string;
+  issuer: string;
+  ledgerAmount: number;
+};
+
+const accounts = ["Customer Service", "Nesto Trading", "Blue Harbor LLC", "Falcon Logistics"];
+
+/** Deterministic sample rows, newest first. */
+const logs: Log[] = Array.from({ length: 120 }, (_, i) => {
+  const seed = (i * 7919 + 104729) % 100000;
+  const amount = Math.round(((seed * 13) % 2500000) + 1500) / 100;
+  const ledgerAmount = Math.round((amount + ((seed * 31) % 4000000) / 100) * 100) / 100;
+  const second = 59 - (i % 60);
+  const minute = 56 - Math.floor(i / 60);
+  return {
+    id: 13262499 - i,
+    account: i % 9 === 3 ? accounts[(i / 9) % accounts.length | 0]! : null,
+    amount: i % 11 === 7 ? 0 : amount,
+    currency: "AED",
+    balanceUpdatedAt: `2026-10-16T10:${minute}:${String(second).padStart(2, "0")}.${String(seed % 1000).padStart(3, "0")}Z`,
+    createdAt: `16/10/2026 02:${minute - 1} PM`,
+    issuer: "nymcard",
+    ledgerAmount: i % 11 === 7 ? 0 : ledgerAmount,
+  };
+});
+
+const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+type SortKey = "account" | "amount" | "balanceUpdatedAt" | "id" | "ledgerAmount";
+type Sort = { key: SortKey; direction: "ascending" | "descending" };
+
+const columns: { key: SortKey | null; label: string }[] = [
+  { key: "account", label: "Account" },
+  { key: "amount", label: "Amount" },
+  { key: null, label: "Currency" },
+  { key: null, label: "Balance" },
+  { key: "balanceUpdatedAt", label: "Balance updated at" },
+  { key: null, label: "Created at" },
+  { key: "id", label: "ID" },
+  { key: null, label: "Issuer" },
+  { key: "ledgerAmount", label: "Ledger amount" },
+  { key: null, label: "Ledger currency" },
+];
+
+const pageSize = 25;
+
+function sortLogs(rows: Log[], sort: Sort) {
+  const sign = sort.direction === "ascending" ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    const x = a[sort.key] ?? "";
+    const y = b[sort.key] ?? "";
+    return (x < y ? -1 : x > y ? 1 : 0) * sign;
+  });
+}
+
+/** The admin console's navigation, with the Accounts section open on this screen. */
+function AdminNavigation() {
+  return (
+    <>
+      <QUI.List aria-label="Main">
+        <NavLink icon={Icons.House} label="Home" />
+        <NavLink icon={Icons.CodeXml} label="Developer portal" />
+      </QUI.List>
+      <QUI.ListSection label="Accounts" defaultOpen>
+        <QUI.List aria-label="Accounts">
+          <NavLink icon={Icons.Landmark} label="Accounts" />
+          <NavLink icon={Icons.WalletCards} label="Account balance logs" />
+          <NavLink icon={Icons.ArrowLeftRight} label="Account balance transactions" />
+          <NavLink icon={Icons.IdCard} label="Account details" />
+          <NavLink icon={Icons.UserRound} label="Account managers" />
+          <NavLink icon={Icons.FileText} label="Account statements" />
+          <NavLink icon={Icons.Wallet} label="Balances" />
+          <NavLink icon={Icons.Gauge} label="Balance limits" />
+          <NavLink icon={Icons.WalletMinimal} label="Virtual account balances" />
+          <NavLink icon={Icons.Hash} label="Virtual IBANs" />
+          <NavLink icon={Icons.BellOff} label="Dormancy notifications" />
+          <NavLink icon={Icons.Layers} label="Float accounts" />
+        </QUI.List>
+      </QUI.ListSection>
+      {[
+        { label: "Approvals", items: ["Approval rules", "Approval requests"] },
+        { label: "Cards", items: ["Cards", "Card types", "Card limits"] },
+        { label: "Companies", items: ["Companies", "Company users"] },
+        { label: "Compliance", items: ["KYC reviews", "Screening"] },
+        { label: "Payments", items: ["Payments", "Payment links", "Refunds"] },
+        { label: "Reporting", items: ["Reports", "Exports"] },
+      ].map((section) => (
+        <QUI.ListSection key={section.label} label={section.label}>
+          <QUI.List aria-label={section.label}>
+            {section.items.map((item) => (
+              <NavLink key={item} icon={Icons.Folder} label={item} />
+            ))}
+          </QUI.List>
+        </QUI.ListSection>
+      ))}
+    </>
+  );
+}
+
+function PageHeader() {
+  return (
+    <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3" wrap={false}>
+      <QUI.Inline gap="2" wrap={false}>
+        <QUI.Icon icon={Icons.WalletCards} size="lg" tint="secondary" />
+        <QUI.Heading level={1} size={5} weight="semibold" truncate>
+          Account balance logs
+        </QUI.Heading>
+      </QUI.Inline>
+      <QUI.Inline gap="2" wrap={false}>
+        <QUI.Button variant="primary" icon={<QUI.Icon icon={Icons.Plus} />} label="Create" />
+        <QUI.Menu>
+          <QUI.MenuTrigger render={<QUI.Button variant="secondary" endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label="Actions" />} />
+          <QUI.MenuContent align="end">
+            <QUI.MenuItem icon={<QUI.Icon icon={Icons.Download} />}>Export CSV</QUI.MenuItem>
+            <QUI.MenuItem icon={<QUI.Icon icon={Icons.Upload} />}>Import</QUI.MenuItem>
+            <QUI.MenuSeparator />
+            <QUI.MenuItem variant="danger" icon={<QUI.Icon icon={Icons.Trash2} />}>
+              Delete selected
+            </QUI.MenuItem>
+          </QUI.MenuContent>
+        </QUI.Menu>
+      </QUI.Inline>
+    </QUI.Inline>
+  );
+}
+
+function Toolbar({ query, onQuery, view, onView }: { query: string; onQuery: (q: string) => void; view: string; onView: (v: string) => void }) {
+  return (
+    <QUI.Inline justify="between" gap="2" paddingX="4" paddingBottom="3">
+      <QUI.Inline gap="2">
+        <QUI.Box width="2xs">
+          <QUI.Input
+            aria-label="Search balance logs"
+            placeholder="Search…"
+            value={query}
+            onChange={(event) => onQuery(event.target.value)}
+            startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />}
+          />
+        </QUI.Box>
+        <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.ListFilter} />} label="Filters" />
+        <QUI.Box shrink={false}>
+          <QUI.Tabs value={view} onValueChange={(value) => onView(String(value))}>
+            <QUI.TabsList aria-label="Records">
+              <QUI.Tab value="recent" label="Recent" />
+              <QUI.Tab value="all" label="All records" />
+            </QUI.TabsList>
+          </QUI.Tabs>
+        </QUI.Box>
+      </QUI.Inline>
+      <QUI.Inline gap="1" wrap={false}>
+        <QUI.Button variant="ghost" icon={<QUI.Icon icon={Icons.Bookmark} />} label="Save view" />
+        <QUI.IconButton variant="secondary" aria-label="Choose columns" icon={<QUI.Icon icon={Icons.Columns3} />} />
+        <QUI.IconButton variant="secondary" aria-label="Refresh" icon={<QUI.Icon icon={Icons.RefreshCw} />} />
+      </QUI.Inline>
+    </QUI.Inline>
+  );
+}
+
+function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; sort: Sort; onSort: (key: SortKey) => void; selected: Set<number>; onSelect: (ids: number[], checked: boolean) => void }) {
+  const selectedOnPage = rows.filter((row) => selected.has(row.id)).length;
+  return (
+    <QUI.Table density="compact" aria-label="Account balance logs">
+      <QUI.TableHeader>
+        <QUI.TableRow>
+          <QUI.TableHead>
+            <QUI.Checkbox
+              aria-label="Select all rows on this page"
+              checked={rows.length > 0 && selectedOnPage === rows.length}
+              indeterminate={selectedOnPage > 0 && selectedOnPage < rows.length}
+              onCheckedChange={(checked) => onSelect(rows.map((row) => row.id), checked)}
+            />
+          </QUI.TableHead>
+          {columns.map((column) => (
+            <QUI.TableHead
+              key={column.label}
+              sortDirection={column.key ? (sort.key === column.key ? sort.direction : "none") : undefined}
+              onSort={column.key ? () => onSort(column.key!) : undefined}
+            >
+              {column.label}
+            </QUI.TableHead>
+          ))}
+        </QUI.TableRow>
+      </QUI.TableHeader>
+      <QUI.TableBody>
+        {rows.map((row) => (
+          <QUI.TableRow key={row.id} selected={selected.has(row.id)}>
+            <QUI.TableCell>
+              <QUI.Checkbox aria-label={`Select log ${row.id}`} checked={selected.has(row.id)} onCheckedChange={(checked) => onSelect([row.id], checked)} />
+            </QUI.TableCell>
+            <QUI.TableCell>{row.account ? <QUI.TextButton label={row.account} /> : "—"}</QUI.TableCell>
+            <QUI.TableCell>{money.format(row.amount)}</QUI.TableCell>
+            <QUI.TableCell>{row.currency}</QUI.TableCell>
+            <QUI.TableCell>—</QUI.TableCell>
+            <QUI.TableCell>{row.balanceUpdatedAt}</QUI.TableCell>
+            <QUI.TableCell>{row.createdAt}</QUI.TableCell>
+            <QUI.TableCell>{row.id}</QUI.TableCell>
+            <QUI.TableCell>{row.issuer}</QUI.TableCell>
+            <QUI.TableCell>{money.format(row.ledgerAmount)}</QUI.TableCell>
+            <QUI.TableCell>{row.currency}</QUI.TableCell>
+          </QUI.TableRow>
+        ))}
+      </QUI.TableBody>
+    </QUI.Table>
+  );
+}
+
+/** Playground page: the balance-log records table in the Acme shell with the admin navigation. */
+export function BalanceLogsPage() {
+  const [query, setQuery] = React.useState("");
+  const [view, setView] = React.useState("all");
+  const [sort, setSort] = React.useState<Sort>({ key: "id", direction: "descending" });
+  const [page, setPage] = React.useState(1);
+  const [selected, setSelected] = React.useState<Set<number>>(() => new Set());
+
+  const q = query.trim().toLowerCase();
+  const filtered = (view === "recent" ? logs.slice(0, 30) : logs).filter(
+    (row) => !q || String(row.id).includes(q) || (row.account ?? "").toLowerCase().includes(q) || money.format(row.amount).includes(q)
+  );
+  const sorted = sortLogs(filtered, sort);
+  const pageCount = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const current = Math.min(page, pageCount);
+  const rows = sorted.slice((current - 1) * pageSize, current * pageSize);
+
+  const toggleSort = (key: SortKey) => {
+    setSort((s) => ({ key, direction: s.key === key && s.direction === "descending" ? "ascending" : "descending" }));
+    setPage(1);
+  };
+  const select = (ids: number[], checked: boolean) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      for (const id of ids) checked ? next.add(id) : next.delete(id);
+      return next;
+    });
+
+  return (
+    <AcmeShell current="Account balance logs" header={<PageHeader />} navigation={<AdminNavigation />}>
+      <Toolbar
+        query={query}
+        onQuery={(value) => {
+          setQuery(value);
+          setPage(1);
+        }}
+        view={view}
+        onView={(value) => {
+          setView(value);
+          setPage(1);
+        }}
+      />
+      <QUI.Box grow overflow="auto" paddingX="4">
+        <LogsTable rows={rows} sort={sort} onSort={toggleSort} selected={selected} onSelect={select} />
+      </QUI.Box>
+      <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
+        <QUI.Text size="xs" color="tertiary" tabularNums>
+          {selected.size > 0 ? `${selected.size} selected · ` : ""}
+          {sorted.length === 0 ? "No records" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${sorted.length}`}
+        </QUI.Text>
+        <QUI.Pagination page={current} pageCount={pageCount} onPageChange={setPage} />
+      </QUI.Inline>
+    </AcmeShell>
+  );
+}

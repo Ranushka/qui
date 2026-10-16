@@ -12,7 +12,7 @@ import { nodeSlotClass } from "../lib/node-slot";
  * clip to the padding box. Reacts to Base UI's `data-checked`/`data-indeterminate`/`data-disabled`.
  */
 const checkboxBoxClass = cn(
-  "inline-flex size-4 shrink-0 items-center justify-center rounded-sm border-sm border-transparent bg-clip-padding align-top [--node-size:0.75rem]",
+  "inline-flex size-4 shrink-0 items-center justify-center rounded-sm border-sm border-transparent bg-clip-padding align-middle [--node-size:0.75rem]",
   "shadow-[inset_0_0_0_1px_var(--border-color-icon-tertiary)]",
   "transition-[color,background-color,box-shadow] duration-100 outline-none",
   "focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-offset-1",
