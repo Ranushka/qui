@@ -106,17 +106,14 @@ function TopBar() {
 const navHrefs: Record<string, string> = {
   Dashboards: "#/examples/dashboard",
   "Core product": "#/examples/work-items",
-  "Account balance logs": "#/examples/tables",
-  "Approval requests": "#/examples/tables/approval-requests",
 };
 
 /** The nav entry the current screen belongs to; the shell sets it and `NavLink` marks it. */
 const CurrentNavContext = React.createContext("Core product");
 
-/** A sidebar entry; marked current when it is the shell's `current`, and a link when it has a screen. */
-export function NavLink({ icon, label }: { icon: IconComponent; label: string }) {
+/** A sidebar entry; marked current when it is the shell's `current`, and a link when it has a screen (`href`, or a known one). */
+export function NavLink({ icon, label, href = navHrefs[label] }: { icon: IconComponent; label: string; href?: string }) {
   const current = React.useContext(CurrentNavContext) === label ? "page" : undefined;
-  const href = navHrefs[label];
   return (
     <QUI.ListItem>
       {href ? (
