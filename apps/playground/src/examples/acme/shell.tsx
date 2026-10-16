@@ -149,7 +149,7 @@ function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
 
 function Sidebar() {
   return (
-    <QUI.Box as="aside" width="3xs" border="subtle" borderEdge="end" shrink={false} overflow="auto" hideBelow="lg">
+    <QUI.Box as="aside" width="3xs" shrink={false} overflow="auto" hideBelow="lg">
       <SidebarContent />
     </QUI.Box>
   );
@@ -177,14 +177,12 @@ export function AcmeShell({ children }: { children: React.ReactNode }) {
         <QUI.Stack height="full">
           <TopBar />
           <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
+            <Sidebar />
             <QUI.Box as="section" aria-label="Core product" grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
-              <QUI.Inline height="full" wrap={false} align="stretch" gap="0">
-                <Sidebar />
-                <QUI.Stack grow>
-                  <CoreProductHeader />
-                  {children}
-                </QUI.Stack>
-              </QUI.Inline>
+              <QUI.Stack height="full">
+                <CoreProductHeader />
+                {children}
+              </QUI.Stack>
             </QUI.Box>
           </QUI.Inline>
         </QUI.Stack>
