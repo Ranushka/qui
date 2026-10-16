@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
-import { ChangeCell, DateCell, DateRangeCell, MaskedCell, MoneyCell, NumberCell, StatusIconsCell, TableCell, TagCell, Table, TableBody, TableRow, TrendCell, UsersCell } from "../src";
+import { ChangeCell, DateCell, DateRangeCell, MaskedCell, MoneyCell, NumberCell, StatusIconsCell, TableCell, TagCell, Table, TableBody, TableRow, TextCell, TrendCell, UserCell, UsersCell } from "../src";
 
 const text = (ui: React.ReactElement) => render(ui).container.textContent;
 
@@ -92,5 +93,28 @@ describe("banking cells", () => {
     rerender(table(false));
     expect(container.querySelector("tr")!.className).not.toContain("even:");
     expect(container.querySelector("tr")!.className).toContain("border-b-sm");
+  });
+});
+
+describe("clickable cells", () => {
+  it("renders a link with href and a button with onClick", async () => {
+    const onClick = vi.fn();
+    render(
+      <>
+        <TextCell primary="Blue Harbor LLC" secondary="virtual" tone="link" href="#/accounts/1" />
+        <UserCell name="Sohrab Khan" secondary="sohrab@acme.com" onClick={onClick} />
+        <TagCell label="Active" color="emerald" onClick={onClick} />
+      </>
+    );
+    expect(screen.getByRole("link", { name: /Blue Harbor LLC/ }).getAttribute("href")).toBe("#/accounts/1");
+    await userEvent.click(screen.getByRole("button", { name: /Sohrab Khan/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Active" }));
+    expect(onClick).toHaveBeenCalledTimes(2);
+  });
+
+  it("stays plain text without an action", () => {
+    render(<TextCell primary="Blue Harbor LLC" />);
+    expect(screen.queryByRole("link")).toBeNull();
+    expect(screen.queryByRole("button")).toBeNull();
   });
 });

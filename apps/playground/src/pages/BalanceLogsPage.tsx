@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
-import { AcmeShell, NavLink } from "../examples/acme/shell";
+import { AcmeShell } from "../examples/acme/shell";
+import { AdminNavigation } from "../examples/acme/admin-nav";
 
 /**
  * An admin records table — "Account balance logs" — in the Acme shell with an admin navigation tree:
@@ -142,50 +143,6 @@ function sortLogs(rows: Log[], sort: Sort) {
   });
 }
 
-/** The admin console's navigation, with the Accounts section open on this screen. */
-function AdminNavigation() {
-  return (
-    <>
-      <QUI.List aria-label="Main">
-        <NavLink icon={Icons.House} label="Home" />
-        <NavLink icon={Icons.CodeXml} label="Developer portal" />
-      </QUI.List>
-      <QUI.ListSection label="Accounts" defaultOpen>
-        <QUI.List aria-label="Accounts">
-          <NavLink icon={Icons.Landmark} label="Accounts" />
-          <NavLink icon={Icons.WalletCards} label="Account balance logs" />
-          <NavLink icon={Icons.ArrowLeftRight} label="Account balance transactions" />
-          <NavLink icon={Icons.IdCard} label="Account details" />
-          <NavLink icon={Icons.UserRound} label="Account managers" />
-          <NavLink icon={Icons.FileText} label="Account statements" />
-          <NavLink icon={Icons.Wallet} label="Balances" />
-          <NavLink icon={Icons.Gauge} label="Balance limits" />
-          <NavLink icon={Icons.WalletMinimal} label="Virtual account balances" />
-          <NavLink icon={Icons.Hash} label="Virtual IBANs" />
-          <NavLink icon={Icons.BellOff} label="Dormancy notifications" />
-          <NavLink icon={Icons.Layers} label="Float accounts" />
-        </QUI.List>
-      </QUI.ListSection>
-      {[
-        { label: "Approvals", items: ["Approval rules", "Approval requests"] },
-        { label: "Cards", items: ["Cards", "Card types", "Card limits"] },
-        { label: "Companies", items: ["Companies", "Company users"] },
-        { label: "Compliance", items: ["KYC reviews", "Screening"] },
-        { label: "Payments", items: ["Payments", "Payment links", "Refunds"] },
-        { label: "Reporting", items: ["Reports", "Exports"] },
-      ].map((section) => (
-        <QUI.ListSection key={section.label} label={section.label}>
-          <QUI.List aria-label={section.label}>
-            {section.items.map((item) => (
-              <NavLink key={item} icon={Icons.Folder} label={item} />
-            ))}
-          </QUI.List>
-        </QUI.ListSection>
-      ))}
-    </>
-  );
-}
-
 function PageHeader() {
   return (
     <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3" wrap={false}>
@@ -245,7 +202,22 @@ function Toolbar({ query, onQuery, view, onView }: { query: string; onQuery: (q:
   );
 }
 
-function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; sort: Sort; onSort: (key: SortKey) => void; selected: Set<number>; onSelect: (ids: number[], checked: boolean) => void }) {
+/** The records table. Clicking an account, manager or status filters the table to it via `onFilter`. */
+function LogsTable({
+  rows,
+  sort,
+  onSort,
+  selected,
+  onSelect,
+  onFilter,
+}: {
+  rows: Log[];
+  sort: Sort;
+  onSort: (key: SortKey) => void;
+  selected: Set<number>;
+  onSelect: (ids: number[], checked: boolean) => void;
+  onFilter: (query: string) => void;
+}) {
   const selectedOnPage = rows.filter((row) => selected.has(row.id)).length;
   return (
     <QUI.Table aria-label="Account balance logs">
@@ -278,9 +250,9 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
               <QUI.Checkbox aria-label={`Select log ${row.id}`} checked={selected.has(row.id)} onCheckedChange={(checked) => onSelect([row.id], checked)} />
             </QUI.TableCell>
             <QUI.TableCell>
-              <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" />
+              <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" onClick={() => onFilter(row.account ?? "")} />
             </QUI.TableCell>
-            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} secondary={row.manager.email} /> : <QUI.EmptyCell />}</QUI.TableCell>
+            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} secondary={row.manager.email} onClick={() => onFilter(row.manager!.name)} /> : <QUI.EmptyCell />}</QUI.TableCell>
             <QUI.TableCell>
               <QUI.MaskedCell last={row.card} />
             </QUI.TableCell>
@@ -294,7 +266,7 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
               <QUI.MoneyCell amount={row.ledgerAmount} currency={row.currency} display="none" minor="subdued" locale="en-US" />
             </QUI.TableCell>
             <QUI.TableCell>
-              <QUI.TrendCell values={trendFor(row)} label="Ledger balance, last 3 months" showChange locale="en-US" />
+              <QUI.TrendCell values={trendFor(row)} label="Ledger balance, last 3 months" locale="en-US" />
             </QUI.TableCell>
             <QUI.TableCell>
               <QUI.StatusIconsCell items={stepsFor(row)} />
@@ -310,7 +282,7 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
               <QUI.TagCell label={row.issuer} color="indigo" />
             </QUI.TableCell>
             <QUI.TableCell>
-              <QUI.TagCell label={row.status} color={statusColor[row.status]} />
+              <QUI.TagCell label={row.status} color={statusColor[row.status]} onClick={() => onFilter(row.status)} />
             </QUI.TableCell>
             <QUI.TableCell>
               <QUI.UsersCell users={row.approvers} />
@@ -353,7 +325,13 @@ export function BalanceLogsPage() {
 
   const q = query.trim().toLowerCase();
   const filtered = (view === "recent" ? logs.slice(0, 30) : logs).filter(
-    (row) => !q || String(row.id).includes(q) || (row.account ?? "").toLowerCase().includes(q) || money.format(row.amount).includes(q)
+    (row) =>
+      !q ||
+      String(row.id).includes(q) ||
+      (row.account ?? "").toLowerCase().includes(q) ||
+      (row.manager?.name ?? "").toLowerCase().includes(q) ||
+      row.status.toLowerCase() === q ||
+      money.format(row.amount).includes(q)
   );
   const sorted = sortLogs(filtered, sort);
   const pageCount = Math.max(1, Math.ceil(sorted.length / pageSize));
@@ -372,7 +350,7 @@ export function BalanceLogsPage() {
     });
 
   return (
-    <AcmeShell current="Account balance logs" header={<PageHeader />} navigation={<AdminNavigation />}>
+    <AcmeShell current="Account balance logs" header={<PageHeader />} navigation={<AdminNavigation open="Accounts" />}>
       <Toolbar
         query={query}
         onQuery={(value) => {
@@ -386,7 +364,17 @@ export function BalanceLogsPage() {
         }}
       />
       <QUI.Box grow overflow="hidden" paddingX="4">
-        <LogsTable rows={rows} sort={sort} onSort={toggleSort} selected={selected} onSelect={select} />
+        <LogsTable
+          rows={rows}
+          sort={sort}
+          onSort={toggleSort}
+          selected={selected}
+          onSelect={select}
+          onFilter={(value) => {
+            setQuery(value);
+            setPage(1);
+          }}
+        />
       </QUI.Box>
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
         <QUI.Text size="xs" color="tertiary" tabularNums>

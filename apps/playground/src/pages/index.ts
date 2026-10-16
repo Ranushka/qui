@@ -1,10 +1,10 @@
 import type * as React from "react";
-import { BalanceLogsPage } from "./BalanceLogsPage";
 import { BoardPage } from "./BoardPage";
 import { ComponentsPage } from "./ComponentsPage";
 import { DashboardPage } from "./DashboardPage";
 import { IconsPage } from "./IconsPage";
 import { WorkItemsPage } from "./WorkItemsPage";
+import { TablesPage } from "./TablesPage";
 import { SpecPage } from "../spec/SpecPage";
 
 export type PlaygroundPage = {
@@ -24,7 +24,7 @@ export const pages: PlaygroundPage[] = [
   { path: "/examples/work-items", title: "Work items", component: WorkItemsPage, fullBleed: true },
   { path: "/examples/board", title: "Board", component: BoardPage, fullBleed: true },
   { path: "/examples/dashboard", title: "Dashboard", component: DashboardPage, fullBleed: true },
-  { path: "/examples/balance-logs", title: "Balance logs", component: BalanceLogsPage, fullBleed: true },
+  { path: "/examples/tables", title: "Tables", component: TablesPage, fullBleed: true },
 ];
 
 /** Old links that should keep working. */
@@ -32,4 +32,5 @@ export const redirects: Record<string, string> = {
   "": "/components",
   "/": "/components",
   "work-items": "/examples/work-items",
+  "/examples/balance-logs": "/examples/tables",
 };

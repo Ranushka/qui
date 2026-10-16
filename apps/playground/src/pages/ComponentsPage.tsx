@@ -1183,7 +1183,7 @@ export function ComponentsPage() {
   <QUI.SwitchField label="Single sign-on" disabled hint="Available on the Business plan." />
 </div>
           </Section>
-          <Section title="Tabs" align="block" props={{"variant":["contained","underline"],"stretch":["auto","full"],"disabled":"boolean"}}>
+          <Section title="Tabs" align="block" props={{"variant":["contained","underline","card"],"stretch":["auto","full"],"disabled":"boolean"}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Tabs defaultValue="board">
     <QUI.TabsList>
@@ -1204,6 +1204,13 @@ export function ComponentsPage() {
     <QUI.TabsPanel value="overview">Overview content.</QUI.TabsPanel>
     <QUI.TabsPanel value="activity">Activity content.</QUI.TabsPanel>
     <QUI.TabsPanel value="settings">Settings content.</QUI.TabsPanel>
+  </QUI.Tabs>
+  <QUI.Tabs variant="card" defaultValue="all">
+    <QUI.TabsList aria-label="Request types">
+      <QUI.Tab value="all" label="All requests" count="13,924" />
+      <QUI.Tab value="cards" label="Card and fund requests" count="0" />
+      <QUI.Tab value="invoices" label="Invoices and reimbursements" count="12" />
+    </QUI.TabsList>
   </QUI.Tabs>
 </div>
           </Section>
@@ -1488,7 +1495,7 @@ export function ComponentsPage() {
     </QUI.TableHeader>
     <QUI.TableBody>
       <QUI.TableRow>
-        <QUI.TableCell><QUI.UserCell name="James Clarke" secondary="james@acme.com" /></QUI.TableCell>
+        <QUI.TableCell><QUI.UserCell name="James Clarke" secondary="james@acme.com" onClick={() => {}} /></QUI.TableCell>
         <QUI.TableCell><QUI.UsersCell users={[{ name: "Raul Patel" }, { name: "Candice Smith" }, { name: "Nuwan Epa" }, { name: "Saif Kapadia" }]} /></QUI.TableCell>
         <QUI.TableCell><QUI.MaskedCell last="1435" /></QUI.TableCell>
         <QUI.TableCell><QUI.DateCell value="2026-05-10" format="short" locale="en-GB" /></QUI.TableCell>
@@ -1512,7 +1519,7 @@ export function ComponentsPage() {
         <QUI.TableCell><QUI.TagCell label="XL" color="crimson" /></QUI.TableCell>
       </QUI.TableRow>
       <QUI.TableRow>
-        <QUI.TableCell><QUI.TextCell primary="Ranu Test 2" secondary="virtual" tone="link" /></QUI.TableCell>
+        <QUI.TableCell><QUI.TextCell primary="Ranu Test 2" secondary="virtual" tone="link" href="#/examples/balance-logs" /></QUI.TableCell>
         <QUI.TableCell><QUI.UsersCell users={[]} /></QUI.TableCell>
         <QUI.TableCell><QUI.MaskedCell last={null} /></QUI.TableCell>
         <QUI.TableCell><QUI.DateCell value={null} /></QUI.TableCell>
@@ -1542,7 +1549,7 @@ export function ComponentsPage() {
         <QUI.TableCell align="end"><QUI.MoneyCell amount={4620000} currency="AED" display="code" notation="compact" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.MoneyCell amount={-18250.5} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.ChangeCell value={7.2} /></QUI.TableCell>
-        <QUI.TableCell><QUI.TrendCell values={[3.1, 3.9, 4.6]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[3.1, 3.9, 4.6]} label="Balance, last 3 months" /></QUI.TableCell>
         <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "current" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
       </QUI.TableRow>
       <QUI.TableRow>
@@ -1550,7 +1557,7 @@ export function ComponentsPage() {
         <QUI.TableCell align="end"><QUI.MoneyCell amount={812400} currency="AED" display="code" notation="compact" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.MoneyCell amount={42000} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.ChangeCell value={-3.4} /></QUI.TableCell>
-        <QUI.TableCell><QUI.TrendCell values={[1.2, 1.5, 0.8]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[1.2, 1.5, 0.8]} label="Balance, last 3 months" /></QUI.TableCell>
         <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "failed" }, { label: "Reviewed", icon: Icons.SquarePen, status: "pending" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
       </QUI.TableRow>
       <QUI.TableRow>
@@ -1558,7 +1565,7 @@ export function ComponentsPage() {
         <QUI.TableCell align="end"><QUI.MoneyCell amount={96300} currency="AED" display="code" notation="compact" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.MoneyCell amount={-96300} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.ChangeCell value={-12.5} good="down" /></QUI.TableCell>
-        <QUI.TableCell><QUI.TrendCell values={[110, 104, 96]} good="down" label="Spend, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[110, 104, 96]} good="down" label="Spend, last 3 months" /></QUI.TableCell>
         <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "done" }, { label: "Stamped", icon: Icons.Stamp, status: "done" }]} /></QUI.TableCell>
       </QUI.TableRow>
     </QUI.TableBody>

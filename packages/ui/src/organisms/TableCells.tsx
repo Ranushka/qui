@@ -24,23 +24,69 @@ export function EmptyCell() {
   );
 }
 
-export interface TextCellProps {
+/** Makes a cell clickable: a link with `href`, a button with `onClick`. */
+export interface CellActionProps {
+  /** Opens this URL; the cell renders as a link. */
+  href?: string;
+  /** Runs on click; the cell renders as a button. Ignored when `href` is set. */
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+}
+
+/** Hover/pressed fill and focus ring for a clickable cell, pulled out slightly so the fill doesn't hug the text. */
+const cellActionClass =
+  "-mx-1 -my-0.5 max-w-[calc(100%+0.5rem)] cursor-pointer rounded-sm px-1 py-0.5 text-start outline-none transition-colors hover:bg-layer-transparent-hover active:bg-layer-transparent-active focus-visible:ring-2 focus-visible:ring-accent-strong";
+
+/** Wraps `children` in an `<a>` or `<button>` when the cell has an action; otherwise renders them as they are. */
+function CellAction({ href, onClick, className, children }: CellActionProps & { className?: string; children: React.ReactNode }) {
+  if (href != null) {
+    return (
+      <a href={href} onClick={onClick} className={cn(cellActionClass, "inline-flex", className)}>
+        {children}
+      </a>
+    );
+  }
+  if (onClick != null) {
+    return (
+      <button type="button" onClick={onClick} className={cn(cellActionClass, "inline-flex", className)}>
+        {children}
+      </button>
+    );
+  }
+  return <>{children}</>;
+}
+
+export interface TextCellProps extends CellActionProps {
   /** Main line. */
   primary: React.ReactNode;
   /** Muted second line, e.g. an email or a type. */
   secondary?: React.ReactNode;
-  /** `link` tints the main line as a link, for cells that open a record. @default "default" */
+  /** `link` tints the main line as a link (underlined on hover when the cell has an action). @default "default" */
   tone?: "default" | "link";
 }
 
-/** One or two lines of text; both truncate to the column width. */
-export function TextCell({ primary, secondary, tone = "default" }: TextCellProps) {
-  if (primary == null || primary === "") return <EmptyCell />;
+function TextLines({ primary, secondary, tone }: Pick<TextCellProps, "primary" | "secondary" | "tone">) {
   return (
     <span className="flex min-w-0 flex-col">
-      <span className={cn("truncate text-body-sm-medium", tone === "link" ? "text-link-primary" : "text-primary")}>{primary}</span>
+      <span
+        className={cn(
+          "truncate text-body-sm-medium",
+          tone === "link" ? "text-link-primary group-hover/cell:text-link-primary-hover group-hover/cell:underline" : "text-primary"
+        )}
+      >
+        {primary}
+      </span>
       {secondary != null ? <span className="truncate text-caption-md-regular text-tertiary">{secondary}</span> : null}
     </span>
+  );
+}
+
+/** One or two lines of text; both truncate to the column width. With `href` or `onClick` it's a link or button. */
+export function TextCell({ primary, secondary, tone = "default", href, onClick }: TextCellProps) {
+  if (primary == null || primary === "") return <EmptyCell />;
+  return (
+    <CellAction href={href} onClick={onClick} className="group/cell">
+      <TextLines primary={primary} secondary={secondary} tone={tone} />
+    </CellAction>
   );
 }
 
@@ -50,18 +96,23 @@ export interface CellUser {
   src?: string;
 }
 
-export interface UserCellProps extends CellUser {
+export interface UserCellProps extends CellUser, CellActionProps {
   /** Muted second line, e.g. an email. */
   secondary?: React.ReactNode;
 }
 
-/** One person: avatar and name, with an optional second line. */
-export function UserCell({ name, src, secondary }: UserCellProps) {
-  return (
+/** One person: avatar and name, with an optional second line. With `href` or `onClick` the whole cell is clickable. */
+export function UserCell({ name, src, secondary, href, onClick }: UserCellProps) {
+  const content = (
     <span className="flex min-w-0 items-center gap-2">
       <Avatar size={secondary != null ? "lg" : "sm"} src={src} alt={name} />
-      <TextCell primary={name} secondary={secondary} />
+      <TextLines primary={name} secondary={secondary} />
     </span>
+  );
+  return (
+    <CellAction href={href} onClick={onClick}>
+      {content}
+    </CellAction>
   );
 }
 
@@ -381,7 +432,7 @@ const stepWord: Record<StatusStep, string> = { done: "done", current: "in progre
 export function StatusIconsCell({ items }: StatusIconsCellProps) {
   if (items.length === 0) return <EmptyCell />;
   return (
-    <span role="list" className="inline-flex items-center gap-2">
+    <span role="list" className="inline-flex items-center gap-3">
       {items.map((item) => {
         const Icon = item.icon ?? (item.status === "done" ? undefined : stepIcon[item.status]);
         const name = `${item.label}: ${stepWord[item.status]}`;
@@ -416,16 +467,38 @@ const tagColorClass = {
 
 export type TagColor = keyof typeof tagColorClass;
 
-export interface TagCellProps {
+const tagHoverClass: Record<TagColor, string> = {
+  grey: "hover:bg-label-grey-hover",
+  indigo: "hover:bg-label-indigo-hover",
+  purple: "hover:bg-label-purple-hover",
+  pink: "hover:bg-label-pink-hover",
+  crimson: "hover:bg-label-crimson-hover",
+  orange: "hover:bg-label-orange-hover",
+  yellow: "hover:bg-label-yellow-hover",
+  emerald: "hover:bg-label-emerald-hover",
+};
+
+export interface TagCellProps extends CellActionProps {
   label: React.ReactNode;
   /** One of the label palette colours. @default "grey" */
   color?: TagColor;
 }
 
-/** A coloured tag, e.g. a quarter, size or status; truncates in a narrow column. */
-export function TagCell({ label, color = "grey" }: TagCellProps) {
+/** A coloured tag, e.g. a quarter, size or status; truncates in a narrow column. With `href` or `onClick` it's clickable. */
+export function TagCell({ label, color = "grey", href, onClick }: TagCellProps) {
   if (label == null || label === "") return <EmptyCell />;
-  return <span className={cn("inline-block max-w-full truncate rounded-sm px-1.5 align-middle text-body-xs-medium", tagColorClass[color])}>{label}</span>;
+  const tagClass = cn("inline-block max-w-full truncate rounded-sm px-1.5 align-middle text-body-xs-medium", tagColorClass[color]);
+  if (href == null && onClick == null) return <span className={tagClass}>{label}</span>;
+  const actionClass = cn(tagClass, "cursor-pointer outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent-strong", tagHoverClass[color]);
+  return href != null ? (
+    <a href={href} onClick={onClick} className={actionClass}>
+      {label}
+    </a>
+  ) : (
+    <button type="button" onClick={onClick} className={actionClass}>
+      {label}
+    </button>
+  );
 }
 
 export interface MaskedCellProps {
@@ -468,7 +541,7 @@ export function MaskedCell({ last, groups = 3 }: MaskedCellProps) {
     </QUI.TableHeader>
     <QUI.TableBody>
       <QUI.TableRow>
-        <QUI.TableCell><QUI.UserCell name="James Clarke" secondary="james@acme.com" /></QUI.TableCell>
+        <QUI.TableCell><QUI.UserCell name="James Clarke" secondary="james@acme.com" onClick={() => {}} /></QUI.TableCell>
         <QUI.TableCell><QUI.UsersCell users={[{ name: "Raul Patel" }, { name: "Candice Smith" }, { name: "Nuwan Epa" }, { name: "Saif Kapadia" }]} /></QUI.TableCell>
         <QUI.TableCell><QUI.MaskedCell last="1435" /></QUI.TableCell>
         <QUI.TableCell><QUI.DateCell value="2026-05-10" format="short" locale="en-GB" /></QUI.TableCell>
@@ -492,7 +565,7 @@ export function MaskedCell({ last, groups = 3 }: MaskedCellProps) {
         <QUI.TableCell><QUI.TagCell label="XL" color="crimson" /></QUI.TableCell>
       </QUI.TableRow>
       <QUI.TableRow>
-        <QUI.TableCell><QUI.TextCell primary="Ranu Test 2" secondary="virtual" tone="link" /></QUI.TableCell>
+        <QUI.TableCell><QUI.TextCell primary="Ranu Test 2" secondary="virtual" tone="link" href="#/examples/balance-logs" /></QUI.TableCell>
         <QUI.TableCell><QUI.UsersCell users={[]} /></QUI.TableCell>
         <QUI.TableCell><QUI.MaskedCell last={null} /></QUI.TableCell>
         <QUI.TableCell><QUI.DateCell value={null} /></QUI.TableCell>
@@ -522,7 +595,7 @@ export function MaskedCell({ last, groups = 3 }: MaskedCellProps) {
         <QUI.TableCell align="end"><QUI.MoneyCell amount={4620000} currency="AED" display="code" notation="compact" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.MoneyCell amount={-18250.5} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.ChangeCell value={7.2} /></QUI.TableCell>
-        <QUI.TableCell><QUI.TrendCell values={[3.1, 3.9, 4.6]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[3.1, 3.9, 4.6]} label="Balance, last 3 months" /></QUI.TableCell>
         <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "current" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
       </QUI.TableRow>
       <QUI.TableRow>
@@ -530,7 +603,7 @@ export function MaskedCell({ last, groups = 3 }: MaskedCellProps) {
         <QUI.TableCell align="end"><QUI.MoneyCell amount={812400} currency="AED" display="code" notation="compact" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.MoneyCell amount={42000} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.ChangeCell value={-3.4} /></QUI.TableCell>
-        <QUI.TableCell><QUI.TrendCell values={[1.2, 1.5, 0.8]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[1.2, 1.5, 0.8]} label="Balance, last 3 months" /></QUI.TableCell>
         <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "failed" }, { label: "Reviewed", icon: Icons.SquarePen, status: "pending" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
       </QUI.TableRow>
       <QUI.TableRow>
@@ -538,7 +611,7 @@ export function MaskedCell({ last, groups = 3 }: MaskedCellProps) {
         <QUI.TableCell align="end"><QUI.MoneyCell amount={96300} currency="AED" display="code" notation="compact" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.MoneyCell amount={-96300} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
         <QUI.TableCell align="end"><QUI.ChangeCell value={-12.5} good="down" /></QUI.TableCell>
-        <QUI.TableCell><QUI.TrendCell values={[110, 104, 96]} good="down" label="Spend, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[110, 104, 96]} good="down" label="Spend, last 3 months" /></QUI.TableCell>
         <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "done" }, { label: "Stamped", icon: Icons.Stamp, status: "done" }]} /></QUI.TableCell>
       </QUI.TableRow>
     </QUI.TableBody>

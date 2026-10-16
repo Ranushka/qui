@@ -106,7 +106,8 @@ function TopBar() {
 const navHrefs: Record<string, string> = {
   Dashboards: "#/examples/dashboard",
   "Core product": "#/examples/work-items",
-  "Account balance logs": "#/examples/balance-logs",
+  "Account balance logs": "#/examples/tables",
+  "Approval requests": "#/examples/tables/approval-requests",
 };
 
 /** The nav entry the current screen belongs to; the shell sets it and `NavLink` marks it. */

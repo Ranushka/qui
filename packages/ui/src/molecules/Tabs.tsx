@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 
-type TabsVariant = "contained" | "underline";
+type TabsVariant = "contained" | "underline" | "card";
 type TabsStretch = "auto" | "full";
 
 /** Shares the set's `variant`/`stretch` from `Tabs` down to `TabsList`/`Tab` without repeating them. */
@@ -16,6 +16,7 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
     variant: {
       contained: "items-center gap-px rounded-lg bg-layer-3 p-0.5",
       underline: "items-start gap-px px-0.5",
+      card: "items-stretch gap-2 overflow-x-auto",
     },
     stretch: {
       auto: "inline-flex",
@@ -70,12 +71,33 @@ export interface TabProps extends NoClass<Omit<React.ComponentPropsWithoutRef<ty
   label: string;
   /** Icon rendered before the label. */
   icon?: React.ReactNode;
+  /** A count shown with the label — large under it on `card` tabs, a trailing number on the others. */
+  count?: React.ReactNode;
 }
 
 /** A single tab button. Renders contained pill chrome or an underline label + sliding bar, per the set's `variant`. */
-export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon, ...props }, ref) => {
+export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon, count, ...props }, ref) => {
   const variant = React.useContext(TabsVariantContext);
   const stretch = React.useContext(TabsStretchContext);
+
+  if (variant === "card") {
+    return (
+      <BaseTabs.Tab
+        ref={ref}
+        className={cn(
+          "flex w-40 shrink-0 cursor-pointer flex-col items-start justify-between gap-2 rounded-lg border-sm border-subtle bg-layer-2 px-3 py-2.5 text-start outline-none transition-colors select-none [--node-size:var(--control-glyph-md)] not-aria-disabled:not-data-active:hover:bg-layer-2-hover focus-visible:ring-2 focus-visible:ring-accent-strong aria-disabled:cursor-not-allowed aria-disabled:text-disabled data-active:border-accent-strong data-active:bg-accent-subtle",
+          stretch === "full" && "flex-1"
+        )}
+        {...props}
+      >
+        <span className="flex items-start gap-1.5 text-body-xs-medium text-secondary">
+          {icon}
+          {label}
+        </span>
+        {count != null ? <span className="text-h5-semibold text-primary tabular-nums">{count}</span> : null}
+      </BaseTabs.Tab>
+    );
+  }
 
   if (variant === "underline") {
     return (
@@ -90,6 +112,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon,
         <span className="flex h-7 items-center justify-center gap-1.5 rounded-md px-2 py-0.5 text-tertiary transition-colors group-aria-disabled/tab:text-disabled group-focus-visible/tab:ring-2 group-focus-visible/tab:ring-inset group-focus-visible/tab:ring-accent-strong group-hover/tab:bg-layer-transparent-hover group-hover/tab:text-secondary group-data-active/tab:bg-layer-transparent-selected group-data-active/tab:text-primary [--node-size:var(--control-glyph-md)]">
           {icon}
           {label}
+          {count != null ? <span className="text-tertiary tabular-nums">{count}</span> : null}
         </span>
         <span className="flex px-2">
           <span className="h-[3px] w-full rounded-full bg-current text-transparent transition-colors group-hover/tab:text-icon-placeholder group-data-active/tab:text-primary" />
@@ -102,6 +125,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon,
     <BaseTabs.Tab ref={ref} className={cn(tabVariants({ stretch }))} {...props}>
       {icon}
       <span className="truncate">{label}</span>
+      {count != null ? <span className="text-tertiary tabular-nums">{count}</span> : null}
     </BaseTabs.Tab>
   );
 });
@@ -137,9 +161,16 @@ TabsPanel.displayName = "TabsPanel";
     <QUI.TabsPanel value="activity">Activity content.</QUI.TabsPanel>
     <QUI.TabsPanel value="settings">Settings content.</QUI.TabsPanel>
   </QUI.Tabs>
+  <QUI.Tabs variant="card" defaultValue="all">
+    <QUI.TabsList aria-label="Request types">
+      <QUI.Tab value="all" label="All requests" count="13,924" />
+      <QUI.Tab value="cards" label="Card and fund requests" count="0" />
+      <QUI.Tab value="invoices" label="Invoices and reimbursements" count="12" />
+    </QUI.TabsList>
+  </QUI.Tabs>
 </div>
 DOC__ */
 
 /* __PROPS
-{ "variant": ["contained", "underline"], "stretch": ["auto", "full"], "disabled": "boolean" }
+{ "variant": ["contained", "underline", "card"], "stretch": ["auto", "full"], "disabled": "boolean" }
 PROPS__ */
