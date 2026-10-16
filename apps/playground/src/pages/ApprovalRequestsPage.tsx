@@ -357,7 +357,7 @@ export function ApprovalRequestsPage() {
           }}
         />
       }
-      navigation={<AdminNavigation open="Approvals" />}
+      navigation={<AdminNavigation open="Accounts" />}
     >
       <QUI.Box paddingX="4" paddingY="3">
         <QUI.Tabs

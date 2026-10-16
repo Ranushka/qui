@@ -22,7 +22,7 @@ export const adminSections: AdminSection[] = [
     items: [
       item("Accounts", Icons.Landmark),
       item("Account balance logs", Icons.WalletCards),
-      item("Account balance transactions", Icons.ArrowLeftRight),
+      item("Approval requests", Icons.ListChecks),
       item("Account details", Icons.IdCard),
       item("Account managers", Icons.UserRound),
       item("Account statements", Icons.FileText),
@@ -34,7 +34,7 @@ export const adminSections: AdminSection[] = [
       item("Float accounts", Icons.Layers),
     ],
   },
-  { label: "Approvals", items: [item("Approval requests", Icons.ListChecks), item("Approval rules", Icons.Workflow)] },
+  { label: "Approvals", items: [item("Approval rules", Icons.Workflow), item("Approval policies", Icons.ShieldCheck)] },
   { label: "Cards", items: [item("Cards", Icons.CreditCard), item("Card types", Icons.Shapes), item("Card limits", Icons.Gauge)] },
   { label: "Companies", items: [item("Companies", Icons.Building2), item("Company users", Icons.UsersRound)] },
   { label: "Compliance", items: [item("KYC reviews", Icons.ScanFace), item("Screening", Icons.ShieldCheck)] },
