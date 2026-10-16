@@ -1439,7 +1439,7 @@ export function ComponentsPage() {
   ]}
 />
           </Section>
-          <Section title="Table" align="block" props={{"density":["comfortable","compact"],"stickyHeader":"boolean","verticalLines":"boolean","TableCell.align":["start","center","end"]}}>
+          <Section title="Table" align="block" props={{"density":["comfortable","compact"],"stickyHeader":"boolean","verticalLines":"boolean","striped":"boolean","TableCell.align":["start","center","end"]}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Table>
     <QUI.TableHeader>
@@ -1469,7 +1469,7 @@ export function ComponentsPage() {
   </QUI.Table>
 </div>
           </Section>
-          <Section title="TableCells" align="block" props={{"DateCell.format":["short","medium","long","datetime","relative"],"DateCell.tone":["default","warning","danger"],"MoneyCell.display":["symbol","code","none"],"MoneyCell.minor":["inline","subdued","hidden"],"MoneyCell.signed":"boolean","NumberCell.format":["decimal","integer","percent","compact","duration"],"ProgressCell.variant":["auto","brand","success","warning","danger"],"TagCell.color":["grey","indigo","purple","pink","crimson","orange","yellow","emerald"],"TextCell.tone":["default","link"]}}>
+          <Section title="TableCells" align="block" props={{"DateCell.format":["short","medium","long","datetime","relative"],"DateCell.tone":["default","warning","danger"],"MoneyCell.display":["symbol","code","none"],"MoneyCell.minor":["inline","subdued","hidden"],"MoneyCell.signed":"boolean","MoneyCell.notation":["standard","compact"],"MoneyCell.negative":["minus","parentheses"],"ChangeCell.format":["percent","number","money"],"ChangeCell.good":["up","down"],"TrendCell.good":["up","down"],"TrendCell.showChange":"boolean","NumberCell.format":["decimal","integer","percent","compact","duration"],"ProgressCell.variant":["auto","brand","success","warning","danger"],"TagCell.color":["grey","indigo","purple","pink","crimson","orange","yellow","emerald"],"TextCell.tone":["default","link"]}}>
 <div className="flex w-full flex-col gap-4 p-4">
   <QUI.Table aria-label="Projects" stickyHeader={false}>
     <QUI.TableHeader>
@@ -1522,6 +1522,44 @@ export function ComponentsPage() {
         <QUI.TableCell align="end"><QUI.NumberCell value={null} /></QUI.TableCell>
         <QUI.TableCell><QUI.ProgressCell value={9} aria-label="Budget used" /></QUI.TableCell>
         <QUI.TableCell><QUI.TagCell label="Small" color="emerald" /></QUI.TableCell>
+      </QUI.TableRow>
+    </QUI.TableBody>
+  </QUI.Table>
+  <QUI.Table aria-label="Accounts" stickyHeader={false}>
+    <QUI.TableHeader>
+      <QUI.TableRow>
+        <QUI.TableHead>Account</QUI.TableHead>
+        <QUI.TableHead align="end">Balance</QUI.TableHead>
+        <QUI.TableHead align="end">Net flow</QUI.TableHead>
+        <QUI.TableHead align="end">MoM</QUI.TableHead>
+        <QUI.TableHead>Trend (3M)</QUI.TableHead>
+        <QUI.TableHead>Status</QUI.TableHead>
+      </QUI.TableRow>
+    </QUI.TableHeader>
+    <QUI.TableBody>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Operating" secondary="AE07 0331 •••• 1435" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={4620000} currency="AED" display="code" notation="compact" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={-18250.5} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.ChangeCell value={7.2} /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[3.1, 3.9, 4.6]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "current" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Payroll" secondary="AE07 0331 •••• 8993" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={812400} currency="AED" display="code" notation="compact" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={42000} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.ChangeCell value={-3.4} /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[1.2, 1.5, 0.8]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "failed" }, { label: "Reviewed", icon: Icons.SquarePen, status: "pending" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Card spend" secondary="Costs" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={96300} currency="AED" display="code" notation="compact" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={-96300} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.ChangeCell value={-12.5} good="down" /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[110, 104, 96]} good="down" label="Spend, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "done" }, { label: "Stamped", icon: Icons.Stamp, status: "done" }]} /></QUI.TableCell>
       </QUI.TableRow>
     </QUI.TableBody>
   </QUI.Table>

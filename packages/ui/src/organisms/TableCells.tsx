@@ -3,10 +3,12 @@ import { cn } from "../lib/cn";
 import { Avatar } from "../atoms/Avatar";
 import { AvatarGroup } from "../atoms/AvatarGroup";
 import { LinearProgress } from "../atoms/LinearProgress";
+import { Tooltip } from "../atoms/Tooltip";
+import { ArrowDownRight, ArrowUpRight, Check, CircleDashed, CircleDot, CircleX, Minus } from "lucide-react";
 
 /**
- * Typed cell content for `TableCell`: people, dates, money, numbers, progress, tags and masked
- * numbers. Each formats its value with `Intl` (pass `locale` to pin it), renders an em dash for a
+ * Typed cell content for `TableCell`: people, dates, money, numbers, changes, trends, statuses,
+ * progress, tags and masked numbers. Each formats its value with `Intl` (pass `locale` to pin it), renders an em dash for a
  * missing value, and sets its own type scale so a column reads the same everywhere. Put numeric
  * cells in a `TableCell align="end"` so their digits line up.
  */
@@ -35,7 +37,7 @@ export interface TextCellProps {
 export function TextCell({ primary, secondary, tone = "default" }: TextCellProps) {
   if (primary == null || primary === "") return <EmptyCell />;
   return (
-    <span className="flex min-w-0 flex-col">
+    <span className="flex min-w-0 flex-col gap-0.5">
       <span className={cn("truncate text-body-sm-medium", tone === "link" ? "text-link-primary" : "text-primary")}>{primary}</span>
       {secondary != null ? <span className="truncate text-body-xs-regular text-tertiary">{secondary}</span> : null}
     </span>
@@ -158,30 +160,42 @@ export interface MoneyCellProps {
   minor?: "inline" | "subdued" | "hidden";
   /** Tints negative amounts red and positive ones green, with an explicit sign. @default false */
   signed?: boolean;
+  /** `compact` shortens large amounts: "AED 1.2M". Cents are dropped. @default "standard" */
+  notation?: "standard" | "compact";
+  /** `parentheses` shows a negative amount the accounting way, "(500.00)", in red. @default "minus" */
+  negative?: "minus" | "parentheses";
   locale?: Locale;
 }
 
 /** A currency amount with tabular digits; put it in a `TableCell align="end"`. */
-export function MoneyCell({ amount, currency, display = "symbol", minor = "inline", signed = false, locale }: MoneyCellProps) {
+export function MoneyCell({ amount, currency, display = "symbol", minor = "inline", signed = false, notation = "standard", negative = "minus", locale }: MoneyCellProps) {
   if (amount == null || Number.isNaN(amount)) return <EmptyCell />;
+  const compact = notation === "compact";
+  const accounting = negative === "parentheses" && amount < 0;
   const formatter = new Intl.NumberFormat(locale, {
     style: display === "none" ? "decimal" : "currency",
     currency,
     currencyDisplay: display === "code" ? "code" : "narrowSymbol",
-    minimumFractionDigits: minor === "hidden" ? 0 : 2,
-    maximumFractionDigits: minor === "hidden" ? 0 : 2,
-    signDisplay: signed ? "exceptZero" : "auto",
+    notation,
+    minimumFractionDigits: compact || minor === "hidden" ? 0 : 2,
+    maximumFractionDigits: compact ? 1 : minor === "hidden" ? 0 : 2,
+    signDisplay: accounting ? "never" : signed ? "exceptZero" : "auto",
   });
-  const tone = signed && amount < 0 ? "text-danger-primary" : signed && amount > 0 ? "text-success-primary" : "text-primary";
-  if (minor !== "subdued") return <span className={cn("whitespace-nowrap tabular-nums", tone)}>{formatter.format(amount)}</span>;
+  const tone = (signed || accounting) && amount < 0 ? "text-danger-primary" : signed && amount > 0 ? "text-success-primary" : "text-primary";
+  const wrap = (text: React.ReactNode) => (accounting ? <>({text})</> : text);
+  if (minor !== "subdued" || compact) return <span className={cn("whitespace-nowrap tabular-nums", tone)}>{wrap(formatter.format(amount))}</span>;
   const parts = formatter.formatToParts(amount);
   const split = parts.findIndex((part) => part.type === "decimal");
   const whole = parts.slice(0, split === -1 ? parts.length : split).map((part) => part.value).join("");
   const cents = split === -1 ? "" : parts.slice(split).map((part) => part.value).join("");
   return (
     <span className={cn("whitespace-nowrap tabular-nums", tone)}>
-      {whole}
-      <span className="text-body-xs-regular text-tertiary">{cents}</span>
+      {wrap(
+        <>
+          {whole}
+          <span className="text-body-xs-regular text-tertiary">{cents}</span>
+        </>
+      )}
     </span>
   );
 }
@@ -246,6 +260,145 @@ export function ProgressCell({ value, variant = "auto", "aria-label": ariaLabel 
   return (
     <span className="flex min-w-24">
       <LinearProgress aria-label={ariaLabel} size="sm" value={value} variant={variant === "auto" ? (value >= 100 ? "success" : "brand") : variant} />
+    </span>
+  );
+}
+
+/** Which way is good: `up` for revenue or balances, `down` for costs or arrears. */
+export type GoodDirection = "up" | "down";
+
+function changeTone(delta: number, good: GoodDirection) {
+  if (delta === 0) return "text-tertiary";
+  return (delta > 0) === (good === "up") ? "text-success-primary" : "text-danger-primary";
+}
+
+export interface ChangeCellProps {
+  /** The change: a percentage (12.5 = 12.5%), a plain number, or an amount in `currency`. */
+  value: number | null | undefined;
+  /** @default "percent" */
+  format?: "percent" | "number" | "money";
+  /** Currency code when `format` is `money`. */
+  currency?: string;
+  /** Which direction is green. @default "up" */
+  good?: GoodDirection;
+  /** Fraction digits. @default 1 for percent, 0 for number, 2 for money */
+  decimals?: number;
+  locale?: Locale;
+}
+
+/** A change with a direction arrow, coloured by whether that direction is good: "↗ 12.5%". */
+export function ChangeCell({ value, format = "percent", currency = "USD", good = "up", decimals, locale }: ChangeCellProps) {
+  if (value == null || Number.isNaN(value)) return <EmptyCell />;
+  const digits = decimals ?? (format === "percent" ? 1 : format === "money" ? 2 : 0);
+  const text = new Intl.NumberFormat(locale, {
+    style: format === "percent" ? "percent" : format === "money" ? "currency" : "decimal",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+    signDisplay: "never",
+  }).format(format === "percent" ? Math.abs(value) / 100 : Math.abs(value));
+  const Arrow = value > 0 ? ArrowUpRight : value < 0 ? ArrowDownRight : Minus;
+  const direction = value > 0 ? "Up" : value < 0 ? "Down" : "No change";
+  return (
+    <span className={cn("inline-flex items-center gap-0.5 whitespace-nowrap tabular-nums text-body-sm-medium", changeTone(value, good))}>
+      <Arrow aria-hidden className="size-3.5 shrink-0" />
+      <span className="sr-only">{direction} </span>
+      {text}
+    </span>
+  );
+}
+
+export interface TrendCellProps {
+  /** Values oldest first, e.g. month-end balances. */
+  values: ReadonlyArray<number>;
+  /** Which direction is green. @default "up" */
+  good?: GoodDirection;
+  /** Also show the change from first to last as a percentage. @default false */
+  showChange?: boolean;
+  /** What the line shows, for screen readers, e.g. "Balance, last 3 months". @default "Trend" */
+  label?: string;
+  locale?: Locale;
+}
+
+const SPARK_W = 64;
+const SPARK_H = 20;
+
+/** A sparkline coloured by whether the overall direction (first → last) is good, with an optional % change. */
+export function TrendCell({ values, good = "up", showChange = false, label = "Trend", locale }: TrendCellProps) {
+  const points = values.filter((v) => Number.isFinite(v));
+  if (points.length < 2) return <EmptyCell />;
+  const first = points[0]!;
+  const last = points[points.length - 1]!;
+  const min = Math.min(...points);
+  const range = Math.max(...points) - min || 1;
+  const path = points
+    .map((v, i) => `${((i / (points.length - 1)) * (SPARK_W - 2) + 1).toFixed(1)},${(SPARK_H - 1 - ((v - min) / range) * (SPARK_H - 2)).toFixed(1)}`)
+    .join(" ");
+  const change = first === 0 ? null : ((last - first) / Math.abs(first)) * 100;
+  const tone = changeTone(last - first, good);
+  const direction = last > first ? "up" : last < first ? "down" : "flat";
+  const summary = `${label}: ${direction}${change != null ? ` ${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(Math.abs(change))}%` : ""}`;
+  return (
+    <span className={cn("inline-flex items-center gap-2", tone)}>
+      <svg role="img" aria-label={summary} width={SPARK_W} height={SPARK_H} viewBox={`0 0 ${SPARK_W} ${SPARK_H}`} className="shrink-0 overflow-visible">
+        <polyline points={path} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      {showChange && change != null ? (
+        <span aria-hidden className="whitespace-nowrap tabular-nums text-body-xs-medium">
+          {new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1, signDisplay: "exceptZero" }).format(change / 100)}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+export type StatusStep = "done" | "current" | "pending" | "failed";
+
+export interface StatusIconsCellItem {
+  /** What the step is, e.g. "Approved", "Invoice", "Reviewed". Shown in the tooltip. */
+  label: string;
+  status: StatusStep;
+  /** The step's icon. Without one, a step shows its status: a filled check, a dot, a dashed circle or an ✕. */
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+}
+
+export interface StatusIconsCellProps {
+  items: ReadonlyArray<StatusIconsCellItem>;
+}
+
+const stepTone: Record<StatusStep, string> = {
+  done: "text-success-primary",
+  current: "text-accent-primary",
+  pending: "text-icon-placeholder",
+  failed: "text-danger-primary",
+};
+/** Status-only icons for steps without their own (`done` draws a filled check instead). */
+const stepIcon = { current: CircleDot, pending: CircleDashed, failed: CircleX } as const;
+const stepWord: Record<StatusStep, string> = { done: "done", current: "in progress", pending: "pending", failed: "failed" };
+
+/** A row of step icons — approved, invoiced, reviewed, stamped… — each tinted by its status, named in a tooltip. */
+export function StatusIconsCell({ items }: StatusIconsCellProps) {
+  if (items.length === 0) return <EmptyCell />;
+  return (
+    <span role="list" className="inline-flex items-center gap-2">
+      {items.map((item) => {
+        const Icon = item.icon ?? (item.status === "done" ? undefined : stepIcon[item.status]);
+        const name = `${item.label}: ${stepWord[item.status]}`;
+        return (
+          <Tooltip key={item.label} label={name}>
+            <span role="listitem" tabIndex={0} aria-label={name} className={cn("inline-flex size-5 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-accent-strong", stepTone[item.status])}>
+              {item.status === "done" && !Icon ? (
+                <span className="inline-flex size-5 items-center justify-center rounded-full bg-success-primary text-icon-on-color">
+                  <Check aria-hidden className="size-3" strokeWidth={3} />
+                </span>
+              ) : (
+                Icon && <Icon aria-hidden className="size-5" />
+              )}
+            </span>
+          </Tooltip>
+        );
+      })}
     </span>
   );
 }
@@ -352,6 +505,44 @@ export function MaskedCell({ last, groups = 3 }: MaskedCellProps) {
       </QUI.TableRow>
     </QUI.TableBody>
   </QUI.Table>
+  <QUI.Table aria-label="Accounts" stickyHeader={false}>
+    <QUI.TableHeader>
+      <QUI.TableRow>
+        <QUI.TableHead>Account</QUI.TableHead>
+        <QUI.TableHead align="end">Balance</QUI.TableHead>
+        <QUI.TableHead align="end">Net flow</QUI.TableHead>
+        <QUI.TableHead align="end">MoM</QUI.TableHead>
+        <QUI.TableHead>Trend (3M)</QUI.TableHead>
+        <QUI.TableHead>Status</QUI.TableHead>
+      </QUI.TableRow>
+    </QUI.TableHeader>
+    <QUI.TableBody>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Operating" secondary="AE07 0331 •••• 1435" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={4620000} currency="AED" display="code" notation="compact" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={-18250.5} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.ChangeCell value={7.2} /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[3.1, 3.9, 4.6]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "current" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Payroll" secondary="AE07 0331 •••• 8993" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={812400} currency="AED" display="code" notation="compact" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={42000} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.ChangeCell value={-3.4} /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[1.2, 1.5, 0.8]} label="Balance, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "failed" }, { label: "Reviewed", icon: Icons.SquarePen, status: "pending" }, { label: "Stamped", icon: Icons.Stamp, status: "pending" }]} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Card spend" secondary="Costs" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={96300} currency="AED" display="code" notation="compact" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={-96300} currency="AED" display="none" negative="parentheses" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.ChangeCell value={-12.5} good="down" /></QUI.TableCell>
+        <QUI.TableCell><QUI.TrendCell values={[110, 104, 96]} good="down" label="Spend, last 3 months" showChange /></QUI.TableCell>
+        <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "done" }, { label: "Stamped", icon: Icons.Stamp, status: "done" }]} /></QUI.TableCell>
+      </QUI.TableRow>
+    </QUI.TableBody>
+  </QUI.Table>
 </div>
 DOC__ */
 
@@ -362,6 +553,12 @@ DOC__ */
   "MoneyCell.display": ["symbol", "code", "none"],
   "MoneyCell.minor": ["inline", "subdued", "hidden"],
   "MoneyCell.signed": "boolean",
+  "MoneyCell.notation": ["standard", "compact"],
+  "MoneyCell.negative": ["minus", "parentheses"],
+  "ChangeCell.format": ["percent", "number", "money"],
+  "ChangeCell.good": ["up", "down"],
+  "TrendCell.good": ["up", "down"],
+  "TrendCell.showChange": "boolean",
   "NumberCell.format": ["decimal", "integer", "percent", "compact", "duration"],
   "ProgressCell.variant": ["auto", "brand", "success", "warning", "danger"],
   "TagCell.color": ["grey", "indigo", "purple", "pink", "crimson", "orange", "yellow", "emerald"],

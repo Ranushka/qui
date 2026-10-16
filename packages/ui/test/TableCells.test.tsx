@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { DateCell, DateRangeCell, MaskedCell, MoneyCell, NumberCell, TableCell, TagCell, Table, TableBody, TableRow, UsersCell } from "../src";
+import { ChangeCell, DateCell, DateRangeCell, MaskedCell, MoneyCell, NumberCell, StatusIconsCell, TableCell, TagCell, Table, TableBody, TableRow, TrendCell, UsersCell } from "../src";
 
 const text = (ui: React.ReactElement) => render(ui).container.textContent;
 
@@ -49,5 +49,46 @@ describe("table cells", () => {
     expect(cell().className).toContain("border-e-sm");
     rerender(table(false));
     expect(cell().className).not.toContain("border-e-sm");
+  });
+});
+
+describe("banking cells", () => {
+  it("formats compact and accounting money", () => {
+    expect(text(<MoneyCell amount={4620000} currency="AED" display="code" notation="compact" locale="en-US" />)).toMatch(/^AED\s4\.6M$/);
+    expect(text(<MoneyCell amount={-18250.5} currency="AED" display="none" negative="parentheses" locale="en-US" />)).toBe("(18,250.50)");
+    expect(text(<MoneyCell amount={42000} currency="AED" display="none" negative="parentheses" locale="en-US" />)).toBe("42,000.00");
+  });
+
+  it("colours a change by whether its direction is good", () => {
+    const { container: up } = render(<ChangeCell value={7.2} locale="en-US" />);
+    expect(up.textContent).toBe("Up 7.2%");
+    expect(up.firstElementChild!.className).toContain("text-success-primary");
+    const { container: cost } = render(<ChangeCell value={-12.5} good="down" locale="en-US" />);
+    expect(cost.firstElementChild!.className).toContain("text-success-primary");
+    const { container: down } = render(<ChangeCell value={-3.4} locale="en-US" />);
+    expect(down.firstElementChild!.className).toContain("text-danger-primary");
+  });
+
+  it("summarises a trend for screen readers and needs two points", () => {
+    render(<TrendCell values={[100, 90, 80]} label="Balance" locale="en-US" />);
+    expect(screen.getByRole("img").getAttribute("aria-label")).toBe("Balance: down 20%");
+    expect(text(<TrendCell values={[5]} />)).toBe("—");
+  });
+
+  it("names each status step", () => {
+    render(<StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Stamped", status: "pending" }]} />);
+    expect(screen.getAllByRole("listitem").map((el) => el.getAttribute("aria-label"))).toEqual(["Approved: done", "Stamped: pending"]);
+  });
+
+  it("stripes body rows unless striped is off", () => {
+    const table = (striped?: boolean) => (
+      <Table striped={striped}>
+        <TableBody><TableRow><TableCell>1</TableCell></TableRow></TableBody>
+      </Table>
+    );
+    const { container, rerender } = render(table());
+    expect(container.querySelector("tr")!.className).toContain("even:");
+    rerender(table(false));
+    expect(container.querySelector("tr")!.className).not.toContain("even:");
   });
 });

@@ -15,7 +15,17 @@ type Log = {
   amount: number;
   currency: string;
   accountType: "virtual" | "physical";
-  manager: { name: string } | null;
+  manager: { name: string; email: string } | null;
+  approvers: { name: string }[];
+  status: "Active" | "Frozen" | "Dormant" | "Closed";
+  creditLimit: number;
+  limitUsed: number;
+  netFlow: number;
+  momChange: number;
+  transactions: number;
+  avgSettlement: number;
+  periodStart: string;
+  periodEnd: string;
   card: string;
   balanceUpdatedAt: string;
   createdAt: string;
@@ -23,8 +33,17 @@ type Log = {
   ledgerAmount: number;
 };
 
-const accounts = ["Customer Service", "Nesto Trading", "Blue Harbor LLC", "Falcon Logistics"];
-const managers = [{ name: "Saif Kapadia" }, { name: "Mashood Pookkadan" }, { name: "Candice Smith" }, null];
+const accounts = ["Customer Service", "Nesto Trading", "Blue Harbor LLC", "Falcon Logistics", "Test 11222211", "Marina Catering", "Desert Rose Travel"];
+const approverPool = [{ name: "Raul Patel" }, { name: "Nuwan Epa" }, { name: "Mohamed Ali" }, { name: "Aisha Khan" }];
+const statuses = ["Active", "Frozen", "Dormant", "Closed"] as const;
+const statusColor = { Active: "emerald", Frozen: "indigo", Dormant: "yellow", Closed: "grey" } as const;
+const managers = [
+  { name: "Saif Kapadia", email: "saif@acme.com" },
+  { name: "Mashood Pookkadan", email: "mashood@acme.com" },
+  { name: "Candice Smith", email: "candice@acme.com" },
+  { name: "Sohrab Khan", email: "sohrab@acme.com" },
+  null,
+];
 
 /** Deterministic sample rows, newest first. */
 const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
@@ -35,7 +54,7 @@ const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
   const minute = 56 - Math.floor(i / 60);
   return {
     id: 13262499 - i,
-    account: i % 9 === 3 ? accounts[(i / 9) % accounts.length | 0]! : null,
+    account: accounts[(i * 3) % accounts.length]!,
     amount: i % 11 === 7 ? 0 : amount,
     currency: "AED",
     accountType: seed % 3 === 0 ? "physical" : "virtual",
@@ -45,8 +64,40 @@ const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
     createdAt: `2026-10-16T10:${String(minute - 1).padStart(2, "0")}:00Z`,
     issuer: "nymcard",
     ledgerAmount: i % 11 === 7 ? 0 : ledgerAmount,
+    approvers: approverPool.slice(0, seed % 4),
+    status: statuses[i % 17 === 5 ? 1 : i % 23 === 9 ? 2 : i % 41 === 13 ? 3 : 0]!,
+    creditLimit: 50000 + (seed % 20) * 25000,
+    limitUsed: (seed * 7) % 101,
+    netFlow: Math.round(((seed * 37) % 5000000) - 2000000) / 100,
+    momChange: Math.round(((seed % 400) - 150) / 10) / 1,
+    transactions: 20 + ((seed * 3) % 4800),
+    avgSettlement: 15 + (seed % 2870),
+    periodStart: `2026-${String(9 + (i % 2)).padStart(2, "0")}-01T08:00:00Z`,
+    periodEnd: `2026-${String(9 + (i % 2)).padStart(2, "0")}-${i % 2 ? "15" : "30"}T08:00:00Z`,
   };
 });
+
+/** Month-end ledger balances for the last three months, ending at today's ledger amount. */
+function trendFor(row: Log) {
+  const swing = ((row.id % 7) - 3) / 10;
+  return [row.ledgerAmount * (1 - swing), row.ledgerAmount * (1 - swing / 3), row.ledgerAmount];
+}
+
+const stepNames = [
+  { label: "Approved" },
+  { label: "Invoice", icon: Icons.ReceiptText },
+  { label: "Reviewed", icon: Icons.SquarePen },
+  { label: "Stamped", icon: Icons.Stamp },
+];
+
+/** Reconciliation steps: the first few done, the next one in progress or failed, the rest pending. */
+function stepsFor(row: Log): QUI.StatusIconsCellItem[] {
+  const done = row.id % 5;
+  return stepNames.map((step, i) => ({
+    ...step,
+    status: i < done ? "done" : i === done ? (row.id % 13 === 0 ? "failed" : "current") : "pending",
+  }));
+}
 
 /** Fixed "now" for relative dates, so the sample reads the same on every visit. */
 const now = new Date("2026-10-18T09:00:00Z");
@@ -63,10 +114,21 @@ const columns: { key: SortKey | null; label: string; align?: "end" }[] = [
   { key: "amount", label: "Amount", align: "end" },
   { key: null, label: "Balance", align: "end" },
   { key: "ledgerAmount", label: "Ledger amount", align: "end" },
+  { key: null, label: "Trend (3M)" },
+  { key: null, label: "Status" },
   { key: "balanceUpdatedAt", label: "Balance updated" },
   { key: null, label: "Created" },
   { key: "id", label: "ID" },
   { key: null, label: "Issuer" },
+  { key: null, label: "Account status" },
+  { key: null, label: "Approvers" },
+  { key: null, label: "Credit limit", align: "end" },
+  { key: null, label: "Limit used" },
+  { key: null, label: "Net flow (MTD)", align: "end" },
+  { key: null, label: "MoM", align: "end" },
+  { key: null, label: "Transactions", align: "end" },
+  { key: null, label: "Avg. settlement", align: "end" },
+  { key: null, label: "Statement period" },
 ];
 
 const pageSize = 50;
@@ -218,7 +280,7 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
             <QUI.TableCell>
               <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" />
             </QUI.TableCell>
-            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} /> : <QUI.EmptyCell />}</QUI.TableCell>
+            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} secondary={row.manager.email} /> : <QUI.EmptyCell />}</QUI.TableCell>
             <QUI.TableCell>
               <QUI.MaskedCell last={row.card} />
             </QUI.TableCell>
@@ -232,6 +294,12 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
               <QUI.MoneyCell amount={row.ledgerAmount} currency={row.currency} display="none" minor="subdued" locale="en-US" />
             </QUI.TableCell>
             <QUI.TableCell>
+              <QUI.TrendCell values={trendFor(row)} label="Ledger balance, last 3 months" showChange locale="en-US" />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.StatusIconsCell items={stepsFor(row)} />
+            </QUI.TableCell>
+            <QUI.TableCell>
               <QUI.DateCell value={row.balanceUpdatedAt} format="datetime" locale="en-GB" />
             </QUI.TableCell>
             <QUI.TableCell>
@@ -240,6 +308,33 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
             <QUI.TableCell>{row.id}</QUI.TableCell>
             <QUI.TableCell>
               <QUI.TagCell label={row.issuer} color="indigo" />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.TagCell label={row.status} color={statusColor[row.status]} />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.UsersCell users={row.approvers} />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.MoneyCell amount={row.creditLimit} currency={row.currency} display="code" notation="compact" locale="en-US" />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.ProgressCell value={row.limitUsed} variant={row.limitUsed >= 90 ? "danger" : row.limitUsed >= 70 ? "warning" : "brand"} aria-label="Credit limit used" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.MoneyCell amount={row.netFlow} currency={row.currency} display="none" negative="parentheses" locale="en-US" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.ChangeCell value={row.momChange} locale="en-US" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.NumberCell value={row.transactions} format="integer" locale="en-US" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.NumberCell value={row.avgSettlement} format="duration" />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.DateRangeCell start={row.periodStart} end={row.periodEnd} locale="en-GB" />
             </QUI.TableCell>
           </QUI.TableRow>
         ))}

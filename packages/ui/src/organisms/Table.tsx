@@ -10,6 +10,8 @@ type SortDirection = "ascending" | "descending";
 const TableDensityContext = React.createContext<TableDensity>("comfortable");
 /** Tells `TableHeader` whether to pin itself to the top of the table's scroll frame. */
 const TableStickyHeaderContext = React.createContext(true);
+/** Tells body rows whether to shade every other row. */
+const TableStripedContext = React.createContext(true);
 /** Tells heads and cells whether to draw the column rule on their inline-end edge. */
 const TableVerticalLinesContext = React.createContext(true);
 
@@ -29,21 +31,25 @@ export interface TableProps extends NoClass<React.ComponentPropsWithoutRef<"tabl
   stickyHeader?: boolean;
   /** Draws a rule between columns. @default true */
   verticalLines?: boolean;
+  /** Shades every other body row (zebra stripes) so long rows are easy to follow. @default true */
+  striped?: boolean;
 }
 
 /**
  * A semantic `<table>` in a scrollable, bordered frame. `density` flows down to every cell; with `stickyHeader`
  * (the default) the frame scrolls both ways within its parent's height and the header stays on top.
  */
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", stickyHeader = true, verticalLines = true, ...props }, ref) => (
+export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", stickyHeader = true, verticalLines = true, striped = true, ...props }, ref) => (
   <TableDensityContext.Provider value={density}>
-    <TableStickyHeaderContext.Provider value={stickyHeader}>
-      <TableVerticalLinesContext.Provider value={verticalLines}>
-        <div className={cn("w-full rounded-lg border-sm border-subtle bg-layer-2", stickyHeader ? "max-h-full overflow-auto" : "overflow-x-auto")}>
-          <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
-        </div>
-      </TableVerticalLinesContext.Provider>
-    </TableStickyHeaderContext.Provider>
+    <TableStripedContext.Provider value={striped}>
+      <TableStickyHeaderContext.Provider value={stickyHeader}>
+        <TableVerticalLinesContext.Provider value={verticalLines}>
+          <div className={cn("w-full rounded-lg border-sm border-subtle bg-layer-2", stickyHeader ? "max-h-full overflow-auto" : "overflow-x-auto")}>
+            <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
+          </div>
+        </TableVerticalLinesContext.Provider>
+      </TableStickyHeaderContext.Provider>
+    </TableStripedContext.Provider>
   </TableDensityContext.Provider>
 ));
 Table.displayName = "Table";
@@ -65,15 +71,22 @@ export interface TableRowProps extends NoClass<React.ComponentPropsWithoutRef<"t
   selected?: boolean;
 }
 
-export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(({ selected, ...props }, ref) => (
-  <tr
-    ref={ref}
-    data-selected={selected ? "" : undefined}
-    aria-selected={selected || undefined}
-    className={cn("border-b-sm border-subtle transition-colors hover:bg-layer-transparent-hover data-selected:bg-layer-transparent-selected")}
-    {...props}
-  />
-));
+export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(({ selected, ...props }, ref) => {
+  const striped = React.useContext(TableStripedContext);
+  return (
+    <tr
+      ref={ref}
+      data-selected={selected ? "" : undefined}
+      aria-selected={selected || undefined}
+      className={cn(
+        "border-b-sm border-subtle transition-colors hover:bg-layer-transparent-hover data-selected:bg-layer-transparent-selected",
+        // Stripes yield to hover and selection; the header's single row is never an even child.
+        striped && "even:not-hover:not-data-selected:bg-layer-1"
+      )}
+      {...props}
+    />
+  );
+});
 TableRow.displayName = "TableRow";
 
 export interface TableHeadProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"th">, "aria-sort" | "align">> {
@@ -125,7 +138,7 @@ export interface TableCellProps extends NoClass<Omit<React.ComponentPropsWithout
 export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(({ align = "start", ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
   const verticalLines = React.useContext(TableVerticalLinesContext);
-  return <td ref={ref} className={cn("max-w-80 px-3", density === "compact" ? "h-8" : "h-11", alignClass[align], verticalLines && columnRuleClass)} {...props} />;
+  return <td ref={ref} className={cn("max-w-80 px-3", density === "compact" ? "h-8 py-1" : "h-11 py-2", alignClass[align], verticalLines && columnRuleClass)} {...props} />;
 });
 TableCell.displayName = "TableCell";
 
@@ -166,5 +179,5 @@ TableCaption.displayName = "TableCaption";
 DOC__ */
 
 /* __PROPS
-{ "density": ["comfortable", "compact"], "stickyHeader": "boolean", "verticalLines": "boolean", "TableCell.align": ["start", "center", "end"] }
+{ "density": ["comfortable", "compact"], "stickyHeader": "boolean", "verticalLines": "boolean", "striped": "boolean", "TableCell.align": ["start", "center", "end"] }
 PROPS__ */
