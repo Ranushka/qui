@@ -10,6 +10,13 @@ type SortDirection = "ascending" | "descending";
 const TableDensityContext = React.createContext<TableDensity>("comfortable");
 /** Tells `TableHeader` whether to pin itself to the top of the table's scroll frame. */
 const TableStickyHeaderContext = React.createContext(true);
+/** Tells heads and cells whether to draw the column rule on their inline-end edge. */
+const TableVerticalLinesContext = React.createContext(true);
+
+type CellAlign = "start" | "center" | "end";
+const alignClass: Record<CellAlign, string> = { start: "text-start", center: "text-center", end: "text-end" };
+/** Column rule between cells (none after the last), drawn on each cell's inline-end edge. */
+const columnRuleClass = "border-e-sm border-subtle last:border-e-0";
 
 export interface TableProps extends NoClass<React.ComponentPropsWithoutRef<"table">> {
   /** Row height: roomy default or a tighter data-dense layout. @default "comfortable" */
@@ -20,18 +27,22 @@ export interface TableProps extends NoClass<React.ComponentPropsWithoutRef<"tabl
    * @default true
    */
   stickyHeader?: boolean;
+  /** Draws a rule between columns. @default true */
+  verticalLines?: boolean;
 }
 
 /**
  * A semantic `<table>` in a scrollable, bordered frame. `density` flows down to every cell; with `stickyHeader`
  * (the default) the frame scrolls both ways within its parent's height and the header stays on top.
  */
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", stickyHeader = true, ...props }, ref) => (
+export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", stickyHeader = true, verticalLines = true, ...props }, ref) => (
   <TableDensityContext.Provider value={density}>
     <TableStickyHeaderContext.Provider value={stickyHeader}>
-      <div className={cn("w-full rounded-lg border-sm border-subtle bg-layer-2", stickyHeader ? "max-h-full overflow-auto" : "overflow-x-auto")}>
-        <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
-      </div>
+      <TableVerticalLinesContext.Provider value={verticalLines}>
+        <div className={cn("w-full rounded-lg border-sm border-subtle bg-layer-2", stickyHeader ? "max-h-full overflow-auto" : "overflow-x-auto")}>
+          <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
+        </div>
+      </TableVerticalLinesContext.Provider>
     </TableStickyHeaderContext.Provider>
   </TableDensityContext.Provider>
 ));
@@ -65,16 +76,19 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(({ 
 ));
 TableRow.displayName = "TableRow";
 
-export interface TableHeadProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"th">, "aria-sort">> {
+export interface TableHeadProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"th">, "aria-sort" | "align">> {
   /** Current sort state of this column. Omit for a non-sortable column. */
   sortDirection?: SortDirection | "none";
   /** Makes the header a button; called when the user activates it. */
   onSort?: () => void;
+  /** Text alignment; use `end` over numeric columns so headers line up with their digits. @default "start" */
+  align?: CellAlign;
 }
 
 /** A column header. With `onSort` it renders a keyboard-operable button and reports `aria-sort`. */
-export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(({ sortDirection, onSort, children, ...props }, ref) => {
+export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(({ sortDirection, onSort, align = "start", children, ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
+  const verticalLines = React.useContext(TableVerticalLinesContext);
   const sortable = onSort != null;
   const SortIcon = sortDirection === "ascending" ? ArrowUp : sortDirection === "descending" ? ArrowDown : ChevronsUpDown;
   return (
@@ -82,7 +96,7 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       ref={ref}
       scope="col"
       aria-sort={sortable ? (sortDirection ?? "none") : undefined}
-      className={cn("px-3 text-body-xs-medium text-tertiary whitespace-nowrap", density === "compact" ? "h-7" : "h-9")}
+      className={cn("px-3 text-body-xs-medium text-tertiary whitespace-nowrap", density === "compact" ? "h-7" : "h-9", alignClass[align], verticalLines && columnRuleClass)}
       {...props}
     >
       {sortable ? (
@@ -102,9 +116,16 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
 });
 TableHead.displayName = "TableHead";
 
-export const TableCell = React.forwardRef<HTMLTableCellElement, NoClass<React.ComponentPropsWithoutRef<"td">>>(({ ...props }, ref) => {
+export interface TableCellProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"td">, "align">> {
+  /** Text alignment; use `end` for money and numbers so digits line up. @default "start" */
+  align?: CellAlign;
+}
+
+/** A body cell. Holds plain text or a typed cell (`UserCell`, `DateCell`, `MoneyCell`, …). */
+export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(({ align = "start", ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
-  return <td ref={ref} className={cn("px-3", density === "compact" ? "h-8" : "h-11")} {...props} />;
+  const verticalLines = React.useContext(TableVerticalLinesContext);
+  return <td ref={ref} className={cn("max-w-80 px-3", density === "compact" ? "h-8" : "h-11", alignClass[align], verticalLines && columnRuleClass)} {...props} />;
 });
 TableCell.displayName = "TableCell";
 
@@ -145,5 +166,5 @@ TableCaption.displayName = "TableCaption";
 DOC__ */
 
 /* __PROPS
-{ "density": ["comfortable", "compact"], "stickyHeader": "boolean" }
+{ "density": ["comfortable", "compact"], "stickyHeader": "boolean", "verticalLines": "boolean", "TableCell.align": ["start", "center", "end"] }
 PROPS__ */

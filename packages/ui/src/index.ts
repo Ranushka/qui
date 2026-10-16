@@ -78,6 +78,7 @@ export * from "./molecules/RadioGroupField";
 export * from "./molecules/Fieldset";
 export * from "./molecules/Form";
 export * from "./organisms/Table";
+export * from "./organisms/TableCells";
 export * from "./organisms/Banner";
 export * from "./organisms/WorkItemCard";
 export * from "./molecules/StateGroupHeader";

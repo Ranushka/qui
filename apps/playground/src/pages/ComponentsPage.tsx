@@ -57,7 +57,7 @@ function Section({
 }
 
 /** Every component in the gallery by atomic level, for the playground side panel and search. */
-export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","SuggestionMenu","SwitchField","Tabs","TextAreaField","Toast","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","Toolbar","VirtualList","WorkItemCard"]}];
+export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","SuggestionMenu","SwitchField","Tabs","TextAreaField","Toast","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","TableCells","Toolbar","VirtualList","WorkItemCard"]}];
 export const componentNames: readonly string[] = componentGroups.flatMap((g) => g.names).sort((a, b) => a.localeCompare(b));
 
 /** Opening #/components/Badge scrolls to that component section. */
@@ -1439,7 +1439,7 @@ export function ComponentsPage() {
   ]}
 />
           </Section>
-          <Section title="Table" align="block" props={{"density":["comfortable","compact"]}}>
+          <Section title="Table" align="block" props={{"density":["comfortable","compact"],"stickyHeader":"boolean","verticalLines":"boolean","TableCell.align":["start","center","end"]}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Table>
     <QUI.TableHeader>
@@ -1465,6 +1465,64 @@ export function ComponentsPage() {
     <QUI.TableBody>
       <QUI.TableRow><QUI.TableCell>Login page</QUI.TableCell><QUI.TableCell>Done</QUI.TableCell></QUI.TableRow>
       <QUI.TableRow><QUI.TableCell>Billing</QUI.TableCell><QUI.TableCell>In progress</QUI.TableCell></QUI.TableRow>
+    </QUI.TableBody>
+  </QUI.Table>
+</div>
+          </Section>
+          <Section title="TableCells" align="block" props={{"DateCell.format":["short","medium","long","datetime","relative"],"DateCell.tone":["default","warning","danger"],"MoneyCell.display":["symbol","code","none"],"MoneyCell.minor":["inline","subdued","hidden"],"MoneyCell.signed":"boolean","NumberCell.format":["decimal","integer","percent","compact","duration"],"ProgressCell.variant":["auto","brand","success","warning","danger"],"TagCell.color":["grey","indigo","purple","pink","crimson","orange","yellow","emerald"],"TextCell.tone":["default","link"]}}>
+<div className="flex w-full flex-col gap-4 p-4">
+  <QUI.Table aria-label="Projects" stickyHeader={false}>
+    <QUI.TableHeader>
+      <QUI.TableRow>
+        <QUI.TableHead>Owner</QUI.TableHead>
+        <QUI.TableHead>Team</QUI.TableHead>
+        <QUI.TableHead>Card</QUI.TableHead>
+        <QUI.TableHead>Due</QUI.TableHead>
+        <QUI.TableHead>Sprint</QUI.TableHead>
+        <QUI.TableHead align="end">Budget</QUI.TableHead>
+        <QUI.TableHead align="end">Estimate</QUI.TableHead>
+        <QUI.TableHead align="end">Logged</QUI.TableHead>
+        <QUI.TableHead>Progress</QUI.TableHead>
+        <QUI.TableHead>Size</QUI.TableHead>
+      </QUI.TableRow>
+    </QUI.TableHeader>
+    <QUI.TableBody>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.UserCell name="James Clarke" secondary="james@acme.com" /></QUI.TableCell>
+        <QUI.TableCell><QUI.UsersCell users={[{ name: "Raul Patel" }, { name: "Candice Smith" }, { name: "Nuwan Epa" }, { name: "Saif Kapadia" }]} /></QUI.TableCell>
+        <QUI.TableCell><QUI.MaskedCell last="1435" /></QUI.TableCell>
+        <QUI.TableCell><QUI.DateCell value="2026-05-10" format="short" locale="en-GB" /></QUI.TableCell>
+        <QUI.TableCell><QUI.DateRangeCell start="2026-05-10" end="2026-05-17" locale="en-GB" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={1250} currency="USD" minor="subdued" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.NumberCell value={1200} format="duration" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.NumberCell value={930} format="duration" /></QUI.TableCell>
+        <QUI.TableCell><QUI.ProgressCell value={24} aria-label="Budget used" /></QUI.TableCell>
+        <QUI.TableCell><QUI.TagCell label="Medium" color="yellow" /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.UserCell name="Candice Smith" /></QUI.TableCell>
+        <QUI.TableCell><QUI.UsersCell users={[{ name: "Mohamed Ali" }]} /></QUI.TableCell>
+        <QUI.TableCell><QUI.MaskedCell last="8993" /></QUI.TableCell>
+        <QUI.TableCell><QUI.DateCell value="2026-02-28" tone="warning" locale="en-GB" /></QUI.TableCell>
+        <QUI.TableCell><QUI.DateRangeCell start="2026-05-28" end="2026-06-04" locale="en-GB" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={-500} currency="AED" display="code" signed /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.NumberCell value={52} format="percent" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.NumberCell value={1234.5} unit="pts" /></QUI.TableCell>
+        <QUI.TableCell><QUI.ProgressCell value={100} aria-label="Budget used" /></QUI.TableCell>
+        <QUI.TableCell><QUI.TagCell label="XL" color="crimson" /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Ranu Test 2" secondary="virtual" tone="link" /></QUI.TableCell>
+        <QUI.TableCell><QUI.UsersCell users={[]} /></QUI.TableCell>
+        <QUI.TableCell><QUI.MaskedCell last={null} /></QUI.TableCell>
+        <QUI.TableCell><QUI.DateCell value={null} /></QUI.TableCell>
+        <QUI.TableCell><QUI.DateRangeCell start="2026-11-30" end={null} locale="en-GB" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MoneyCell amount={0} currency="AED" display="none" minor="subdued" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.NumberCell value={1250000} format="compact" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.NumberCell value={null} /></QUI.TableCell>
+        <QUI.TableCell><QUI.ProgressCell value={9} aria-label="Budget used" /></QUI.TableCell>
+        <QUI.TableCell><QUI.TagCell label="Small" color="emerald" /></QUI.TableCell>
+      </QUI.TableRow>
     </QUI.TableBody>
   </QUI.Table>
 </div>

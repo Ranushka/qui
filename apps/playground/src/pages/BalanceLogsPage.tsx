@@ -14,6 +14,9 @@ type Log = {
   account: string | null;
   amount: number;
   currency: string;
+  accountType: "virtual" | "physical";
+  manager: { name: string } | null;
+  card: string;
   balanceUpdatedAt: string;
   createdAt: string;
   issuer: string;
@@ -21,6 +24,7 @@ type Log = {
 };
 
 const accounts = ["Customer Service", "Nesto Trading", "Blue Harbor LLC", "Falcon Logistics"];
+const managers = [{ name: "Saif Kapadia" }, { name: "Mashood Pookkadan" }, { name: "Candice Smith" }, null];
 
 /** Deterministic sample rows, newest first. */
 const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
@@ -34,29 +38,35 @@ const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
     account: i % 9 === 3 ? accounts[(i / 9) % accounts.length | 0]! : null,
     amount: i % 11 === 7 ? 0 : amount,
     currency: "AED",
+    accountType: seed % 3 === 0 ? "physical" : "virtual",
+    manager: managers[i % managers.length]!,
+    card: String(1000 + (seed % 9000)),
     balanceUpdatedAt: `2026-10-16T10:${minute}:${String(second).padStart(2, "0")}.${String(seed % 1000).padStart(3, "0")}Z`,
-    createdAt: `16/10/2026 02:${minute - 1} PM`,
+    createdAt: `2026-10-16T10:${String(minute - 1).padStart(2, "0")}:00Z`,
     issuer: "nymcard",
     ledgerAmount: i % 11 === 7 ? 0 : ledgerAmount,
   };
 });
+
+/** Fixed "now" for relative dates, so the sample reads the same on every visit. */
+const now = new Date("2026-10-18T09:00:00Z");
 
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 type SortKey = "account" | "amount" | "balanceUpdatedAt" | "id" | "ledgerAmount";
 type Sort = { key: SortKey; direction: "ascending" | "descending" };
 
-const columns: { key: SortKey | null; label: string }[] = [
+const columns: { key: SortKey | null; label: string; align?: "end" }[] = [
   { key: "account", label: "Account" },
-  { key: "amount", label: "Amount" },
-  { key: null, label: "Currency" },
-  { key: null, label: "Balance" },
-  { key: "balanceUpdatedAt", label: "Balance updated at" },
-  { key: null, label: "Created at" },
+  { key: null, label: "Account manager" },
+  { key: null, label: "Card" },
+  { key: "amount", label: "Amount", align: "end" },
+  { key: null, label: "Balance", align: "end" },
+  { key: "ledgerAmount", label: "Ledger amount", align: "end" },
+  { key: "balanceUpdatedAt", label: "Balance updated" },
+  { key: null, label: "Created" },
   { key: "id", label: "ID" },
   { key: null, label: "Issuer" },
-  { key: "ledgerAmount", label: "Ledger amount" },
-  { key: null, label: "Ledger currency" },
 ];
 
 const pageSize = 50;
@@ -190,6 +200,7 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
           {columns.map((column) => (
             <QUI.TableHead
               key={column.label}
+              align={column.align}
               sortDirection={column.key ? (sort.key === column.key ? sort.direction : "none") : undefined}
               onSort={column.key ? () => onSort(column.key!) : undefined}
             >
@@ -204,16 +215,32 @@ function LogsTable({ rows, sort, onSort, selected, onSelect }: { rows: Log[]; so
             <QUI.TableCell>
               <QUI.Checkbox aria-label={`Select log ${row.id}`} checked={selected.has(row.id)} onCheckedChange={(checked) => onSelect([row.id], checked)} />
             </QUI.TableCell>
-            <QUI.TableCell>{row.account ? <QUI.TextButton label={row.account} /> : "—"}</QUI.TableCell>
-            <QUI.TableCell>{money.format(row.amount)}</QUI.TableCell>
-            <QUI.TableCell>{row.currency}</QUI.TableCell>
-            <QUI.TableCell>—</QUI.TableCell>
-            <QUI.TableCell>{row.balanceUpdatedAt}</QUI.TableCell>
-            <QUI.TableCell>{row.createdAt}</QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" />
+            </QUI.TableCell>
+            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} /> : <QUI.EmptyCell />}</QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.MaskedCell last={row.card} />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.MoneyCell amount={row.amount} currency={row.currency} display="code" locale="en-US" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.MoneyCell amount={null} currency={row.currency} />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.MoneyCell amount={row.ledgerAmount} currency={row.currency} display="none" minor="subdued" locale="en-US" />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.DateCell value={row.balanceUpdatedAt} format="datetime" locale="en-GB" />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.DateCell value={row.createdAt} format="relative" now={now} locale="en-US" />
+            </QUI.TableCell>
             <QUI.TableCell>{row.id}</QUI.TableCell>
-            <QUI.TableCell>{row.issuer}</QUI.TableCell>
-            <QUI.TableCell>{money.format(row.ledgerAmount)}</QUI.TableCell>
-            <QUI.TableCell>{row.currency}</QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.TagCell label={row.issuer} color="indigo" />
+            </QUI.TableCell>
           </QUI.TableRow>
         ))}
       </QUI.TableBody>
