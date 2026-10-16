@@ -80,7 +80,7 @@ describe("banking cells", () => {
     expect(screen.getAllByRole("listitem").map((el) => el.getAttribute("aria-label"))).toEqual(["Approved: done", "Stamped: pending"]);
   });
 
-  it("stripes body rows unless striped is off", () => {
+  it("stripes body rows instead of row rules, unless striped is off", () => {
     const table = (striped?: boolean) => (
       <Table striped={striped}>
         <TableBody><TableRow><TableCell>1</TableCell></TableRow></TableBody>
@@ -88,7 +88,9 @@ describe("banking cells", () => {
     );
     const { container, rerender } = render(table());
     expect(container.querySelector("tr")!.className).toContain("even:");
+    expect(container.querySelector("tr")!.className).not.toContain("border-b-sm");
     rerender(table(false));
     expect(container.querySelector("tr")!.className).not.toContain("even:");
+    expect(container.querySelector("tr")!.className).toContain("border-b-sm");
   });
 });

@@ -31,7 +31,7 @@ export interface TableProps extends NoClass<React.ComponentPropsWithoutRef<"tabl
   stickyHeader?: boolean;
   /** Draws a rule between columns. @default true */
   verticalLines?: boolean;
-  /** Shades every other body row (zebra stripes) so long rows are easy to follow. @default true */
+  /** Shades every other body row (zebra stripes) instead of drawing a rule under each row. @default true */
   striped?: boolean;
 }
 
@@ -56,8 +56,9 @@ Table.displayName = "Table";
 
 export const TableHeader = React.forwardRef<HTMLTableSectionElement, NoClass<React.ComponentPropsWithoutRef<"thead">>>(({ ...props }, ref) => {
   const sticky = React.useContext(TableStickyHeaderContext);
-  // A pinned header keeps its bottom rule as an inset shadow: collapsed row borders scroll away with the body.
-  return <thead ref={ref} className={cn("bg-layer-1", sticky && "sticky top-0 z-10 shadow-[inset_0_-1px_0_var(--border-subtle)]")} {...props} />;
+  // The header's bottom rule is an inset shadow: it survives striped tables (no row rules) and pinning (collapsed
+  // row borders scroll away with the body).
+  return <thead ref={ref} className={cn("bg-layer-1 shadow-[inset_0_-1px_0_var(--border-subtle)]", sticky && "sticky top-0 z-10")} {...props} />;
 });
 TableHeader.displayName = "TableHeader";
 
@@ -79,9 +80,10 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(({ 
       data-selected={selected ? "" : undefined}
       aria-selected={selected || undefined}
       className={cn(
-        "border-b-sm border-subtle transition-colors hover:bg-layer-transparent-hover data-selected:bg-layer-transparent-selected",
-        // Stripes yield to hover and selection; the header's single row is never an even child.
-        striped && "even:not-hover:not-data-selected:bg-layer-1"
+        "transition-colors hover:bg-layer-transparent-hover data-selected:bg-layer-transparent-selected",
+        // Zebra stripes replace the row rules; they yield to hover and selection. The header's single row is never
+        // an even child, and keeps its own rule below it.
+        striped ? "even:not-hover:not-data-selected:bg-layer-1" : "border-b-sm border-subtle"
       )}
       {...props}
     />
