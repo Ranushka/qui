@@ -513,6 +513,19 @@ export function ComponentsPage() {
   <QUI.TextArea placeholder="Write something…" size="md" />
   <QUI.TextArea placeholder="Auto-resizing, up to 6 rows" autoResize maxRows={6} />
   <QUI.TextArea placeholder="Disabled" disabled />
+  <QUI.TextArea
+    aria-label="Message"
+    placeholder="Ask anything…"
+    autoResize
+    maxRows={8}
+    footer={
+      <>
+        <QUI.IconButton variant="ghost" size="sm" aria-label="Attach file" icon={<QUI.Icon icon={Icons.Paperclip} />} />
+        <span className="grow" />
+        <QUI.IconButton variant="primary" size="sm" aria-label="Send" icon={<QUI.Icon icon={Icons.ArrowUp} />} />
+      </>
+    }
+  />
 </div>
           </Section>
           <Section title="TextButton" align="block" props={{"variant":["primary","secondary"],"size":["md","lg"],"iconPosition":["start","end"],"type":["button","submit","reset"],"disabled":"boolean"}}>

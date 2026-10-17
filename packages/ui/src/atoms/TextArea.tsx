@@ -53,6 +53,8 @@ export interface TextAreaProps extends NoClass<Omit<React.TextareaHTMLAttributes
   autoResize?: boolean;
   /** Caps `autoResize` growth at this many rows. */
   maxRows?: number;
+  /** A row of controls inside the frame, under the text — e.g. a chat composer's attach, model and send buttons. */
+  footer?: React.ReactNode;
 }
 
 /**
@@ -61,7 +63,7 @@ export interface TextAreaProps extends NoClass<Omit<React.TextareaHTMLAttributes
  * `maxRows` caps that growth before scrolling takes over.
  */
 export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ size = "md", autoResize = false, maxRows, resize = "vertical", onInput, ...props }, ref) => {
+  ({ size = "md", autoResize = false, maxRows, resize = "vertical", footer, onInput, ...props }, ref) => {
     const localRef = React.useRef<HTMLTextAreaElement | null>(null);
     const setRef = React.useCallback(
       (node: HTMLTextAreaElement | null) => {
@@ -77,7 +79,7 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     }, [autoResize, maxRows, props.value]);
 
     return (
-      <div className={cn(textAreaGroupVariants({ resize: autoResize ? "none" : resize }))}>
+      <div className={cn(textAreaGroupVariants({ resize: autoResize ? "none" : resize }), footer != null && "flex-col")}>
         <textarea
           ref={setRef}
           className={cn(textAreaVariants({ size }), autoResize && "h-auto")}
@@ -87,6 +89,7 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           }}
           {...props}
         />
+        {footer != null ? <div className="flex items-center gap-1 px-2 pb-2">{footer}</div> : null}
       </div>
     );
   }
@@ -98,6 +101,19 @@ TextArea.displayName = "TextArea";
   <QUI.TextArea placeholder="Write something…" size="md" />
   <QUI.TextArea placeholder="Auto-resizing, up to 6 rows" autoResize maxRows={6} />
   <QUI.TextArea placeholder="Disabled" disabled />
+  <QUI.TextArea
+    aria-label="Message"
+    placeholder="Ask anything…"
+    autoResize
+    maxRows={8}
+    footer={
+      <>
+        <QUI.IconButton variant="ghost" size="sm" aria-label="Attach file" icon={<QUI.Icon icon={Icons.Paperclip} />} />
+        <span className="grow" />
+        <QUI.IconButton variant="primary" size="sm" aria-label="Send" icon={<QUI.Icon icon={Icons.ArrowUp} />} />
+      </>
+    }
+  />
 </div>
 DOC__ */
 
