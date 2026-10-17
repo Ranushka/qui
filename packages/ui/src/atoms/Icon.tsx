@@ -9,6 +9,8 @@ const iconVariants = cva(nodeSlotClass, {
     tint: {
       inherit: "",
       danger: "text-danger-primary",
+      success: "text-success-primary",
+      warning: "text-warning-primary",
       placeholder: "text-icon-placeholder transition-colors group-focus-within/control:text-icon-secondary group-has-[:disabled]/control:text-icon-disabled group-data-disabled/control:text-icon-disabled",
       muted: "text-icon-placeholder",
       secondary: "text-icon-secondary group-has-[:disabled]/control:text-icon-disabled group-data-disabled/control:text-icon-disabled",
@@ -50,5 +52,5 @@ export function Icon({ icon: IconComponent, tint, size, ...props }: IconProps) {
 DOC__ */
 
 /* __PROPS
-{ "tint": ["inherit", "danger", "placeholder", "muted", "secondary", "tertiary"], "size": ["inherit", "xs", "sm", "md", "lg", "xl", "2xl"] }
+{ "tint": ["inherit", "danger", "success", "warning", "placeholder", "muted", "secondary", "tertiary"], "size": ["inherit", "xs", "sm", "md", "lg", "xl", "2xl"] }
 PROPS__ */

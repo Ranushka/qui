@@ -16,17 +16,9 @@ import type { NoClass } from "../../lib/no-class";
  *
  * Classes are spelled out in full so Tailwind's source scan picks them up.
  */
+// The palette itself lives on `:root` in styles.css, so `chartColor()` resolves anywhere — a legend row or a
+// swatch outside a chart included. The frame only sets the surface its fills are cut against.
 const chartPaletteClasses = cn(
-  "[--qui-chart-1:var(--extended-color-indigo-500)] dark:[--qui-chart-1:var(--extended-color-indigo-400)]",
-  "[--qui-chart-2:var(--extended-color-orange-600)] dark:[--qui-chart-2:var(--extended-color-orange-600)]",
-  "[--qui-chart-3:var(--extended-color-purple-400)] dark:[--qui-chart-3:var(--extended-color-purple-400)]",
-  "[--qui-chart-4:var(--extended-color-emerald-700)] dark:[--qui-chart-4:var(--extended-color-emerald-600)]",
-  "[--qui-chart-5:var(--extended-color-pink-500)] dark:[--qui-chart-5:var(--extended-color-pink-500)]",
-  "[--qui-chart-6:var(--extended-color-yellow-800)] dark:[--qui-chart-6:var(--extended-color-yellow-800)]",
-  "[--qui-chart-7:var(--extended-color-indigo-400)] dark:[--qui-chart-7:var(--extended-color-indigo-500)]",
-  "[--qui-chart-8:var(--extended-color-crimson-500)] dark:[--qui-chart-8:var(--extended-color-crimson-400)]",
-  // Neutral for an "Other" bucket; never a categorical slot.
-  "[--qui-chart-other:var(--extended-color-grey-600)]",
   // The surface the chart sits on — used for the 2px gaps between adjacent fills and the ring on
   // active dots. Override on a chart's `className` when it sits on a different layer.
   "[--qui-chart-surface:var(--bg-surface-1)]"

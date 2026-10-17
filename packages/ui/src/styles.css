@@ -5,3 +5,32 @@
     @apply bg-canvas font-body text-primary;
   }
 }
+
+/* Categorical chart palette (see organisms/charts/shared.tsx for how the slots were chosen). On :root so
+   `chartColor(i)` works outside a chart too, e.g. a swatch in a legend list. */
+@layer base {
+  /* Set on every themed element too, so a light/dark subtree re-resolves the slots like the token theme does. */
+  :root,
+  [data-theme] {
+    --qui-chart-1: var(--extended-color-indigo-500);
+    --qui-chart-2: var(--extended-color-orange-600);
+    --qui-chart-3: var(--extended-color-purple-400);
+    --qui-chart-4: var(--extended-color-emerald-700);
+    --qui-chart-5: var(--extended-color-pink-500);
+    --qui-chart-6: var(--extended-color-yellow-800);
+    --qui-chart-7: var(--extended-color-indigo-400);
+    --qui-chart-8: var(--extended-color-crimson-500);
+    --qui-chart-other: var(--extended-color-grey-600);
+  }
+
+  [data-theme*="dark"] {
+    --qui-chart-1: var(--extended-color-indigo-400);
+    --qui-chart-2: var(--extended-color-orange-600);
+    --qui-chart-3: var(--extended-color-purple-400);
+    --qui-chart-4: var(--extended-color-emerald-600);
+    --qui-chart-5: var(--extended-color-pink-500);
+    --qui-chart-6: var(--extended-color-yellow-800);
+    --qui-chart-7: var(--extended-color-indigo-500);
+    --qui-chart-8: var(--extended-color-crimson-400);
+  }
+}

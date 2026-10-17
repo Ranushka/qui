@@ -18,6 +18,19 @@ const mainItems = [item("Home", Icons.House), item("Developer portal", Icons.Cod
 /** Every section of the admin console's navigation tree. */
 export const adminSections: AdminSection[] = [
   {
+    label: "Spend",
+    items: [
+      item("Spend overview", Icons.ChartPie),
+      item("Transactions", Icons.ReceiptText),
+      item("Cards", Icons.CreditCard),
+      item("Budgets", Icons.PiggyBank),
+      item("Policies", Icons.ShieldCheck),
+      item("My spend", Icons.UserRound),
+      item("Reimbursements", Icons.HandCoins),
+      item("Bills", Icons.FileText),
+    ],
+  },
+  {
     label: "Accounts",
     items: [
       item("Accounts", Icons.Landmark),
@@ -35,7 +48,7 @@ export const adminSections: AdminSection[] = [
     ],
   },
   { label: "Approvals", items: [item("Approval rules", Icons.Workflow), item("Approval policies", Icons.ShieldCheck)] },
-  { label: "Cards", items: [item("Cards", Icons.CreditCard), item("Card types", Icons.Shapes), item("Card limits", Icons.Gauge)] },
+  { label: "Card programs", items: [item("Card types", Icons.Shapes), item("Card limits", Icons.Gauge)] },
   { label: "Companies", items: [item("Companies", Icons.Building2), item("Company users", Icons.UsersRound)] },
   { label: "Compliance", items: [item("KYC reviews", Icons.ScanFace), item("Screening", Icons.ShieldCheck)] },
   { label: "Payments", items: [item("Payments", Icons.Banknote), item("Payment links", Icons.Link), item("Refunds", Icons.Undo2)] },

@@ -57,7 +57,7 @@ function Section({
 }
 
 /** Every component in the gallery by atomic level, for the playground side panel and search. */
-export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","SuggestionMenu","SwitchField","Tabs","TextAreaField","Toast","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","TableCells","Toolbar","VirtualList","WorkItemCard"]}];
+export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CardVisual","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ReceiptPreview","RuleBuilder","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","Stepper","SuggestionMenu","SwitchField","Tabs","TextAreaField","Timeline","Toast","UploadArea","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","TableCells","Toolbar","VirtualList","WorkItemCard"]}];
 export const componentNames: readonly string[] = componentGroups.flatMap((g) => g.names).sort((a, b) => a.localeCompare(b));
 
 /** Opening #/components/Badge scrolls to that component section. */
@@ -260,7 +260,7 @@ export function ComponentsPage() {
   <QUI.Heading level={2} size={5} color="secondary">An h2 that looks like h5</QUI.Heading>
 </div>
           </Section>
-          <Section title="Icon" align="row" props={{"tint":["inherit","danger","placeholder","muted","secondary","tertiary"],"size":["inherit","xs","sm","md","lg","xl","2xl"]}}>
+          <Section title="Icon" align="row" props={{"tint":["inherit","danger","success","warning","placeholder","muted","secondary","tertiary"],"size":["inherit","xs","sm","md","lg","xl","2xl"]}}>
 <div className="flex items-center gap-3 [--node-size:20px]">
   <QUI.Icon icon={Icons.Settings} tint="secondary" />
   <QUI.Icon icon={Icons.Settings} tint="muted" />
@@ -682,6 +682,14 @@ export function ComponentsPage() {
   </QUI.ButtonGroup>
 </div>
           </Section>
+          <Section title="CardVisual" align="block" props={{"color":["indigo","emerald","purple","crimson","grey"],"size":["sm","md"],"form":["virtual","physical"],"network":["visa","mastercard"],"frozen":"boolean"}}>
+<div className="flex flex-wrap items-start gap-4 p-4">
+  <QUI.CardVisual holder="Saif Kapadia" last4="4821" expiry="09/29" nickname="AWS billing" />
+  <QUI.CardVisual holder="Candice Smith" last4="1167" expiry="03/28" nickname="Team travel" form="physical" network="mastercard" color="emerald" />
+  <QUI.CardVisual holder="Aisha Khan" last4="9034" nickname="Ads" color="purple" size="sm" />
+  <QUI.CardVisual holder="Sohrab Khan" last4="5502" nickname="Office" size="sm" frozen />
+</div>
+          </Section>
           <Section title="CheckboxField" align="block" props={{"size":["md","lg","xl","2xl"],"indeterminate":"boolean","required":"boolean","disabled":"boolean","defaultChecked":"boolean"}}>
 <div className="flex max-w-md flex-col gap-4 p-4">
   <QUI.CheckboxField label="Email me about mentions" description="Only when someone @-mentions you." defaultChecked />
@@ -1070,6 +1078,28 @@ export function ComponentsPage() {
   <QUI.RailItem icon={Icons.Settings} label="Settings" />
 </ul>
           </Section>
+          <Section title="ReceiptPreview" align="block">
+<div className="flex w-96 flex-col gap-4 p-4">
+  <QUI.ReceiptPreview file={{ name: "emirates-ek815.pdf", detail: "212 KB · matched 2 Oct" }} onView={() => {}} onReplace={() => {}} />
+  <QUI.ReceiptPreview emptyLabel="Required for spend over AED 75" onUpload={() => {}} onRequest={() => {}} />
+</div>
+          </Section>
+          <Section title="RuleBuilder" align="block" props={{"disabled":"boolean"}}>
+<div className="flex max-w-3xl flex-col gap-4 p-4">
+  <QUI.RuleBuilder
+    fields={[
+      { value: "amount", label: "Amount", type: "number", unit: "AED" },
+      { value: "category", label: "Category", type: "select", options: [{ value: "Travel", label: "Travel" }, { value: "Meals", label: "Meals" }, { value: "Software", label: "Software" }] },
+      { value: "merchant", label: "Merchant", type: "text" },
+    ]}
+    defaultConditions={[
+      { id: "a", field: "amount", operator: "gt", value: "5000" },
+      { id: "b", field: "category", operator: "eq", value: "Travel" },
+    ]}
+    then={<QUI.Text size="xs">Require approval from Finance</QUI.Text>}
+  />
+</div>
+          </Section>
           <Section title="ScrollArea" align="block" props={{"orientation":["vertical","horizontal","both"],"visibility":["auto","always"],"size":["sm","md","lg"]}}>
 <div className="flex flex-wrap gap-6 p-4">
   <div className="flex h-48 w-64 flex-col rounded-lg border border-subtle bg-layer-1">
@@ -1176,6 +1206,24 @@ export function ComponentsPage() {
   <QUI.StateGroupHeader icon={Icons.CircleDot} state="In Progress" count={3} layout="column" />
 </div>
           </Section>
+          <Section title="Stepper" align="block" props={{"orientation":["horizontal","vertical"]}}>
+<div className="flex flex-col gap-8 p-4">
+  <QUI.Stepper
+    current={2}
+    steps={[
+      { label: "Cardholder", description: "Saif Kapadia" },
+      { label: "Card type", description: "Virtual" },
+      { label: "Limits" },
+      { label: "Review" },
+    ]}
+  />
+  <QUI.Stepper
+    orientation="vertical"
+    current={1}
+    steps={[{ label: "Submitted", description: "2 Oct" }, { label: "Manager approval" }, { label: "Paid" }]}
+  />
+</div>
+          </Section>
           <Section title="SuggestionMenu" align="row" props={{"width":["fixed","fit"],"loopFocus":"boolean"}}>
 <QUI.SuggestionMenu aria-label="Insert block">
   <QUI.SuggestionMenuGroup label="Basic blocks">
@@ -1234,10 +1282,44 @@ export function ComponentsPage() {
   <QUI.TextAreaField label="Archived note" disabled defaultValue="Read-only history." size="xl" />
 </div>
           </Section>
+          <Section title="Timeline" align="block">
+<div className="flex w-96 flex-col gap-4 p-4">
+  <QUI.Timeline
+    items={[
+      { title: "Submitted by Aisha Khan", time: "2 Oct, 09:14", description: "Client dinner, Zuma Dubai" },
+      { title: "Approved by Saif Kapadia", time: "2 Oct, 14:20" },
+      { title: "Finance review", time: "Now", tone: "current" },
+      { title: "Paid to bank account", tone: "pending" },
+    ]}
+  />
+  <QUI.Timeline
+    items={[
+      { title: "Submitted", time: "28 Sep" },
+      { title: "Rejected by finance", time: "29 Sep", description: "Receipt is unreadable — please upload a clearer copy.", tone: "danger" },
+    ]}
+  />
+</div>
+          </Section>
           <Section title="Toast" align="block" props={{"timeout":["number"],"limit":["number"]}}>
 <QUI.ToastProvider>
   <QUI.ToastLauncher />
 </QUI.ToastProvider>
+          </Section>
+          <Section title="UploadArea" align="block" props={{"multiple":"boolean","disabled":"boolean"}}>
+<div className="flex w-96 flex-col gap-4 p-4">
+  <QUI.UploadArea
+    accept="image/*,application/pdf"
+    maxSize={10 * 1024 * 1024}
+    hint="PDF, JPG or PNG up to 10 MB"
+    onFiles={() => {}}
+    files={[
+      { id: "1", name: "emirates-ek815.pdf", size: 217000 },
+      { id: "2", name: "hotel-folio.jpg", size: 1840000, progress: 45 },
+      { id: "3", name: "scan.heic", size: 3200000, error: "Couldn't read this file. Try a PDF or JPG." },
+    ]}
+    onRemove={() => {}}
+  />
+</div>
           </Section>
           <Section title="ViewToolbar" align="block">
 <div className="flex flex-col gap-2">

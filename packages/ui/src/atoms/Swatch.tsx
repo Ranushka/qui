@@ -5,12 +5,12 @@ import type { NoClass } from "../lib/no-class";
 
 /**
  * An 8px filled disc drawn as an `::after` pseudo-element, centred inside a `--node-size` box so the
- * swatch occupies exactly the footprint an icon would in the same slot. The fill comes from the
+ * swatch occupies exactly the footprint an icon would in the same slot (1rem outside any slot, e.g. a legend row). The fill comes from the
  * `--swatch-fill` custom property, which `Swatch` sets from its `fill` prop.
  */
 const swatchVariants = cva(
   cn(
-    "inline-flex size-(--node-size) shrink-0 items-center justify-center",
+    "inline-flex size-[var(--node-size,1rem)] shrink-0 items-center justify-center",
     "after:size-2 after:rounded-full after:bg-(--swatch-fill) after:content-['']"
   )
 );

@@ -5,6 +5,14 @@ import { AcmeShell } from "../examples/acme/shell";
 import { AdminNavigation, adminItems, type AdminItem } from "../examples/acme/admin-nav";
 import { ApprovalRequestsPage } from "./ApprovalRequestsPage";
 import { BalanceLogsPage } from "./BalanceLogsPage";
+import { BillsPage } from "./BillsPage";
+import { BudgetsPage } from "./BudgetsPage";
+import { CardsPage } from "./CardsPage";
+import { MySpendPage } from "./MySpendPage";
+import { PoliciesPage } from "./PoliciesPage";
+import { ReimbursementsPage } from "./ReimbursementsPage";
+import { SpendOverviewPage } from "./SpendOverviewPage";
+import { TransactionsPage } from "./TransactionsPage";
 import { UsdAccountSummaryPage } from "./UsdAccountSummaryPage";
 
 const placeholderColumns = ["Name", "Status", "Owner", "Created", "Updated"];
@@ -65,7 +73,7 @@ function AdminPlaceholderPage({ item, section }: { item: AdminItem; section: str
 
 /** The current admin entry's slug: what follows `#/examples/tables/`, or "" for the balance logs. */
 function useSlug() {
-  const read = () => window.location.hash.replace(/^#\/examples\/tables\/?/, "");
+  const read = () => window.location.hash.replace(/^#\/examples\/tables\/?/, "").split("?")[0]!;
   const [slug, setSlug] = React.useState(read);
   React.useEffect(() => {
     const onChange = () => setSlug(read());
@@ -80,6 +88,14 @@ export function TablesPage() {
   const slug = useSlug();
   if (slug === "approval-requests") return <ApprovalRequestsPage />;
   if (slug === "usd-account-summary") return <UsdAccountSummaryPage />;
+  if (slug === "spend-overview") return <SpendOverviewPage />;
+  if (slug === "transactions") return <TransactionsPage />;
+  if (slug === "cards") return <CardsPage />;
+  if (slug === "budgets") return <BudgetsPage />;
+  if (slug === "my-spend") return <MySpendPage />;
+  if (slug === "reimbursements") return <ReimbursementsPage />;
+  if (slug === "policies") return <PoliciesPage />;
+  if (slug === "bills") return <BillsPage />;
   const entry = adminItems.find((e) => e.item.slug === slug);
   return entry ? <AdminPlaceholderPage key={slug} item={entry.item} section={entry.section} /> : <BalanceLogsPage />;
 }
