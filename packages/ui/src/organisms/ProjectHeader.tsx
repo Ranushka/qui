@@ -26,8 +26,8 @@ export interface ProjectHeaderProps extends NoClass<Omit<React.ComponentPropsWit
 /** Header of a project page: icon and name, the project's tabs, and link / actions buttons. Tabs and buttons collapse on narrow screens. */
 export function ProjectHeader({ icon, title, tabs, value, ...props }: ProjectHeaderProps) {
   return (
-    <Box as="header" border="subtle" borderEdge="bottom" paddingX="4" paddingY="2" {...props}>
-      <Inline justify="between" align="start" wrap={false} gap="4">
+    <Box as="header" border="subtle" borderEdge="bottom" paddingX="4" {...props}>
+      <Inline justify="between" wrap={false} gap="4">
         <Inline grow gap="6" wrap={false} stackBelow="md">
           <Inline gap="2" wrap={false} shrink={false}>
             <Icon icon={icon} size="lg" />

@@ -14,8 +14,8 @@ const TabsStretchContext = React.createContext<TabsStretch>("auto");
 const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-none", {
   variants: {
     variant: {
-      contained: "items-center gap-px rounded-lg bg-layer-3 p-0.5",
-      underline: "items-start gap-px px-0.5",
+      contained: "items-center gap-0.5 rounded-md bg-layer-3 p-0.5",
+      underline: "items-stretch gap-5",
       card: "items-stretch gap-2 overflow-x-auto",
     },
     stretch: {
@@ -26,14 +26,30 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
   defaultVariants: { variant: "contained", stretch: "auto" },
 });
 
-/** Contained-tab chrome: a pill that lifts off the track when active. Underline tabs are laid out inline in `Tab` below (label row + sliding bar), since their structure diverges too much for one cva. */
-const tabVariants = cva(
-  "inline-flex h-6 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-md border-sm border-transparent px-1.5 text-body-xs-medium text-secondary outline-none transition-colors select-none [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:bg-layer-transparent-hover not-aria-disabled:not-data-active:active:bg-layer-transparent-active focus-visible:ring-2 focus-visible:ring-accent-strong aria-disabled:cursor-not-allowed aria-disabled:text-disabled data-active:border-subtle-1 data-active:bg-layer-2 data-active:text-primary data-active:shadow-raised-200",
-  {
-    variants: { stretch: { auto: "", full: "flex-1" } },
-    defaultVariants: { stretch: "auto" },
-  }
-);
+/**
+ * Chrome shared by every tab: label type, muted-to-primary text, focus ring, disabled state. The variants add only
+ * their own shape — a lifted pill, an accent underline, or a bordered tile.
+ */
+const tabBase =
+  "group/tab cursor-pointer whitespace-nowrap outline-none transition-colors select-none text-tertiary focus-visible:ring-2 focus-visible:ring-accent-strong aria-disabled:cursor-not-allowed aria-disabled:text-disabled not-aria-disabled:hover:text-primary data-active:text-primary";
+
+const tabVariants = cva(tabBase, {
+  variants: {
+    variant: {
+      contained:
+        "inline-flex h-6 items-center justify-center gap-1.5 rounded-sm px-2 text-body-xs-medium [--node-size:var(--control-glyph-sm)] data-active:bg-layer-2 data-active:shadow-raised-200",
+      underline:
+        "relative inline-flex h-9 items-center justify-center gap-1.5 rounded-xs text-body-sm-medium focus-visible:ring-inset [--node-size:var(--control-glyph-md)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:transition-colors not-aria-disabled:hover:after:bg-layer-3-hover data-active:after:bg-accent-primary",
+      card: "flex min-w-36 max-w-56 shrink-0 flex-col items-start justify-between gap-1.5 rounded-md border-sm border-subtle bg-layer-2 px-3 py-2 text-start text-caption-md-medium [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:border-strong data-active:border-accent-strong data-active:ring-1 data-active:ring-inset data-active:ring-accent-strong",
+    },
+    stretch: { auto: "", full: "flex-1" },
+  },
+  defaultVariants: { variant: "contained", stretch: "auto" },
+});
+
+/** The count next to a tab's label: a small neutral chip that brightens with the tab. */
+const countChipClass =
+  "inline-flex h-4 min-w-4 items-center justify-center rounded-xs bg-layer-3 px-1 text-caption-sm-medium tabular-nums text-tertiary group-data-active/tab:bg-layer-3-selected group-data-active/tab:text-secondary";
 
 export interface TabsProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Root>, "className">> {
   /** Pill-in-a-track chrome, or a flat row with a sliding underline. @default "contained" */
@@ -75,57 +91,27 @@ export interface TabProps extends NoClass<Omit<React.ComponentPropsWithoutRef<ty
   count?: React.ReactNode;
 }
 
-/** A single tab button. Renders contained pill chrome or an underline label + sliding bar, per the set's `variant`. */
+/** A single tab button: icon, label and optional count, in the set's `variant` (pill, underline or tile). */
 export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon, count, ...props }, ref) => {
   const variant = React.useContext(TabsVariantContext);
   const stretch = React.useContext(TabsStretchContext);
-
-  if (variant === "card") {
-    return (
-      <BaseTabs.Tab
-        ref={ref}
-        className={cn(
-          "flex w-40 shrink-0 cursor-pointer flex-col items-start justify-between gap-2 rounded-lg border-sm border-subtle bg-layer-2 px-3 py-2.5 text-start outline-none transition-colors select-none [--node-size:var(--control-glyph-md)] not-aria-disabled:not-data-active:hover:bg-layer-2-hover focus-visible:ring-2 focus-visible:ring-accent-strong aria-disabled:cursor-not-allowed aria-disabled:text-disabled data-active:border-accent-strong data-active:bg-accent-subtle",
-          stretch === "full" && "flex-1"
-        )}
-        {...props}
-      >
-        <span className="flex items-start gap-1.5 text-body-xs-medium text-secondary">
-          {icon}
-          {label}
-        </span>
-        {count != null ? <span className="text-h5-semibold text-primary tabular-nums">{count}</span> : null}
-      </BaseTabs.Tab>
-    );
-  }
-
-  if (variant === "underline") {
-    return (
-      <BaseTabs.Tab
-        ref={ref}
-        className={cn(
-          "group/tab inline-flex cursor-pointer flex-col items-stretch gap-2 whitespace-nowrap text-body-sm-medium outline-none select-none aria-disabled:cursor-not-allowed aria-disabled:text-disabled",
-          stretch === "full" && "flex-1"
-        )}
-        {...props}
-      >
-        <span className="flex h-7 items-center justify-center gap-1.5 rounded-md px-2 py-0.5 text-tertiary transition-colors group-aria-disabled/tab:text-disabled group-focus-visible/tab:ring-2 group-focus-visible/tab:ring-inset group-focus-visible/tab:ring-accent-strong group-hover/tab:bg-layer-transparent-hover group-hover/tab:text-secondary group-data-active/tab:bg-layer-transparent-selected group-data-active/tab:text-primary [--node-size:var(--control-glyph-md)]">
-          {icon}
-          {label}
-          {count != null ? <span className="text-tertiary tabular-nums">{count}</span> : null}
-        </span>
-        <span className="flex px-2">
-          <span className="h-[3px] w-full rounded-full bg-current text-transparent transition-colors group-hover/tab:text-icon-placeholder group-data-active/tab:text-primary" />
-        </span>
-      </BaseTabs.Tab>
-    );
-  }
-
   return (
-    <BaseTabs.Tab ref={ref} className={cn(tabVariants({ stretch }))} {...props}>
-      {icon}
-      <span className="truncate">{label}</span>
-      {count != null ? <span className="text-tertiary tabular-nums">{count}</span> : null}
+    <BaseTabs.Tab ref={ref} className={cn(tabVariants({ variant, stretch }))} {...props}>
+      {variant === "card" ? (
+        <>
+          <span className="flex min-w-0 items-center gap-1.5">
+            {icon}
+            <span className="truncate">{label}</span>
+          </span>
+          {count != null ? <span className="text-h5-semibold tabular-nums text-primary group-aria-disabled/tab:text-disabled">{count}</span> : null}
+        </>
+      ) : (
+        <>
+          {icon}
+          <span className="truncate">{label}</span>
+          {count != null ? <span className={countChipClass}>{count}</span> : null}
+        </>
+      )}
     </BaseTabs.Tab>
   );
 });
@@ -143,7 +129,7 @@ TabsPanel.displayName = "TabsPanel";
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Tabs defaultValue="board">
     <QUI.TabsList>
-      <QUI.Tab value="board" label="Board" icon={<QUI.Icon icon={Icons.Grid} />} />
+      <QUI.Tab value="board" label="Board" icon={<QUI.Icon icon={Icons.Grid} />} count={12} />
       <QUI.Tab value="list" label="List" icon={<QUI.Icon icon={Icons.List} />} />
       <QUI.Tab value="timeline" label="Timeline" disabled />
     </QUI.TabsList>
@@ -154,7 +140,7 @@ TabsPanel.displayName = "TabsPanel";
   <QUI.Tabs variant="underline" defaultValue="overview">
     <QUI.TabsList>
       <QUI.Tab value="overview" label="Overview" />
-      <QUI.Tab value="activity" label="Activity" />
+      <QUI.Tab value="activity" label="Activity" count={4} />
       <QUI.Tab value="settings" label="Settings" />
     </QUI.TabsList>
     <QUI.TabsPanel value="overview">Overview content.</QUI.TabsPanel>

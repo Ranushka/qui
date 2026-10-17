@@ -140,7 +140,7 @@ export interface TableCellProps extends NoClass<Omit<React.ComponentPropsWithout
 export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(({ align = "start", ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
   const verticalLines = React.useContext(TableVerticalLinesContext);
-  return <td ref={ref} className={cn("max-w-80 px-3", density === "compact" ? "h-8 py-1" : "h-11 py-1.5", alignClass[align], verticalLines && columnRuleClass)} {...props} />;
+  return <td ref={ref} className={cn("relative max-w-80 px-3", density === "compact" ? "h-8 py-1" : "h-11 py-1.5", alignClass[align], verticalLines && columnRuleClass)} {...props} />;
 });
 TableCell.displayName = "TableCell";
 

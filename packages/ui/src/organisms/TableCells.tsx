@@ -33,21 +33,25 @@ export interface CellActionProps {
 }
 
 /** Hover/pressed fill and focus ring for a clickable cell, pulled out slightly so the fill doesn't hug the text. */
+/**
+ * A clickable cell's chrome. The `<a>`/`<button>` wraps only the content, but its `::before` stretches over the whole
+ * `<td>` (which is `relative`), so the entire cell is the hit area and takes the hover, pressed and focus states.
+ */
 const cellActionClass =
-  "-mx-1 -my-0.5 max-w-[calc(100%+0.5rem)] cursor-pointer rounded-sm px-1 py-0.5 text-start outline-none transition-colors hover:bg-layer-transparent-hover active:bg-layer-transparent-active focus-visible:ring-2 focus-visible:ring-accent-strong";
+  "group/cell inline-flex max-w-full cursor-pointer text-start outline-none before:absolute before:inset-0 before:transition-colors hover:before:bg-layer-transparent-hover active:before:bg-layer-transparent-active focus-visible:before:ring-2 focus-visible:before:ring-inset focus-visible:before:ring-accent-strong";
 
 /** Wraps `children` in an `<a>` or `<button>` when the cell has an action; otherwise renders them as they are. */
-function CellAction({ href, onClick, className, children }: CellActionProps & { className?: string; children: React.ReactNode }) {
+function CellAction({ href, onClick, children }: CellActionProps & { children: React.ReactNode }) {
   if (href != null) {
     return (
-      <a href={href} onClick={onClick} className={cn(cellActionClass, "inline-flex", className)}>
+      <a href={href} onClick={onClick} className={cellActionClass}>
         {children}
       </a>
     );
   }
   if (onClick != null) {
     return (
-      <button type="button" onClick={onClick} className={cn(cellActionClass, "inline-flex", className)}>
+      <button type="button" onClick={onClick} className={cellActionClass}>
         {children}
       </button>
     );
@@ -84,7 +88,7 @@ function TextLines({ primary, secondary, tone }: Pick<TextCellProps, "primary" |
 export function TextCell({ primary, secondary, tone = "default", href, onClick }: TextCellProps) {
   if (primary == null || primary === "") return <EmptyCell />;
   return (
-    <CellAction href={href} onClick={onClick} className="group/cell">
+    <CellAction href={href} onClick={onClick}>
       <TextLines primary={primary} secondary={secondary} tone={tone} />
     </CellAction>
   );
@@ -489,7 +493,8 @@ export function TagCell({ label, color = "grey", href, onClick }: TagCellProps) 
   if (label == null || label === "") return <EmptyCell />;
   const tagClass = cn("inline-block max-w-full truncate rounded-sm px-1.5 align-middle text-body-xs-medium", tagColorClass[color]);
   if (href == null && onClick == null) return <span className={tagClass}>{label}</span>;
-  const actionClass = cn(tagClass, "cursor-pointer outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent-strong", tagHoverClass[color]);
+  // Like `CellAction`, the tag's `::before` covers the whole cell, so clicking anywhere in it hits the tag.
+  const actionClass = cn(tagClass, "cursor-pointer outline-none transition-colors before:absolute before:inset-0 before:transition-colors hover:before:bg-layer-transparent-hover active:before:bg-layer-transparent-active focus-visible:before:ring-2 focus-visible:before:ring-inset focus-visible:before:ring-accent-strong", tagHoverClass[color]);
   return href != null ? (
     <a href={href} onClick={onClick} className={actionClass}>
       {label}

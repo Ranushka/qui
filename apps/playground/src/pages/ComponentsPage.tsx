@@ -1187,7 +1187,7 @@ export function ComponentsPage() {
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Tabs defaultValue="board">
     <QUI.TabsList>
-      <QUI.Tab value="board" label="Board" icon={<QUI.Icon icon={Icons.Grid} />} />
+      <QUI.Tab value="board" label="Board" icon={<QUI.Icon icon={Icons.Grid} />} count={12} />
       <QUI.Tab value="list" label="List" icon={<QUI.Icon icon={Icons.List} />} />
       <QUI.Tab value="timeline" label="Timeline" disabled />
     </QUI.TabsList>
@@ -1198,7 +1198,7 @@ export function ComponentsPage() {
   <QUI.Tabs variant="underline" defaultValue="overview">
     <QUI.TabsList>
       <QUI.Tab value="overview" label="Overview" />
-      <QUI.Tab value="activity" label="Activity" />
+      <QUI.Tab value="activity" label="Activity" count={4} />
       <QUI.Tab value="settings" label="Settings" />
     </QUI.TabsList>
     <QUI.TabsPanel value="overview">Overview content.</QUI.TabsPanel>
