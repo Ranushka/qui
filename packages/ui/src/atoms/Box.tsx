@@ -1,15 +1,19 @@
 import * as React from "react";
 import { cn } from "../lib/cn";
+import { glassPanel } from "../lib/glass";
 import { layoutClasses, listReset, type LayoutProps } from "../lib/layout";
 
 // Spelled out so Tailwind sees every class.
 const backgroundClass = {
-  canvas: "bg-canvas",
+  // The glass look adds a soft colour wash on top (none otherwise).
+  canvas: "bg-canvas bg-(image:--bg-canvas-image) bg-cover",
   "surface-1": "bg-surface-1",
   "surface-2": "bg-surface-2",
   "layer-1": "bg-layer-1",
   "layer-2": "bg-layer-2",
   "layer-3": "bg-layer-3",
+  // A content panel: frosted under the glass look, surface-1 otherwise.
+  glass: cn("bg-glass", glassPanel),
 } as const;
 
 const borderColorClass = { subtle: "border-subtle", strong: "border-strong" } as const;
@@ -30,12 +34,17 @@ const shadowClass = {
   "raised-300": "shadow-raised-300",
   "overlay-100": "shadow-overlay-100",
   "overlay-200": "shadow-overlay-200",
+  // Rim light and a soft drop under the glass look; none otherwise.
+  glass: "shadow-glass",
 } as const;
 
 const overflowClass = { hidden: "overflow-hidden", auto: "overflow-auto" } as const;
 
 export type BoxProps = LayoutProps & {
-  /** Surface color token. Leave unset for a transparent box. */
+  /**
+   * Surface color token. Leave unset for a transparent box. `glass` (a content panel on the canvas) is frosted under
+   * the glass look and falls back to `surface-1` without it.
+   */
   background?: keyof typeof backgroundClass;
   /** Border color token. Unset means no border. */
   border?: keyof typeof borderColorClass;
@@ -103,12 +112,12 @@ DOC__ */
 
 /* __PROPS
 {
-  "background": ["canvas", "surface-1", "surface-2", "layer-1", "layer-2", "layer-3"],
+  "background": ["canvas", "surface-1", "surface-2", "layer-1", "layer-2", "layer-3", "glass"],
   "border": ["subtle", "strong"],
   "borderEdge": ["all", "top", "bottom", "start", "end"],
   "dashed": "boolean",
   "radius": ["sm", "md", "lg", "xl", "full"],
-  "shadow": ["raised-100", "raised-200", "raised-300", "overlay-100", "overlay-200"],
+  "shadow": ["raised-100", "raised-200", "raised-300", "overlay-100", "overlay-200", "glass"],
   "overflow": ["hidden", "auto"],
   "padding / paddingX / paddingY": ["0", "0.5", "1", "1.5", "2", "3", "4", "5", "6", "8", "10", "12", "16"],
   "width": ["full", "auto", "3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],

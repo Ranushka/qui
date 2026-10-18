@@ -2,10 +2,14 @@ import * as React from "react";
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import { glassOverlay } from "../lib/glass";
 import type { NoClass } from "../lib/no-class";
 
 const tooltipPopupVariants = cva(
-  "z-50 flex max-w-[min(500px,var(--available-width,100vw))] items-center gap-3 rounded-md border border-subtle bg-layer-2 px-2 py-1.5 text-caption-md-regular text-primary shadow-overlay-200 outline-none"
+  cn(
+    "z-50 flex max-w-[min(500px,var(--available-width,100vw))] items-center gap-3 rounded-md border border-subtle bg-layer-2 px-2 py-1.5 text-caption-md-regular text-primary shadow-overlay-200 outline-none",
+    glassOverlay
+  )
 );
 
 export interface TooltipProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseTooltip.Root>, "children">> {

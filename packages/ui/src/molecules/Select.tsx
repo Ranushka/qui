@@ -3,6 +3,7 @@ import { Select as BaseSelect } from "@base-ui/react/select";
 import { ChevronDown, Check } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import { glassOverlay } from "../lib/glass";
 import type { NoClass } from "../lib/no-class";
 import { fieldControlSurfaceVariants } from "../lib/field-control-surface";
 import { controlSize } from "../lib/control-group";
@@ -43,6 +44,7 @@ const selectListVariants = cva("p-1 outline-none");
 const selectPopupVariants = cva(
   cn(
     "max-h-(--available-height) min-w-(--anchor-width) origin-(--transform-origin) overflow-y-auto rounded-md border-sm border-subtle bg-surface-1 p-1 shadow-overlay-100 outline-none",
+    glassOverlay,
     "transition-[opacity,transform] duration-150 motion-reduce:transition-none",
     "data-starting-style:scale-95 data-starting-style:opacity-0",
     "data-ending-style:scale-95 data-ending-style:opacity-0"

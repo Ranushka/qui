@@ -2,6 +2,7 @@ import * as React from "react";
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import { glassOverlay } from "../lib/glass";
 import type { NoClass } from "../lib/no-class";
 import { controlGroupClass, controlSize } from "../lib/control-group";
 import { controlInputClass } from "../lib/control-input";
@@ -24,6 +25,7 @@ const autocompleteInputVariants = cva(cn(controlInputClass, "flex-1"));
 const autocompletePopupVariants = cva(
   cn(
     "max-h-(--available-height) min-w-(--anchor-width) origin-(--transform-origin) overflow-y-auto rounded-md border-sm border-subtle bg-surface-1 p-1 shadow-overlay-100 outline-none",
+    glassOverlay,
     "transition-[opacity,transform] duration-150 motion-reduce:transition-none",
     "data-starting-style:scale-95 data-starting-style:opacity-0",
     "data-ending-style:scale-95 data-ending-style:opacity-0"

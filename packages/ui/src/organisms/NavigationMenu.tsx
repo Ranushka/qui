@@ -3,6 +3,7 @@ import { NavigationMenu as BaseNavigationMenu } from "@base-ui/react/navigation-
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import { glassOverlay } from "../lib/glass";
 import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
@@ -13,6 +14,7 @@ import { nodeSlotClass } from "../lib/node-slot";
  */
 const navigationMenuPopupClass = cn(
   "rounded-lg border-sm border-subtle bg-layer-1 p-2 shadow-overlay-100 outline-none",
+  glassOverlay,
   "origin-(--transform-origin) transition-[opacity,transform] duration-150 motion-reduce:transition-none",
   "data-starting-style:scale-95 data-starting-style:opacity-0",
   "data-ending-style:scale-95 data-ending-style:opacity-0"

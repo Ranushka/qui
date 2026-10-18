@@ -218,7 +218,7 @@ export function AcmeShell({
               <TopBar />
               <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
                 <Sidebar />
-                <QUI.Box as="section" aria-label={current} grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
+                <QUI.Box as="section" aria-label={current} grow background="glass" border="subtle" radius="lg" shadow="glass" overflow="hidden">
                   <QUI.Stack height="full">
                     {header}
                     {children}

@@ -3,6 +3,7 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import { glassOverlay } from "../lib/glass";
 import type { NoClass, NoStyle } from "../lib/no-class";
 import { IconButton } from "../atoms/IconButton";
 import { Icon } from "../atoms/Icon";
@@ -19,6 +20,7 @@ const drawerBackdropClass =
 const drawerPopupVariants = cva(
   cn(
     "fixed inset-y-0 z-50 flex flex-col bg-surface-1 outline-none",
+    glassOverlay,
     "transition-transform duration-200 motion-reduce:transition-none"
   ),
   {
