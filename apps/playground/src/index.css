@@ -8,3 +8,11 @@ body,
 #root {
   height: 100%;
 }
+
+/* Pages scroll inside their own regions, never the document: on phones a scrolled document makes the browser
+   collapse its toolbars, and the full-height layout then stops short of the bottom. */
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
