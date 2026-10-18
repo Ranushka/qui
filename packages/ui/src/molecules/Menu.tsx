@@ -3,6 +3,7 @@ import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check } from "lucide-react";
 import { cn } from "../lib/cn";
+import { glassOverlay } from "../lib/glass";
 import type { NoClass, NoStyle } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
@@ -13,6 +14,7 @@ import { nodeSlotClass } from "../lib/node-slot";
  */
 export const menuPopupSurfaceClass = cn(
   "z-50 min-w-(--popup-width-min) rounded-lg border-sm border-subtle bg-layer-1 p-1 shadow-overlay-100 outline-none",
+  glassOverlay,
   "origin-(--transform-origin) transition-[opacity,transform] duration-150",
   "data-starting-style:scale-95 data-starting-style:opacity-0",
   "data-ending-style:scale-95 data-ending-style:opacity-0"

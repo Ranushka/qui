@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { cn } from "../lib/cn";
+import { glassOverlay } from "../lib/glass";
 import type { NoClass } from "../lib/no-class";
 
 type TableDensity = "comfortable" | "compact";
@@ -58,7 +59,7 @@ export const TableHeader = React.forwardRef<HTMLTableSectionElement, NoClass<Rea
   const sticky = React.useContext(TableStickyHeaderContext);
   // The header's bottom rule is an inset shadow: it survives striped tables (no row rules) and pinning (collapsed
   // row borders scroll away with the body).
-  return <thead ref={ref} className={cn("bg-layer-1 shadow-[inset_0_-1px_0_var(--border-subtle)]", sticky && "sticky top-0 z-10")} {...props} />;
+  return <thead ref={ref} className={cn("bg-layer-1 shadow-[inset_0_-1px_0_var(--border-subtle)]", sticky && cn("sticky top-0 z-10", glassOverlay))} {...props} />;
 });
 TableHeader.displayName = "TableHeader";
 
