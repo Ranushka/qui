@@ -13,6 +13,7 @@ import { PoliciesPage } from "./PoliciesPage";
 import { ReimbursementsPage } from "./ReimbursementsPage";
 import { SpendOverviewPage } from "./SpendOverviewPage";
 import { TransactionsPage } from "./TransactionsPage";
+import { TravelPage } from "./TravelPage";
 import { UsdAccountSummaryPage } from "./UsdAccountSummaryPage";
 
 const placeholderColumns = ["Name", "Status", "Owner", "Created", "Updated"];
@@ -96,6 +97,7 @@ export function TablesPage() {
   if (slug === "reimbursements") return <ReimbursementsPage />;
   if (slug === "policies") return <PoliciesPage />;
   if (slug === "bills") return <BillsPage />;
+  if (slug === "travel") return <TravelPage />;
   const entry = adminItems.find((e) => e.item.slug === slug);
   return entry ? <AdminPlaceholderPage key={slug} item={entry.item} section={entry.section} /> : <BalanceLogsPage />;
 }

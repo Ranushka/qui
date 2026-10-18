@@ -27,6 +27,7 @@ export const adminSections: AdminSection[] = [
       item("Policies", Icons.ShieldCheck),
       item("My spend", Icons.UserRound),
       item("Reimbursements", Icons.HandCoins),
+      item("Travel", Icons.Plane),
       item("Bills", Icons.FileText),
     ],
   },
