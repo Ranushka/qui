@@ -15,8 +15,8 @@ const isTypographyToken = (value: string) =>
  */
 const borderWidths = ["xs", "sm", "md", "lg"];
 
-/** Elevation tokens (`shadow-raised-100`, `shadow-overlay-200`, `shadow-glass`); stock tailwind-merge reads them as shadow colors. */
-const isShadowToken = (value: string) => /^(?:(?:raised|overlay)-\d+|glass)$/.test(value);
+/** Elevation tokens (`shadow-raised-100`, `shadow-overlay-200`); stock tailwind-merge reads them as shadow colors. */
+const isShadowToken = (value: string) => /^(?:raised|overlay)-\d+$/.test(value);
 
 const twMerge = extendTailwindMerge({
   extend: {

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ResponsiveContainer, type TooltipContentProps } from "recharts";
 import { cn } from "../../lib/cn";
-import { glassOverlay } from "../../lib/glass";
 import type { NoClass } from "../../lib/no-class";
 
 /**
@@ -95,8 +94,7 @@ export const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltip
     <div
       ref={ref}
       className={cn(
-        "flex min-w-32 flex-col gap-1.5 rounded-lg border-sm border-subtle-1 bg-layer-2 px-3 py-2 shadow-overlay-200",
-        glassOverlay
+        "flex min-w-32 flex-col gap-1.5 rounded-lg border-sm border-subtle-1 bg-layer-2 px-3 py-2 shadow-overlay-200"
       )}
       {...props}
     >

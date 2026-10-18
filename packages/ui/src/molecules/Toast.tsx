@@ -3,7 +3,6 @@ import { Toast as BaseToast, type ToastManagerAddOptions } from "@base-ui/react/
 import { CircleCheck, CircleX, Info, TriangleAlert, CircleAlert, X } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
-import { glassOverlay } from "../lib/glass";
 import type { NoClass } from "../lib/no-class";
 import { Icon } from "../atoms/Icon";
 import { IconButton } from "../atoms/IconButton";
@@ -40,7 +39,6 @@ const toastViewportClass = cn(
  */
 const toastCardClass = cn(
   "rounded-lg border-sm border-subtle bg-layer-2 shadow-raised-300",
-  glassOverlay,
   "flex items-start gap-1.5 px-3 py-3",
   "absolute inset-e-0 bottom-0 w-full origin-bottom select-none outline-none",
   "[--gap:0.5rem] [--peek:0.5rem] [--scale:calc(max(0,1-(var(--toast-index,0)*0.1)))]",

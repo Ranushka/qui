@@ -1,14 +1,12 @@
 import * as React from "react";
 import { PreviewCard as BasePreviewCard } from "@base-ui/react/preview-card";
 import { cn } from "../lib/cn";
-import { glassOverlay } from "../lib/glass";
 import { textLinkBaseClass, textLinkPalette } from "../lib/text-link-chrome";
 import type { NoClass, NoStyle } from "../lib/no-class";
 
 /** Same raised surface as `Popover`'s compact `text` variant: 296px card, overlay elevation, scale-in. */
 const previewCardPopupClass = cn(
   "w-74 rounded-lg border-sm border-subtle-1 bg-layer-2 shadow-overlay-200 outline-none",
-  glassOverlay,
   "origin-(--transform-origin) transition-[opacity,transform] duration-150 motion-reduce:transition-none",
   "data-starting-style:scale-95 data-starting-style:opacity-0",
   "data-ending-style:scale-95 data-ending-style:opacity-0"

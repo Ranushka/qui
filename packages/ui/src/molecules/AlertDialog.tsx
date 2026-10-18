@@ -2,7 +2,6 @@ import * as React from "react";
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
-import { glassOverlay } from "../lib/glass";
 import type { NoClass, NoStyle } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";
 
@@ -20,7 +19,6 @@ const alertDialogViewportClass = "fixed inset-0 z-50 flex items-end justify-cent
 const alertDialogPopupClass = cn(
   "relative flex max-h-[min(740px,calc(100dvh-2rem))] w-150 max-w-[calc(100vw-2rem)] flex-col overflow-clip",
   "rounded-lg border-sm border-subtle bg-surface-1 shadow-raised-300 outline-none",
-  glassOverlay,
   "origin-(--transform-origin) transition-[opacity,transform] duration-200 motion-reduce:transition-none",
   "data-starting-style:scale-95 data-starting-style:opacity-0",
   "data-ending-style:scale-95 data-ending-style:opacity-0"

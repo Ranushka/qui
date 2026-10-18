@@ -2,13 +2,11 @@ import * as React from "react";
 import { Popover as BasePopover } from "@base-ui/react/popover";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
-import { glassOverlay } from "../lib/glass";
 import type { NoClass, NoStyle } from "../lib/no-class";
 
 const popoverPopupVariants = cva(
   cn(
     "flex max-h-(--available-height) flex-col border-sm border-subtle-1 bg-layer-2 shadow-overlay-200 outline-none",
-    glassOverlay,
     "origin-(--transform-origin) transition-[opacity,transform] duration-150 motion-reduce:transition-none",
     "data-starting-style:scale-95 data-starting-style:opacity-0",
     "data-ending-style:scale-95 data-ending-style:opacity-0"

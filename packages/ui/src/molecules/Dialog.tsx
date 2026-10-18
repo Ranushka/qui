@@ -3,7 +3,6 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
-import { glassOverlay } from "../lib/glass";
 import type { NoClass, NoStyle } from "../lib/no-class";
 import { IconButton } from "../atoms/IconButton";
 import { Icon } from "../atoms/Icon";
@@ -19,7 +18,6 @@ const dialogViewportClass = "fixed inset-0 z-50 flex items-start justify-center 
 const dialogPopupVariants = cva(
   cn(
     "relative flex max-h-[calc(100dvh-10rem)] max-w-[calc(100vw-2rem)] flex-col overflow-clip rounded-xl border-sm border-subtle bg-surface-1 shadow-raised-300 outline-none",
-    glassOverlay,
     "origin-(--transform-origin) transition-[opacity,transform] duration-200 motion-reduce:transition-none",
     "data-starting-style:scale-95 data-starting-style:opacity-0",
     "data-ending-style:scale-95 data-ending-style:opacity-0"
