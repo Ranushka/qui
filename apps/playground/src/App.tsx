@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Menu } from "lucide-react";
 import { pages, redirects } from "./pages";
 import { componentGroups, componentNames } from "./pages/ComponentsPage";
 
@@ -109,6 +109,23 @@ function SidePanel({ route }: { route: string }) {
   );
 }
 
+/** Below md: a ☰ button opening the side panel in a drawer, which closes once a page is picked. */
+function MobileNav({ route }: { route: string }) {
+  const [open, setOpen] = React.useState(false);
+  React.useEffect(() => setOpen(false), [route]);
+  return (
+    <QUI.Drawer open={open} onOpenChange={setOpen}>
+      <QUI.DrawerTrigger render={<QUI.IconButton variant="ghost" size="lg" aria-label="Open navigation" icon={<QUI.Icon icon={Menu} />} />} />
+      {/* Opened by touch, keep focus off the search box so the phone keyboard doesn't pop up. */}
+      <QUI.DrawerContent side="start" aria-label="Playground navigation" initialFocus={(openType) => openType !== "touch"}>
+        <QUI.Box grow overflow="auto">
+          <SidePanel route={route} />
+        </QUI.Box>
+      </QUI.DrawerContent>
+    </QUI.Drawer>
+  );
+}
+
 export function App() {
   const route = useRoute();
   const page = pages.find((p) => route === p.path || route.startsWith(`${p.path}/`)) ?? pages[0]!;
@@ -138,7 +155,12 @@ export function App() {
           </QUI.Box>
           <QUI.Stack height="full" grow>
             <QUI.Box hideAbove="md" background="surface-1" border="subtle" borderEdge="bottom" padding="3" shrink={false}>
-              <PlaygroundSearch />
+              <QUI.Inline gap="2" wrap={false}>
+                <MobileNav route={route} />
+                <QUI.Box grow>
+                  <PlaygroundSearch />
+                </QUI.Box>
+              </QUI.Inline>
             </QUI.Box>
             <QUI.Box as="main" key={page.path} grow overflow="auto" padding="8">
               <Page />

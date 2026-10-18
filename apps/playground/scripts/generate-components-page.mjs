@@ -99,7 +99,7 @@ type PropsSpec = Record<string, ReadonlyArray<string | number> | "boolean">;
 
 function PropsPanel({ props }: { props: PropsSpec }) {
   return (
-    <dl className="flex w-56 shrink-0 flex-col gap-3 border-s border-subtle p-4">
+    <dl className="flex shrink-0 flex-col gap-3 border-t border-subtle p-4 md:w-56 md:border-t-0 md:border-s">
       {Object.entries(props).map(([name, values]) => (
         <div key={name} className="flex flex-col gap-1">
           <dt className="font-mono text-caption-md-medium text-primary">{name}</dt>
@@ -136,8 +136,8 @@ function Section({
   return (
     <section id={\`c-\${title}\`} className="flex scroll-mt-4 flex-col gap-3">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-tertiary">{title}</h2>
-      <div className="flex overflow-hidden rounded-lg border border-subtle bg-layer-1">
-        <div className={align === "row" ? "flex flex-1 flex-wrap items-center gap-4 p-4" : "flex-1 overflow-hidden"}>{children}</div>
+      <div className="flex flex-col overflow-hidden rounded-lg border border-subtle bg-layer-1 md:flex-row">
+        <div className={align === "row" ? "flex min-w-0 flex-1 flex-wrap items-center gap-4 p-4" : "min-w-0 flex-1 overflow-x-auto"}>{children}</div>
         {props ? <PropsPanel props={props} /> : null}
       </div>
     </section>
