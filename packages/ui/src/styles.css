@@ -1,8 +1,16 @@
 @import "@qui/tokens/tokens.css";
 
 @layer base {
+  /* Crisp, Apple-style text: grayscale antialiasing (macOS otherwise thickens strokes the way it did for non-Retina
+     screens), kerning and ligatures on, and DM Sans's optical-size axis following the font size like SF's text and
+     display cuts. */
   body {
     @apply bg-canvas font-body text-primary;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-optical-sizing: auto;
+    font-kerning: normal;
   }
 }
 

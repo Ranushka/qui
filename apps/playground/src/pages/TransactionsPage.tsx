@@ -282,30 +282,7 @@ export function TransactionsPage() {
         </QUI.Box>
       ) : null}
 
-      <QUI.Box grow overflow="hidden" paddingX="4" position="relative">
-        <QUI.ActionBar
-          open={selected.size > 0}
-          aria-label="Bulk actions"
-          summary={
-            <>
-              {selected.size} selected · Total: <QUI.Text weight="semibold">{formatAed(rows.filter((t) => selected.has(t.id)).reduce((sum, t) => sum + Math.abs(t.amount), 0))}</QUI.Text>
-            </>
-          }
-          onClear={() => setSelected(new Set())}
-        >
-          <QUI.Menu>
-            <QUI.MenuTrigger render={<QUI.ActionBarButton label="Categorise" icon={<QUI.Icon icon={Icons.Tag} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} />} />
-            <QUI.MenuContent align="center" side="top">
-              {categories.map((c) => (
-                <QUI.MenuItem key={c} onClick={() => bulk(`Moved ${selected.size} transactions to ${c}.`, { category: c })}>
-                  {c}
-                </QUI.MenuItem>
-              ))}
-            </QUI.MenuContent>
-          </QUI.Menu>
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Send} />} label="Request receipts" onClick={() => bulk(`Asked cardholders for ${selected.size} receipts.`)} />
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => bulk(`Exported ${selected.size} transactions.`)} />
-        </QUI.ActionBar>
+      <QUI.Box grow overflow="hidden" paddingX="4">
         <QUI.Table aria-label="Card transactions">
           <QUI.TableHeader>
             <QUI.TableRow>
@@ -373,6 +350,30 @@ export function TransactionsPage() {
         <QUI.Text size="xs" color="tertiary" tabularNums>
           {filtered.length === 0 ? "No transactions" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + pageRows.length} of ${filtered.length}`}
         </QUI.Text>
+        <QUI.ActionBar
+          placement="inline"
+          open={selected.size > 0}
+          aria-label="Bulk actions"
+          summary={
+            <>
+              {selected.size} selected · Total: <QUI.Text weight="semibold">{formatAed(rows.filter((t) => selected.has(t.id)).reduce((sum, t) => sum + Math.abs(t.amount), 0))}</QUI.Text>
+            </>
+          }
+          onClear={() => setSelected(new Set())}
+        >
+          <QUI.Menu>
+            <QUI.MenuTrigger render={<QUI.ActionBarButton label="Categorise" icon={<QUI.Icon icon={Icons.Tag} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} />} />
+            <QUI.MenuContent align="center" side="top">
+              {categories.map((c) => (
+                <QUI.MenuItem key={c} onClick={() => bulk(`Moved ${selected.size} transactions to ${c}.`, { category: c })}>
+                  {c}
+                </QUI.MenuItem>
+              ))}
+            </QUI.MenuContent>
+          </QUI.Menu>
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Send} />} label="Request receipts" onClick={() => bulk(`Asked cardholders for ${selected.size} receipts.`)} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => bulk(`Exported ${selected.size} transactions.`)} />
+        </QUI.ActionBar>
         <QUI.Pagination page={current} pageCount={pageCount} onPageChange={setPage} />
       </QUI.Inline>
 

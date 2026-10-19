@@ -2,6 +2,7 @@ import * as React from "react";
 import { Tabs as BaseTabs } from "@base-ui/react/tabs";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
+import { StableLabel } from "../lib/stable-label";
 import type { NoClass } from "../lib/no-class";
 
 type TabsVariant = "contained" | "underline" | "card";
@@ -40,9 +41,9 @@ const tabVariants = cva(tabBase, {
   variants: {
     variant: {
       contained:
-        "inline-flex h-6 items-center justify-center gap-1.5 rounded-sm px-2 text-body-xs-medium [--node-size:var(--control-glyph-sm)] data-active:bg-layer-2 data-active:shadow-raised-200",
+        "inline-flex h-6 items-center justify-center gap-1.5 rounded-sm px-2 text-body-xs-medium [--node-size:var(--control-glyph-sm)] data-active:bg-layer-2 data-active:font-semibold data-active:shadow-raised-200",
       underline:
-        "relative inline-flex h-9 items-center justify-center gap-1.5 rounded-xs text-body-sm-medium focus-visible:ring-inset [--node-size:var(--control-glyph-md)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:transition-colors not-aria-disabled:hover:after:bg-layer-3-hover data-active:after:bg-accent-primary",
+        "relative inline-flex h-9 items-center justify-center gap-1.5 rounded-xs text-body-sm-medium focus-visible:ring-inset [--node-size:var(--control-glyph-md)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:transition-colors not-aria-disabled:hover:after:bg-layer-3-hover data-active:font-semibold data-active:after:bg-accent-primary",
       card: "flex min-w-36 max-w-56 shrink-0 flex-col items-start justify-between gap-1.5 rounded-md border-sm border-subtle bg-layer-2 px-3 py-2 text-start text-caption-md-medium [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:border-strong data-active:border-accent-strong data-active:ring-1 data-active:ring-inset data-active:ring-accent-strong",
     },
     stretch: { auto: "", full: "flex-1" },
@@ -111,7 +112,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ label, icon,
       ) : (
         <>
           {icon}
-          <span className="truncate">{label}</span>
+          <StableLabel>{label}</StableLabel>
           {count != null ? <span className={countChipClass}>{count}</span> : null}
         </>
       )}

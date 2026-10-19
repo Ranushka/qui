@@ -124,20 +124,7 @@ export function ReimbursementsPage() {
           </QUI.Banner>
         </QUI.Box>
       ) : null}
-      <QUI.Box grow overflow="hidden" paddingX="4" paddingBottom="4" position="relative">
-        <QUI.ActionBar
-          open={selected.size > 0}
-          aria-label="Bulk actions"
-          summary={
-            <>
-              {selected.size} selected · Total: <QUI.Text weight="semibold">{aed.format(claims.filter((c) => selected.has(c.id)).reduce((sum, c) => sum + c.amount, 0))}</QUI.Text>
-            </>
-          }
-          onClear={() => setSelected(new Set())}
-        >
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.X} />} label={`Reject ${pendingSelected.length}`} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Rejected")} />
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Check} />} label={`Approve ${pendingSelected.length}`} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Approved")} />
-        </QUI.ActionBar>
+      <QUI.Box grow overflow="hidden" paddingX="4">
         <QUI.Table aria-label="Reimbursement claims">
           <QUI.TableHeader>
             <QUI.TableRow>
@@ -199,6 +186,25 @@ export function ReimbursementsPage() {
           </QUI.TableBody>
         </QUI.Table>
       </QUI.Box>
+      <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
+        <QUI.Text size="xs" color="tertiary" tabularNums>
+          {rows.length === 0 ? "No claims" : `${rows.length} ${rows.length === 1 ? "claim" : "claims"}`}
+        </QUI.Text>
+        <QUI.ActionBar
+          placement="inline"
+          open={selected.size > 0}
+          aria-label="Bulk actions"
+          summary={
+            <>
+              {selected.size} selected · Total: <QUI.Text weight="semibold">{aed.format(claims.filter((c) => selected.has(c.id)).reduce((sum, c) => sum + c.amount, 0))}</QUI.Text>
+            </>
+          }
+          onClear={() => setSelected(new Set())}
+        >
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.X} />} label={`Reject ${pendingSelected.length}`} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Rejected")} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Check} />} label={`Approve ${pendingSelected.length}`} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Approved")} />
+        </QUI.ActionBar>
+      </QUI.Inline>
       <ClaimDrawer
         claim={claims.find((c) => c.id === openId) ?? null}
         canDecide

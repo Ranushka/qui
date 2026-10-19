@@ -6,10 +6,19 @@ import type { NoClass } from "../lib/no-class";
 import { Icon } from "../atoms/Icon";
 
 /**
- * Floats centred over the bottom of the nearest positioned container (e.g. `<Box position="relative">` around a
- * table). The outer strip lets clicks through so only the bar itself covers the rows beneath it.
+ * `overlay` floats centred over the bottom of the nearest positioned container (e.g. `<Box position="relative">` around
+ * a table); its strip lets clicks through so only the bar covers what's beneath. `inline` sits in the flow — a table
+ * footer between the count and the pagination — so it covers nothing; its negative margin keeps the row's height.
  */
-const actionBarAnchorClass = "pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center px-4";
+const actionBarAnchorVariants = cva("flex justify-center", {
+  variants: {
+    placement: {
+      overlay: "pointer-events-none absolute inset-x-0 bottom-4 z-20 px-4",
+      inline: "-my-1 min-w-0",
+    },
+  },
+  defaultVariants: { placement: "overlay" },
+});
 
 const actionBarClass =
   "pointer-events-auto relative flex max-w-full animate-slide-up items-center gap-3 rounded-lg bg-inverse py-1.5 ps-4 pe-1.5 text-caption-md-regular text-inverse shadow-overlay-200";
@@ -35,6 +44,8 @@ export interface ActionBarProps extends NoClass<Omit<React.HTMLAttributes<HTMLDi
   clearLabel?: string;
   /** `ActionBarButton`s, or menus triggered by one. */
   children?: React.ReactNode;
+  /** Float over the container's bottom edge, or sit in the flow (e.g. a table footer) so no rows are covered. @default "overlay" */
+  placement?: "overlay" | "inline";
 }
 
 /**
@@ -42,10 +53,10 @@ export interface ActionBarProps extends NoClass<Omit<React.HTMLAttributes<HTMLDi
  * right, and a ✕ badge on its corner to clear the selection.
  */
 export const ActionBar = React.forwardRef<HTMLDivElement, ActionBarProps>(
-  ({ open, summary, onClear, clearLabel = "Clear selection", children, ...props }, ref) => {
+  ({ open, summary, onClear, clearLabel = "Clear selection", placement = "overlay", children, ...props }, ref) => {
     if (!open) return null;
     return (
-      <div className={actionBarAnchorClass}>
+      <div className={actionBarAnchorVariants({ placement })}>
         <div ref={ref} role="toolbar" aria-orientation="horizontal" className={actionBarClass} {...props}>
           <span aria-live="polite" className="min-w-0 truncate tabular-nums">
             {summary}
@@ -101,5 +112,5 @@ ActionBarButton.displayName = "ActionBarButton";
 DOC__ */
 
 /* __PROPS
-{ "open": "boolean" }
+{ "open": "boolean", "placement": ["overlay", "inline"] }
 PROPS__ */

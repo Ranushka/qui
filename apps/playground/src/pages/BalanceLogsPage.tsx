@@ -363,16 +363,7 @@ export function BalanceLogsPage() {
           setPage(1);
         }}
       />
-      <QUI.Box grow overflow="hidden" paddingX="4" position="relative">
-        <QUI.ActionBar
-          open={selected.size > 0}
-          aria-label="Bulk actions"
-          summary={`${selected.size} ${selected.size === 1 ? "record" : "records"} selected`}
-          onClear={() => setSelected(new Set())}
-        >
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => setSelected(new Set())} />
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.FileText} />} label="Statements" onClick={() => setSelected(new Set())} />
-        </QUI.ActionBar>
+      <QUI.Box grow overflow="hidden" paddingX="4">
         <LogsTable
           rows={rows}
           sort={sort}
@@ -389,6 +380,16 @@ export function BalanceLogsPage() {
         <QUI.Text size="xs" color="tertiary" tabularNums>
           {sorted.length === 0 ? "No records" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${sorted.length}`}
         </QUI.Text>
+        <QUI.ActionBar
+          placement="inline"
+          open={selected.size > 0}
+          aria-label="Bulk actions"
+          summary={`${selected.size} ${selected.size === 1 ? "record" : "records"} selected`}
+          onClear={() => setSelected(new Set())}
+        >
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => setSelected(new Set())} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.FileText} />} label="Statements" onClick={() => setSelected(new Set())} />
+        </QUI.ActionBar>
         <QUI.Pagination page={current} pageCount={pageCount} onPageChange={setPage} />
       </QUI.Inline>
     </AcmeShell>

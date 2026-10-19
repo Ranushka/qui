@@ -382,8 +382,15 @@ export function ApprovalRequestsPage() {
         </QUI.Tabs>
       </QUI.Box>
       <Toolbar filters={filters} onFilters={updateFilters} />
-      <QUI.Box grow overflow="hidden" paddingX="4" position="relative">
+      <QUI.Box grow overflow="hidden" paddingX="4">
+        <RequestsTable rows={rows} selected={selected} onSelect={select} onDecide={(id, status) => decide([id], status)} onFilters={updateFilters} />
+      </QUI.Box>
+      <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
+        <QUI.Text size="xs" color="tertiary" tabularNums>
+          {filtered.length === 0 ? "No requests" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${count.format(filtered.length)}`}
+        </QUI.Text>
         <QUI.ActionBar
+          placement="inline"
           open={selected.size > 0}
           aria-label="Bulk actions"
           summary={
@@ -397,12 +404,6 @@ export function ApprovalRequestsPage() {
           <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Check} />} label={pendingSelected.length ? `Approve ${pendingSelected.length}` : "Approve"} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Approved")} />
           <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => setSelected(new Set())} />
         </QUI.ActionBar>
-        <RequestsTable rows={rows} selected={selected} onSelect={select} onDecide={(id, status) => decide([id], status)} onFilters={updateFilters} />
-      </QUI.Box>
-      <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
-        <QUI.Text size="xs" color="tertiary" tabularNums>
-          {filtered.length === 0 ? "No requests" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${count.format(filtered.length)}`}
-        </QUI.Text>
         <QUI.Inline gap="3" wrap={false}>
           <QUI.Menu>
             <QUI.MenuTrigger render={<QUI.Pill label={`${pageSize} per page`} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} />} />

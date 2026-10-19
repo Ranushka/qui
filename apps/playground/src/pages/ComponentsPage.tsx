@@ -1357,7 +1357,7 @@ export function ComponentsPage() {
       <div>
         <h1 className="mb-3 text-base font-semibold">Organisms</h1>
         <div className="flex flex-col gap-6">
-          <Section title="ActionBar" align="block" props={{"open":"boolean"}}>
+          <Section title="ActionBar" align="block" props={{"open":"boolean","placement":["overlay","inline"]}}>
 <QUI.Box position="relative" width="full" background="layer-1" border="subtle" radius="lg" paddingX="4" paddingTop="4" paddingBottom="16">
   <QUI.Text size="xs" color="tertiary">Table rows…</QUI.Text>
   <QUI.ActionBar open summary="2 selected · Sum of purchases: 838.32 AED" onClear={() => {}}>
