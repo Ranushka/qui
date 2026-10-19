@@ -363,7 +363,16 @@ export function BalanceLogsPage() {
           setPage(1);
         }}
       />
-      <QUI.Box grow overflow="hidden" paddingX="4">
+      <QUI.Box grow overflow="hidden" paddingX="4" position="relative">
+        <QUI.ActionBar
+          open={selected.size > 0}
+          aria-label="Bulk actions"
+          summary={`${selected.size} ${selected.size === 1 ? "record" : "records"} selected`}
+          onClear={() => setSelected(new Set())}
+        >
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => setSelected(new Set())} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.FileText} />} label="Statements" onClick={() => setSelected(new Set())} />
+        </QUI.ActionBar>
         <LogsTable
           rows={rows}
           sort={sort}
@@ -378,7 +387,6 @@ export function BalanceLogsPage() {
       </QUI.Box>
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
         <QUI.Text size="xs" color="tertiary" tabularNums>
-          {selected.size > 0 ? `${selected.size} selected · ` : ""}
           {sorted.length === 0 ? "No records" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${sorted.length}`}
         </QUI.Text>
         <QUI.Pagination page={current} pageCount={pageCount} onPageChange={setPage} />

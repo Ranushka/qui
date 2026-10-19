@@ -116,12 +116,6 @@ export function ReimbursementsPage() {
             onChange={(kind) => setFilters((f) => ({ ...f, kind }))}
           />
         </QUI.Inline>
-        {pendingSelected.length > 0 ? (
-          <QUI.Inline gap="1" wrap={false}>
-            <QUI.Button size="sm" variant="danger-outline" label={`Reject ${pendingSelected.length}`} onClick={() => decide(pendingSelected, "Rejected")} />
-            <QUI.Button size="sm" variant="primary" icon={<QUI.Icon icon={Icons.Check} />} label={`Approve ${pendingSelected.length}`} onClick={() => decide(pendingSelected, "Approved")} />
-          </QUI.Inline>
-        ) : null}
       </QUI.Inline>
       {notice ? (
         <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
@@ -130,7 +124,20 @@ export function ReimbursementsPage() {
           </QUI.Banner>
         </QUI.Box>
       ) : null}
-      <QUI.Box grow overflow="hidden" paddingX="4" paddingBottom="4">
+      <QUI.Box grow overflow="hidden" paddingX="4" paddingBottom="4" position="relative">
+        <QUI.ActionBar
+          open={selected.size > 0}
+          aria-label="Bulk actions"
+          summary={
+            <>
+              {selected.size} selected · Total: <QUI.Text weight="semibold">{aed.format(claims.filter((c) => selected.has(c.id)).reduce((sum, c) => sum + c.amount, 0))}</QUI.Text>
+            </>
+          }
+          onClear={() => setSelected(new Set())}
+        >
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.X} />} label={`Reject ${pendingSelected.length}`} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Rejected")} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Check} />} label={`Approve ${pendingSelected.length}`} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Approved")} />
+        </QUI.ActionBar>
         <QUI.Table aria-label="Reimbursement claims">
           <QUI.TableHeader>
             <QUI.TableRow>

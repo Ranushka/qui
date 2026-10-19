@@ -108,6 +108,7 @@ const amountRanges = [
 ];
 
 const count = new Intl.NumberFormat("en-US");
+const aed = new Intl.NumberFormat("en-US", { style: "currency", currency: "AED", currencyDisplay: "code" });
 
 /** A filter pill opening a single-select menu; shows `name: value` once something other than `all` is chosen. */
 export function FilterMenu({ name, value, options, onChange }: { name: string; value: string; options: { value: string; label: string }[]; onChange: (value: string) => void }) {
@@ -381,21 +382,27 @@ export function ApprovalRequestsPage() {
         </QUI.Tabs>
       </QUI.Box>
       <Toolbar filters={filters} onFilters={updateFilters} />
-      <QUI.Box grow overflow="hidden" paddingX="4">
+      <QUI.Box grow overflow="hidden" paddingX="4" position="relative">
+        <QUI.ActionBar
+          open={selected.size > 0}
+          aria-label="Bulk actions"
+          summary={
+            <>
+              {selected.size} selected · Total: <QUI.Text weight="semibold">{aed.format(requests.filter((row) => selected.has(row.id)).reduce((sum, row) => sum + row.amount, 0))}</QUI.Text>
+            </>
+          }
+          onClear={() => setSelected(new Set())}
+        >
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.X} />} label={pendingSelected.length ? `Reject ${pendingSelected.length}` : "Reject"} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Rejected")} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Check} />} label={pendingSelected.length ? `Approve ${pendingSelected.length}` : "Approve"} disabled={pendingSelected.length === 0} onClick={() => decide(pendingSelected, "Approved")} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => setSelected(new Set())} />
+        </QUI.ActionBar>
         <RequestsTable rows={rows} selected={selected} onSelect={select} onDecide={(id, status) => decide([id], status)} onFilters={updateFilters} />
       </QUI.Box>
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
-        <QUI.Inline gap="3">
-          <QUI.Text size="xs" color="tertiary" tabularNums>
-            {filtered.length === 0 ? "No requests" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${count.format(filtered.length)}`}
-          </QUI.Text>
-          {pendingSelected.length > 0 ? (
-            <QUI.Inline gap="1" wrap={false}>
-              <QUI.Button size="sm" variant="danger-outline" label={`Reject ${pendingSelected.length}`} onClick={() => decide(pendingSelected, "Rejected")} />
-              <QUI.Button size="sm" variant="primary" icon={<QUI.Icon icon={Icons.Check} />} label={`Approve ${pendingSelected.length}`} onClick={() => decide(pendingSelected, "Approved")} />
-            </QUI.Inline>
-          ) : null}
-        </QUI.Inline>
+        <QUI.Text size="xs" color="tertiary" tabularNums>
+          {filtered.length === 0 ? "No requests" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${count.format(filtered.length)}`}
+        </QUI.Text>
         <QUI.Inline gap="3" wrap={false}>
           <QUI.Menu>
             <QUI.MenuTrigger render={<QUI.Pill label={`${pageSize} per page`} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} />} />
