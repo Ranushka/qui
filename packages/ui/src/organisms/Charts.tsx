@@ -9,10 +9,10 @@
  * filter that removes a series doesn't repaint the rest. Use one value axis per chart — plot two
  * measures of different scale as two charts.
  */
-export { BarChart, type BarChartProps } from "./charts/BarChart";
-export { LineChart, type LineChartProps, type ChartCurve } from "./charts/LineChart";
-export { AreaChart, type AreaChartProps } from "./charts/AreaChart";
-export { PieChart, DonutChart, type PieChartProps, type DonutChartProps } from "./charts/PieChart";
+export { BarChart, type BarChartProps } from "./ChartBar";
+export { LineChart, type LineChartProps, type ChartCurve } from "./ChartLine";
+export { AreaChart, type AreaChartProps } from "./ChartArea";
+export { PieChart, DonutChart, type PieChartProps, type DonutChartProps } from "./ChartPie";
 export {
   ChartTooltipContent,
   ChartLegend,
@@ -26,7 +26,7 @@ export {
   type ChartDatum,
   type ChartValueFormatter,
   type ChartBaseProps,
-} from "./charts/shared";
+} from "./ChartShared";
 
 /* __DOC_BLOCK
 <div className="grid w-full grid-cols-1 gap-8 p-4 md:grid-cols-2">

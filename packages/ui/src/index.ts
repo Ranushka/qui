@@ -98,4 +98,5 @@ export * from "./organisms/NavigationMenu";
 export * from "./organisms/Calendar";
 export * from "./organisms/VirtualList";
 export * from "./organisms/Toolbar";
+export * from "./organisms/ActionBar";
 export * from "./organisms/Charts";

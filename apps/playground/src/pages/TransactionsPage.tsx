@@ -24,6 +24,7 @@ type Filters = { query: string; category: string; department: string; cardholder
 const noFilters: Filters = { query: "", category: "all", department: "all", cardholder: "all", receipt: "all" };
 
 const pageSize = 50;
+const formatAed = (amount: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "AED", currencyDisplay: "code" }).format(amount);
 const categories = [...new Set(merchants.map((m) => m.category))];
 
 /** `view`, `q` and `department` from the hash's query string, e.g. `#/examples/tables/transactions?view=missing`. */
@@ -271,25 +272,6 @@ export function TransactionsPage() {
           />
           {changed ? <QUI.Button variant="ghost" icon={<QUI.Icon icon={Icons.X} />} label="Clear all" onClick={() => update(noFilters)} /> : null}
         </QUI.Inline>
-        {selected.size > 0 ? (
-          <QUI.Inline gap="1" wrap={false}>
-            <QUI.Text size="xs" color="secondary" tabularNums>
-              {selected.size} selected
-            </QUI.Text>
-            <QUI.Menu>
-              <QUI.MenuTrigger render={<QUI.Button size="sm" variant="secondary" label="Categorise" endIcon={<QUI.Icon icon={Icons.ChevronDown} />} />} />
-              <QUI.MenuContent align="end">
-                {categories.map((c) => (
-                  <QUI.MenuItem key={c} onClick={() => bulk(`Moved ${selected.size} transactions to ${c}.`, { category: c })}>
-                    {c}
-                  </QUI.MenuItem>
-                ))}
-              </QUI.MenuContent>
-            </QUI.Menu>
-            <QUI.Button size="sm" variant="secondary" icon={<QUI.Icon icon={Icons.Send} />} label="Request receipts" onClick={() => bulk(`Asked cardholders for ${selected.size} receipts.`)} />
-            <QUI.Button size="sm" variant="secondary" icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => bulk(`Exported ${selected.size} transactions.`)} />
-          </QUI.Inline>
-        ) : null}
       </QUI.Inline>
 
       {notice ? (
@@ -300,7 +282,30 @@ export function TransactionsPage() {
         </QUI.Box>
       ) : null}
 
-      <QUI.Box grow overflow="hidden" paddingX="4">
+      <QUI.Box grow overflow="hidden" paddingX="4" position="relative">
+        <QUI.ActionBar
+          open={selected.size > 0}
+          aria-label="Bulk actions"
+          summary={
+            <>
+              {selected.size} selected · Total: <QUI.Text weight="semibold">{formatAed(rows.filter((t) => selected.has(t.id)).reduce((sum, t) => sum + Math.abs(t.amount), 0))}</QUI.Text>
+            </>
+          }
+          onClear={() => setSelected(new Set())}
+        >
+          <QUI.Menu>
+            <QUI.MenuTrigger render={<QUI.ActionBarButton label="Categorise" icon={<QUI.Icon icon={Icons.Tag} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} />} />
+            <QUI.MenuContent align="center" side="top">
+              {categories.map((c) => (
+                <QUI.MenuItem key={c} onClick={() => bulk(`Moved ${selected.size} transactions to ${c}.`, { category: c })}>
+                  {c}
+                </QUI.MenuItem>
+              ))}
+            </QUI.MenuContent>
+          </QUI.Menu>
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Send} />} label="Request receipts" onClick={() => bulk(`Asked cardholders for ${selected.size} receipts.`)} />
+          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => bulk(`Exported ${selected.size} transactions.`)} />
+        </QUI.ActionBar>
         <QUI.Table aria-label="Card transactions">
           <QUI.TableHeader>
             <QUI.TableRow>

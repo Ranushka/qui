@@ -480,7 +480,7 @@ function BookView({ onBooked }: { onBooked: (trip: Trip) => void }) {
         <QUI.Inline gap="4" align="start" wrap={false} stackBelow="lg">
           <QUI.Box grow>
             <QUI.Stack gap="3">
-              <QUI.Inline justify="between" gap="3">
+              <QUI.Stack gap="3">
                 <QUI.Tabs variant="underline" value={sort} onValueChange={(v) => setSort(String(v))}>
                   <QUI.TabsList aria-label="Sort results">
                     <QUI.Tab value="best" label="Best" />
@@ -492,7 +492,7 @@ function BookView({ onBooked }: { onBooked: (trip: Trip) => void }) {
                   {mode === "flights" ? <QUI.SwitchField size="md" label="Non-stop only" checked={nonStopOnly} onCheckedChange={setNonStopOnly} /> : null}
                   <QUI.SwitchField size="md" label="In policy only" checked={inPolicyOnly} onCheckedChange={setInPolicyOnly} />
                 </QUI.Inline>
-              </QUI.Inline>
+              </QUI.Stack>
               <QUI.Text size="xs" color="secondary" aria-live="polite">
                 {mode === "flights"
                   ? `${ratedFlights.length} flights, ${cityOf(fs.from).city} to ${cityOf(fs.to).city}`

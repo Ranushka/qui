@@ -10,7 +10,7 @@ import {
   type ChartBaseProps,
   type ChartDatum,
   type ChartSeries,
-} from "./shared";
+} from "./ChartShared";
 
 export interface BarChartProps extends ChartBaseProps {
   /** Rows to plot, one per category. */

@@ -1,7 +1,7 @@
-import type { NoClass } from "../../lib/no-class";
+import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { Cell, Pie, PieChart as RPieChart, Tooltip } from "recharts";
-import { ChartFrame, chartColor, defaultFormatter, makeTooltipRenderer, type ChartBaseProps, type ChartDatum } from "./shared";
+import { ChartFrame, chartColor, defaultFormatter, makeTooltipRenderer, type ChartBaseProps, type ChartDatum } from "./ChartShared";
 
 export interface PieChartProps extends ChartBaseProps {
   /** One row per slice. Keep it to a handful; fold the long tail into an "Other" row. */

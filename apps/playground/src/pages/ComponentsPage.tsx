@@ -57,7 +57,7 @@ function Section({
 }
 
 /** Every component in the gallery by atomic level, for the playground side panel and search. */
-export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CardVisual","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ReceiptPreview","RuleBuilder","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","Stepper","SuggestionMenu","SwitchField","Tabs","TextAreaField","Timeline","Toast","UploadArea","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","TableCells","Toolbar","VirtualList","WorkItemCard"]}];
+export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CardVisual","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ReceiptPreview","RuleBuilder","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","Stepper","SuggestionMenu","SwitchField","Tabs","TextAreaField","Timeline","Toast","UploadArea","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["ActionBar","Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","TableCells","Toolbar","VirtualList","WorkItemCard"]}];
 export const componentNames: readonly string[] = componentGroups.flatMap((g) => g.names).sort((a, b) => a.localeCompare(b));
 
 /** Opening #/components/Badge scrolls to that component section. */
@@ -146,7 +146,7 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
-          <Section title="Box" align="block" props={{"background":["canvas","surface-1","surface-2","layer-1","layer-2","layer-3"],"border":["subtle","strong"],"borderEdge":["all","top","bottom","start","end"],"dashed":"boolean","radius":["sm","md","lg","xl","full"],"shadow":["raised-100","raised-200","raised-300","overlay-100","overlay-200"],"overflow":["hidden","auto"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+          <Section title="Box" align="block" props={{"background":["canvas","surface-1","surface-2","layer-1","layer-2","layer-3"],"border":["subtle","strong"],"borderEdge":["all","top","bottom","start","end"],"dashed":"boolean","radius":["sm","md","lg","xl","full"],"shadow":["raised-100","raised-200","raised-300","overlay-100","overlay-200"],"overflow":["hidden","auto"],"position":["relative"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
 <QUI.Grid columns={3} collapseBelow="md" gap="4" padding="4" width="full">
   <QUI.Box background="layer-1" border="subtle" radius="lg" padding="4">
     <QUI.Text>Card: layer-1, subtle border, lg radius</QUI.Text>
@@ -1357,6 +1357,16 @@ export function ComponentsPage() {
       <div>
         <h1 className="mb-3 text-base font-semibold">Organisms</h1>
         <div className="flex flex-col gap-6">
+          <Section title="ActionBar" align="block" props={{"open":"boolean"}}>
+<QUI.Box position="relative" width="full" background="layer-1" border="subtle" radius="lg" paddingX="4" paddingTop="4" paddingBottom="16">
+  <QUI.Text size="xs" color="tertiary">Table rows…</QUI.Text>
+  <QUI.ActionBar open summary="2 selected · Sum of purchases: 838.32 AED" onClear={() => {}}>
+    <QUI.ActionBarButton label="Edit" disabled />
+    <QUI.ActionBarButton label="Approve" />
+    <QUI.ActionBarButton label="Request receipts" />
+  </QUI.ActionBar>
+</QUI.Box>
+          </Section>
           <Section title="Banner" align="block" props={{"variant":["info","success","warning","danger"],"layout":["inline","page"]}}>
 <div className="flex w-full flex-col gap-3 p-4">
   <QUI.Banner title="Heads up">Cycles now roll over unfinished work automatically.</QUI.Banner>

@@ -15,7 +15,8 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
   variants: {
     variant: {
       contained: "items-center gap-0.5 rounded-md bg-layer-3 p-0.5",
-      underline: "items-stretch gap-5",
+      // A full-width hairline baseline, drawn as an inset shadow so the active tab's accent bar paints over it.
+      underline: "items-stretch gap-5 shadow-[inset_0_-1px_0_0_var(--border-color-subtle)]",
       card: "items-stretch gap-2 overflow-x-auto",
     },
     stretch: {
@@ -23,6 +24,8 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
       full: "flex w-full",
     },
   },
+  // The underline row spans its container so the baseline does too; its tabs keep their natural width.
+  compoundVariants: [{ variant: "underline", stretch: "auto", class: "flex w-full" }],
   defaultVariants: { variant: "contained", stretch: "auto" },
 });
 

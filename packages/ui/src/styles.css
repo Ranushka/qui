@@ -6,7 +6,7 @@
   }
 }
 
-/* Categorical chart palette (see organisms/charts/shared.tsx for how the slots were chosen). On :root so
+/* Categorical chart palette (see organisms/ChartShared.tsx for how the slots were chosen). On :root so
    `chartColor(i)` works outside a chart too, e.g. a swatch in a legend list. */
 @layer base {
   /* Set on every themed element too, so a light/dark subtree re-resolves the slots like the token theme does. */

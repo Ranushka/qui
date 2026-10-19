@@ -361,14 +361,12 @@ export function UsdAccountSummaryPage() {
         <BalanceCard />
       </QUI.Box>
       <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
-        <QUI.Box border="subtle" borderEdge="bottom">
-          <QUI.Tabs variant="underline" value={tab} onValueChange={(value) => setTab(String(value))}>
-            <QUI.TabsList aria-label="Account views">
-              <QUI.Tab value="cards" label="Cards" count={cards.length} />
-              <QUI.Tab value="transactions" label="Transactions" count={transactions.length} />
-            </QUI.TabsList>
-          </QUI.Tabs>
-        </QUI.Box>
+        <QUI.Tabs variant="underline" value={tab} onValueChange={(value) => setTab(String(value))}>
+          <QUI.TabsList aria-label="Account views">
+            <QUI.Tab value="cards" label="Cards" count={cards.length} />
+            <QUI.Tab value="transactions" label="Transactions" count={transactions.length} />
+          </QUI.TabsList>
+        </QUI.Tabs>
       </QUI.Box>
       {tab === "cards" ? <CardsTab /> : <TransactionsTab />}
     </AcmeShell>

@@ -47,6 +47,8 @@ export type BoxProps = LayoutProps & {
   shadow?: keyof typeof shadowClass;
   /** Clip (e.g. a table inside a rounded card) or scroll content that overflows. */
   overflow?: keyof typeof overflowClass;
+  /** `relative` anchors floating children such as an `ActionBar`. */
+  position?: "relative";
 };
 
 /**
@@ -55,7 +57,7 @@ export type BoxProps = LayoutProps & {
  * to arrange its content.
  */
 export const Box = React.forwardRef<HTMLElement, BoxProps>(
-  ({ background, border, borderEdge = "all", dashed, radius, shadow, overflow, ...props }, ref) => {
+  ({ background, border, borderEdge = "all", dashed, radius, shadow, overflow, position, ...props }, ref) => {
     const { Tag, classes, rest } = layoutClasses(props);
     return (
       <Tag
@@ -68,6 +70,7 @@ export const Box = React.forwardRef<HTMLElement, BoxProps>(
           radius && radiusClass[radius],
           shadow && shadowClass[shadow],
           overflow && overflowClass[overflow],
+          position === "relative" && "relative",
           ...classes
         )}
         {...rest}
@@ -110,6 +113,7 @@ DOC__ */
   "radius": ["sm", "md", "lg", "xl", "full"],
   "shadow": ["raised-100", "raised-200", "raised-300", "overlay-100", "overlay-200"],
   "overflow": ["hidden", "auto"],
+  "position": ["relative"],
   "padding / paddingX / paddingY": ["0", "0.5", "1", "1.5", "2", "3", "4", "5", "6", "8", "10", "12", "16"],
   "width": ["full", "auto", "3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],
   "maxWidth": ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl"],

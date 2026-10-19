@@ -44,10 +44,13 @@ function scanCategory({ dir }) {
     .filter((f) => f.endsWith(".tsx"))
     .sort((a, b) => a.localeCompare(b));
 
-  return files.map((file) => {
+  return files.flatMap((file) => {
     const moduleName = file.replace(/\.tsx$/, "");
     const content = readFileSync(path.join(dir, file), "utf8");
     const docMatch = content.match(DOC_RE);
+    // Undocumented files that don't export a component of their own name are parts of a family
+    // (ChartBar, ChartShared … under Charts), not gallery entries.
+    if (!docMatch && !new RegExp(`export (const|function) ${moduleName}\\b`).test(content)) return [];
     const align = docMatch && docMatch[1] ? "block" : "row";
     const demo = docMatch ? docMatch[2].trim() : `<QUI.${moduleName} />`;
 
@@ -60,7 +63,7 @@ function scanCategory({ dir }) {
         console.warn(`Warning: could not parse __PROPS block in ${file}: ${err.message}`);
       }
     }
-    return { moduleName, demo, align, props };
+    return [{ moduleName, demo, align, props }];
   });
 }
 

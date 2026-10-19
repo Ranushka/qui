@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ResponsiveContainer, type TooltipContentProps } from "recharts";
-import { cn } from "../../lib/cn";
-import type { NoClass } from "../../lib/no-class";
+import { cn } from "../lib/cn";
+import type { NoClass } from "../lib/no-class";
 
 /**
  * Categorical palette, as CSS custom properties set on every chart root.

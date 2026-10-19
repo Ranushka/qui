@@ -18,7 +18,8 @@ const listItemVariants = cva(
   cn(
     "group/list-item relative flex h-8 w-full items-center gap-2 rounded-lg pr-2 [--node-size:var(--control-glyph-lg)]",
     "text-secondary transition-colors hover:bg-layer-transparent-hover active:bg-layer-transparent-active",
-    "has-[[aria-current=page]]:bg-layer-transparent-selected has-[[aria-current=page]]:text-primary",
+    // The current page looks like the stage it opens: surface fill and the same hairline, inset so nothing shifts.
+    "has-[[aria-current=page]]:bg-surface-1 has-[[aria-current=page]]:text-primary has-[[aria-current=page]]:shadow-[inset_0_0_0_1px_var(--border-color-subtle)]",
     "has-[[data-list-item-primary]:focus-visible]:ring-2 has-[[data-list-item-primary]:focus-visible]:ring-accent-strong"
   ),
   {

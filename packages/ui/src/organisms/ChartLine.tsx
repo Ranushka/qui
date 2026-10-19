@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Area, AreaChart as RAreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
-import type { ChartCurve } from "./LineChart";
+import { CartesianGrid, Line, LineChart as RLineChart, Tooltip, XAxis, YAxis } from "recharts";
 import {
   ChartFrame,
   axisTick,
@@ -11,19 +10,22 @@ import {
   type ChartBaseProps,
   type ChartDatum,
   type ChartSeries,
-} from "./shared";
+} from "./ChartShared";
 
-export interface AreaChartProps extends ChartBaseProps {
+/** Interpolation between points. */
+export type ChartCurve = "linear" | "monotone" | "step";
+
+export interface LineChartProps extends ChartBaseProps {
   /** Rows to plot, in x order. */
   data: ReadonlyArray<ChartDatum>;
-  /** Field on each row holding the x value. */
+  /** Field on each row holding the x value (usually a date or period label). */
   categoryKey: string;
   /** Measures to plot; each gets the next palette slot in order. */
   series: ReadonlyArray<ChartSeries>;
-  /** Stack areas to show a part-to-whole total over time. @default false */
-  stacked?: boolean;
   /** Interpolation between points. @default "monotone" */
   curve?: ChartCurve;
+  /** Draw a marker on every point (otherwise only the hovered one). @default false */
+  showDots?: boolean;
   /** Draw horizontal gridlines. @default true */
   showGrid?: boolean;
   /** Width reserved for the value axis, in px. @default 40 */
@@ -32,16 +34,13 @@ export interface AreaChartProps extends ChartBaseProps {
 
 const curveType = { linear: "linear", monotone: "monotone", step: "stepAfter" } as const;
 
-/**
- * Filled lines for volume over time. Each area is a 2px line over a translucent fill of the same
- * slot (more opaque when stacked, so bands read as solid parts of the whole).
- */
-export function AreaChart({
+/** Lines for change over time. 2px strokes; a crosshair + tooltip tracks the hovered x value. */
+export function LineChart({
   data,
   categoryKey,
   series,
-  stacked = false,
   curve = "monotone",
+  showDots = false,
   showGrid = true,
   showLegend,
   showTooltip = true,
@@ -52,7 +51,7 @@ export function AreaChart({
   animate = true,
   
   "aria-label": ariaLabel,
-}: AreaChartProps) {
+}: LineChartProps) {
   const resolved = resolveSeries(series);
   const byKey = new Map(resolved.map((s) => [s.key, s]));
   const legendVisible = showLegend ?? resolved.length > 1;
@@ -65,7 +64,7 @@ export function AreaChart({
 
       legend={legendVisible ? resolved.map((s) => ({ label: s.label, color: s.color })) : undefined}
     >
-      <RAreaChart data={data as ChartDatum[]} margin={{ top: 8, right: 12, bottom: 0, left: 0 }} {...(width != null ? { width, height } : {})}>
+      <RLineChart data={data as ChartDatum[]} margin={{ top: 8, right: 12, bottom: 0, left: 0 }} {...(width != null ? { width, height } : {})}>
         {showGrid && <CartesianGrid stroke={gridStroke} vertical={false} />}
         <XAxis dataKey={categoryKey} tick={axisTick} tickLine={false} axisLine={{ stroke: gridStroke }} interval="preserveStartEnd" />
         <YAxis tick={axisTick} tickLine={false} axisLine={false} width={axisWidth} tickFormatter={(v: number) => valueFormatter(v)} />
@@ -76,21 +75,19 @@ export function AreaChart({
           />
         )}
         {resolved.map((s) => (
-          <Area
+          <Line
             key={s.key}
             dataKey={s.key}
             name={s.label}
             type={curveType[curve]}
-            stackId={stacked ? "stack" : undefined}
             stroke={s.color}
             strokeWidth={2}
-            fill={s.color}
-            fillOpacity={stacked ? 0.35 : 0.12}
+            dot={showDots ? { r: 3, fill: s.color, stroke: "var(--qui-chart-surface)", strokeWidth: 2 } : false}
             activeDot={{ r: 5, fill: s.color, stroke: "var(--qui-chart-surface)", strokeWidth: 2 }}
             isAnimationActive={animate}
           />
         ))}
-      </RAreaChart>
+      </RLineChart>
     </ChartFrame>
   );
 }
