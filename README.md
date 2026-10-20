@@ -104,7 +104,7 @@ Not yet pushed — no GitHub remote configured. To push to `https://github.com/R
 
 **Verified working**:
 - `packages/tokens` (real propel OKLCH tokens, comments stripped, font family switched to
-  `"DM Sans"` for Google Fonts) builds to `dist/tokens.css`.
+  `"IBM Plex Sans"` for Google Fonts) builds to `dist/tokens.css`.
 - `packages/ui`'s `Button`, `IconButton`, `Icon`, `Spinner`, `Tooltip` all render pixel-correct
   against Plane's real chrome — confirmed via a live `apps/playground` render in Chrome, zero
   console errors. Tooltip's hover-open/positioning verified too (Base UI's `restMs`-based open

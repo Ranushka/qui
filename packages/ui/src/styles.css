@@ -2,7 +2,7 @@
 
 @layer base {
   /* Crisp, Apple-style text: grayscale antialiasing (macOS otherwise thickens strokes the way it did for non-Retina
-     screens), kerning and ligatures on, and DM Sans's optical-size axis following the font size like SF's text and
+     screens), kerning and ligatures on, and the optical-size axis (where a font has one) following the font size like SF's text and
      display cuts. */
   body {
     @apply bg-canvas font-body text-primary;
