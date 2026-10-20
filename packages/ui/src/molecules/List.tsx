@@ -31,9 +31,13 @@ const listItemVariants = cva(
   }
 );
 
-/** A row's primary: fills the row, and its `::after` stretches the hit area over the whole box. No own outline — `ListItem` rings it. */
+/**
+ * A row's primary: fills the row, and its `::after` stretches the hit area over the whole `ListItem` box (the row is the
+ * positioned ancestor, so padding and the space above and below the label click too). Sibling controls such as
+ * `ListItemDisclosureTrigger` are positioned and come later, so they stay on top. No own outline — `ListItem` rings it.
+ */
 const listItemPrimaryClass =
-  "relative flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-start outline-none after:absolute after:inset-0 disabled:cursor-not-allowed";
+  "flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-start outline-none after:absolute after:inset-0 disabled:cursor-not-allowed";
 
 const listItemDisclosureTriggerClass = cn(
   "group relative flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm outline-none [--node-size:var(--control-glyph-xs)]",
