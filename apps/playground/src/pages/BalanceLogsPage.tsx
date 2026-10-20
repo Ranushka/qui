@@ -6,7 +6,8 @@ import { AdminNavigation } from "../examples/acme/admin-nav";
 
 /**
  * An admin records table — "Account balance logs" — in the Acme shell with an admin navigation tree:
- * search, filters, saved views, sortable columns, row selection and pagination. Built only from qui
+ * search, a filter bar (pinned filters, "More filters", chips, kept in the URL), saved views, sortable columns, row
+ * selection and pagination. Built only from qui
  * components — no className or style anywhere in this file.
  */
 
@@ -46,13 +47,16 @@ const managers = [
   null,
 ];
 
-/** Deterministic sample rows, newest first. */
+/** Fixed "now" for relative dates, so the sample reads the same on every visit. */
+const now = new Date("2026-10-18T09:00:00Z");
+const hour = 3600 * 1000;
+
+/** Deterministic sample rows, newest first, about eight balance updates a day over the last four months. */
 const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
   const seed = (i * 7919 + 104729) % 100000;
   const amount = Math.round(((seed * 13) % 2500000) + 1500) / 100;
   const ledgerAmount = Math.round((amount + ((seed * 31) % 4000000) / 100) * 100) / 100;
-  const second = 59 - (i % 60);
-  const minute = 56 - Math.floor(i / 60);
+  const updatedAt = new Date(now.getTime() - (i * 3 + (seed % 3)) * hour - (seed % 3600) * 1000);
   return {
     id: 13262499 - i,
     account: accounts[(i * 3) % accounts.length]!,
@@ -61,8 +65,8 @@ const logs: Log[] = Array.from({ length: 1000 }, (_, i) => {
     accountType: seed % 3 === 0 ? "physical" : "virtual",
     manager: managers[i % managers.length]!,
     card: String(1000 + (seed % 9000)),
-    balanceUpdatedAt: `2026-10-16T10:${minute}:${String(second).padStart(2, "0")}.${String(seed % 1000).padStart(3, "0")}Z`,
-    createdAt: `2026-10-16T10:${String(minute - 1).padStart(2, "0")}:00Z`,
+    balanceUpdatedAt: updatedAt.toISOString(),
+    createdAt: new Date(updatedAt.getTime() - (seed % 400) * 24 * hour).toISOString(),
     issuer: "nymcard",
     ledgerAmount: i % 11 === 7 ? 0 : ledgerAmount,
     approvers: approverPool.slice(0, seed % 4),
@@ -100,9 +104,6 @@ function stepsFor(row: Log): QUI.StatusIconsCellItem[] {
   }));
 }
 
-/** Fixed "now" for relative dates, so the sample reads the same on every visit. */
-const now = new Date("2026-10-18T09:00:00Z");
-
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 type SortKey = "account" | "amount" | "balanceUpdatedAt" | "id" | "ledgerAmount";
@@ -133,6 +134,44 @@ const columns: { key: SortKey | null; label: string; align?: "end" }[] = [
 ];
 
 const pageSize = 50;
+
+const options = (values: readonly string[]) => values.map((value) => ({ value, label: value }));
+
+/** What the filter bar can filter on. The first three are pinned; the rest wait in "More filters". */
+const filterFields: QUI.FilterField<Log>[] = [
+  { key: "status", label: "Account status", kind: "select", options: options(statuses), get: (row) => row.status },
+  {
+    key: "manager",
+    label: "Account manager",
+    kind: "select",
+    options: [...managers.flatMap((m) => (m ? [{ value: m.name, label: m.name }] : [])), { value: "none", label: "Unassigned" }],
+    get: (row) => row.manager?.name ?? "none",
+  },
+  { key: "updated", label: "Balance updated", kind: "date", get: (row) => row.balanceUpdatedAt },
+  { key: "account", label: "Account", icon: <QUI.Icon icon={Icons.Building2} />, kind: "select", options: options(accounts), get: (row) => row.account },
+  {
+    key: "type",
+    label: "Account type",
+    icon: <QUI.Icon icon={Icons.CreditCard} />,
+    kind: "select",
+    options: [{ value: "virtual", label: "Virtual" }, { value: "physical", label: "Physical" }],
+    get: (row) => row.accountType,
+  },
+  { key: "amount", label: "Amount", icon: <QUI.Icon icon={Icons.Coins} />, kind: "number", unit: "AED", format: (n) => money.format(n), get: (row) => row.amount },
+  { key: "limit", label: "Credit limit", icon: <QUI.Icon icon={Icons.Gauge} />, kind: "number", unit: "AED", get: (row) => row.creditLimit },
+  { key: "used", label: "Limit used", icon: <QUI.Icon icon={Icons.Percent} />, kind: "number", unit: "%", format: (n) => `${n}%`, get: (row) => row.limitUsed },
+  { key: "approvers", label: "Approvers", icon: <QUI.Icon icon={Icons.Users} />, kind: "select", options: options(approverPool.map((a) => a.name)), get: (row) => row.approvers.map((a) => a.name) },
+  { key: "created", label: "Created", icon: <QUI.Icon icon={Icons.CalendarPlus} />, kind: "date", get: (row) => row.createdAt },
+];
+
+/** Filters live in the hash's query (`#/examples/tables/?status=Frozen`), so a filtered view can be shared or reloaded. */
+const readFilters = () => QUI.filtersFromParams(filterFields, new URLSearchParams(window.location.hash.split("?")[1] ?? ""));
+function writeFilters(state: QUI.FilterState) {
+  const [path, query] = window.location.hash.split("?");
+  const params = QUI.filtersToParams(filterFields, state, new URLSearchParams(query ?? "")).toString();
+  const base = path!.endsWith("/") || !params ? path : `${path}/`;
+  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${base}${params ? `?${params}` : ""}`);
+}
 
 function sortLogs(rows: Log[], sort: Sort) {
   const sign = sort.direction === "ascending" ? 1 : -1;
@@ -170,35 +209,35 @@ function PageHeader() {
   );
 }
 
-function Toolbar({ query, onQuery, view, onView }: { query: string; onQuery: (q: string) => void; view: string; onView: (v: string) => void }) {
+function Toolbar({ query, onQuery, filters, onFilters }: { query: string; onQuery: (q: string) => void; filters: QUI.FilterState; onFilters: (next: QUI.FilterState) => void }) {
   return (
-    <QUI.Inline justify="between" gap="2" paddingX="4" paddingBottom="3">
-      <QUI.Inline gap="2">
-        <QUI.Box width="2xs">
-          <QUI.Input
-            aria-label="Search balance logs"
-            placeholder="Search…"
-            value={query}
-            onChange={(event) => onQuery(event.target.value)}
-            startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />}
-          />
-        </QUI.Box>
-        <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.ListFilter} />} label="Filters" />
-        <QUI.Box shrink={false}>
-          <QUI.Tabs value={view} onValueChange={(value) => onView(String(value))}>
-            <QUI.TabsList aria-label="Records">
-              <QUI.Tab value="recent" label="Recent" />
-              <QUI.Tab value="all" label="All records" />
-            </QUI.TabsList>
-          </QUI.Tabs>
-        </QUI.Box>
-      </QUI.Inline>
-      <QUI.Inline gap="1" wrap={false}>
-        <QUI.Button variant="ghost" icon={<QUI.Icon icon={Icons.Bookmark} />} label="Save view" />
-        <QUI.IconButton variant="secondary" aria-label="Choose columns" icon={<QUI.Icon icon={Icons.Columns3} />} />
-        <QUI.IconButton variant="secondary" aria-label="Refresh" icon={<QUI.Icon icon={Icons.RefreshCw} />} />
-      </QUI.Inline>
-    </QUI.Inline>
+    <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
+      <QUI.FilterBar
+        fields={filterFields}
+        value={filters}
+        onValueChange={onFilters}
+        rows={logs}
+        now={now}
+        search={
+          <QUI.Box width="3xs">
+            <QUI.Input
+              aria-label="Search balance logs"
+              placeholder="Search…"
+              value={query}
+              onChange={(event) => onQuery(event.target.value)}
+              startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />}
+            />
+          </QUI.Box>
+        }
+        actions={
+          <>
+            <QUI.IconButton variant="ghost" aria-label="Save view" icon={<QUI.Icon icon={Icons.Bookmark} />} />
+            <QUI.IconButton variant="secondary" aria-label="Choose columns" icon={<QUI.Icon icon={Icons.Columns3} />} />
+            <QUI.IconButton variant="secondary" aria-label="Refresh" icon={<QUI.Icon icon={Icons.RefreshCw} />} />
+          </>
+        }
+      />
+    </QUI.Box>
   );
 }
 
@@ -216,7 +255,7 @@ function LogsTable({
   onSort: (key: SortKey) => void;
   selected: Set<number>;
   onSelect: (ids: number[], checked: boolean) => void;
-  onFilter: (query: string) => void;
+  onFilter: (key: string, value: string) => void;
 }) {
   const selectedOnPage = rows.filter((row) => selected.has(row.id)).length;
   return (
@@ -250,9 +289,9 @@ function LogsTable({
               <QUI.Checkbox aria-label={`Select log ${row.id}`} checked={selected.has(row.id)} onCheckedChange={(checked) => onSelect([row.id], checked)} />
             </QUI.TableCell>
             <QUI.TableCell>
-              <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" onClick={() => onFilter(row.account ?? "")} />
+              <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" onClick={() => onFilter("account", row.account ?? "")} />
             </QUI.TableCell>
-            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} secondary={row.manager.email} onClick={() => onFilter(row.manager!.name)} /> : <QUI.EmptyCell />}</QUI.TableCell>
+            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} secondary={row.manager.email} onClick={() => onFilter("manager", row.manager!.name)} /> : <QUI.EmptyCell />}</QUI.TableCell>
             <QUI.TableCell>
               <QUI.MaskedCell last={row.card} />
             </QUI.TableCell>
@@ -282,7 +321,7 @@ function LogsTable({
               <QUI.TagCell label={row.issuer} color="indigo" />
             </QUI.TableCell>
             <QUI.TableCell>
-              <QUI.TagCell label={row.status} color={statusColor[row.status]} onClick={() => onFilter(row.status)} />
+              <QUI.TagCell label={row.status} color={statusColor[row.status]} onClick={() => onFilter("status", row.status)} />
             </QUI.TableCell>
             <QUI.TableCell>
               <QUI.UsersCell users={row.approvers} />
@@ -318,13 +357,13 @@ function LogsTable({
 /** Playground page: the balance-log records table in the Acme shell with the admin navigation. */
 export function BalanceLogsPage() {
   const [query, setQuery] = React.useState("");
-  const [view, setView] = React.useState("all");
+  const [filters, setFilters] = React.useState(readFilters);
   const [sort, setSort] = React.useState<Sort>({ key: "id", direction: "descending" });
   const [page, setPage] = React.useState(1);
   const [selected, setSelected] = React.useState<Set<number>>(() => new Set());
 
   const q = query.trim().toLowerCase();
-  const filtered = (view === "recent" ? logs.slice(0, 30) : logs).filter(
+  const filtered = QUI.filterRows(logs, filterFields, filters, { now }).filter(
     (row) =>
       !q ||
       String(row.id).includes(q) ||
@@ -338,6 +377,11 @@ export function BalanceLogsPage() {
   const current = Math.min(page, pageCount);
   const rows = sorted.slice((current - 1) * pageSize, current * pageSize);
 
+  const changeFilters = (next: QUI.FilterState) => {
+    setFilters(next);
+    writeFilters(next);
+    setPage(1);
+  };
   const toggleSort = (key: SortKey) => {
     setSort((s) => ({ key, direction: s.key === key && s.direction === "descending" ? "ascending" : "descending" }));
     setPage(1);
@@ -357,11 +401,8 @@ export function BalanceLogsPage() {
           setQuery(value);
           setPage(1);
         }}
-        view={view}
-        onView={(value) => {
-          setView(value);
-          setPage(1);
-        }}
+        filters={filters}
+        onFilters={changeFilters}
       />
       <QUI.Box grow overflow="hidden" paddingX="4">
         <LogsTable
@@ -370,15 +411,12 @@ export function BalanceLogsPage() {
           onSort={toggleSort}
           selected={selected}
           onSelect={select}
-          onFilter={(value) => {
-            setQuery(value);
-            setPage(1);
-          }}
+          onFilter={(key, value) => changeFilters({ ...filters, [key]: [value] })}
         />
       </QUI.Box>
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
         <QUI.Text size="xs" color="tertiary" tabularNums>
-          {sorted.length === 0 ? "No records" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${sorted.length}`}
+          {sorted.length === 0 ? "No records match these filters" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${sorted.length}`}
         </QUI.Text>
         <QUI.ActionBar
           placement="inline"

@@ -57,7 +57,7 @@ function Section({
 }
 
 /** Every component in the gallery by atomic level, for the playground side panel and search. */
-export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CardVisual","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ReceiptPreview","RuleBuilder","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","Stepper","SuggestionMenu","SwitchField","Tabs","TextAreaField","Timeline","Toast","UploadArea","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["ActionBar","Banner","Calendar","Charts","NavigationMenu","NavSidebar","ProjectHeader","Table","TableCells","Toolbar","VirtualList","WorkItemCard"]}];
+export const componentGroups: ReadonlyArray<{ title: string; names: readonly string[] }> = [{"title":"Atoms","names":["AnchorButton","Avatar","AvatarGroup","Badge","Box","Button","Checkbox","CheckboxGroup","CircularProgress","Grid","Heading","Icon","IconButton","Inline","Input","LinearProgress","LogoSpinner","NumberField","Pill","Radio","RadioGroup","Separator","Shortcut","Skeleton","Slider","Spinner","Stack","Swatch","Switch","Text","TextArea","TextButton","Toggle","Tooltip","WorkspaceAvatar"]},{"title":"Molecules","names":["Accordion","AlertDialog","Autocomplete","AutocompleteField","Breadcrumb","ButtonGroup","CardVisual","CheckboxField","CheckboxGroupField","Collapsible","Combobox","ComboboxField","ContextMenu","Dialog","Drawer","ExpandableSearch","Field","Fieldset","FilterChip","Form","IconSplitButton","InputField","List","Menu","OTPField","Pagination","Popover","PreviewCard","Property","RadioGroupField","RailItem","ReceiptPreview","RuleBuilder","ScrollArea","Select","SelectField","SplitButton","StateGroupHeader","Stepper","SuggestionMenu","SwitchField","Tabs","TextAreaField","Timeline","Toast","UploadArea","ViewToolbar","WorkItemRow"]},{"title":"Organisms","names":["ActionBar","Banner","Calendar","Charts","FilterBar","NavigationMenu","NavSidebar","ProjectHeader","Table","TableCells","Toolbar","VirtualList","WorkItemCard"]}];
 export const componentNames: readonly string[] = componentGroups.flatMap((g) => g.names).sort((a, b) => a.localeCompare(b));
 
 /** Opening #/components/Badge scrolls to that component section. */
@@ -854,6 +854,13 @@ export function ComponentsPage() {
   </QUI.Fieldset>
 </div>
           </Section>
+          <Section title="FilterChip" align="block" props={{"disabled":"boolean"}}>
+<div className="flex flex-wrap items-center gap-2 p-4">
+  <QUI.FilterChip label="Status" />
+  <QUI.FilterChip label="Status" value="Active, Frozen" onRemove={() => {}} />
+  <QUI.FilterChip label="Amount" icon={<QUI.Icon icon={Icons.Coins} />} value="> 5,000" onRemove={() => {}} />
+</div>
+          </Section>
           <Section title="Form" align="block" props={{"validationMode":["onSubmit","onBlur","onChange"],"FormBody.layout":["single","multi"],"FormActions.layout":["inline","stretch"]}}>
 <div className="max-w-md p-4">
 <QUI.Form errors={{ email: "This email is already registered." }}>
@@ -1480,6 +1487,26 @@ export function ComponentsPage() {
       colors={{ Other: "var(--qui-chart-other)" }}
     />
   </div>
+</div>
+          </Section>
+          <Section title="FilterBar" align="block" props={{"moreLabel":["More filters","Filters"]}}>
+<div className="p-4">
+  <QUI.FilterBar
+    rows={[
+      { status: "Active", owner: "Aisha", amount: 1200, created: "2026-10-12" },
+      { status: "Frozen", owner: "Raul", amount: 8400, created: "2026-09-28" },
+      { status: "Active", owner: "Raul", amount: 310, created: "2026-08-03" },
+    ]}
+    fields={[
+      { key: "status", label: "Status", kind: "select" as const, options: ["Active", "Frozen", "Closed"].map((s) => ({ value: s, label: s })), get: (r) => r.status },
+      { key: "owner", label: "Owner", kind: "select" as const, options: ["Aisha", "Raul"].map((s) => ({ value: s, label: s })), get: (r) => r.owner },
+      { key: "amount", label: "Amount", kind: "number" as const, unit: "AED", get: (r) => r.amount },
+      { key: "created", label: "Created", kind: "date" as const, get: (r) => r.created },
+    ]}
+    pinned={["status", "owner"]}
+    defaultValue={{ status: ["Active"] }}
+    search={<QUI.Box width="2xs"><QUI.Input aria-label="Search" placeholder="Search…" startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />} /></QUI.Box>}
+  />
 </div>
           </Section>
           <Section title="NavigationMenu" align="block" props={{"NavigationMenuLink.appearance":["item","card"],"NavigationMenuLink.active":"boolean","NavigationMenuPanel.side":["top","bottom","left","right"],"NavigationMenuPanel.align":["start","center","end"]}}>
