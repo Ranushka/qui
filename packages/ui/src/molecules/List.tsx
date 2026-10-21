@@ -19,13 +19,13 @@ const listItemVariants = cva(
     "group/list-item relative flex h-8 w-full items-center gap-2 rounded-lg pr-2 [--node-size:var(--control-glyph-lg)]",
     "text-secondary transition-colors hover:bg-layer-transparent-hover active:bg-layer-transparent-active",
     // The current page looks like the stage it opens: surface fill and the same hairline, inset so nothing shifts.
-    "has-[[aria-current=page]]:bg-surface-1 has-[[aria-current=page]]:font-semibold has-[[aria-current=page]]:text-primary has-[[aria-current=page]]:shadow-[inset_0_0_0_1px_var(--border-color-subtle)]",
+    "has-[[aria-current=page]]:bg-surface-1 has-[[aria-current=page]]:font-medium has-[[aria-current=page]]:text-primary has-[[aria-current=page]]:shadow-[inset_0_0_0_1px_var(--border-color-subtle)]",
     "has-[[data-list-item-primary]:focus-visible]:ring-2 has-[[data-list-item-primary]:focus-visible]:ring-accent-strong"
   ),
   {
     variants: {
       level: { 1: "pl-2", 2: "pl-4", 3: "pl-6", 4: "pl-8", 5: "pl-10" },
-      density: { comfortable: "text-body-sm-medium active:text-primary", compact: "text-body-xs-medium" },
+      density: { comfortable: "text-body-sm-regular active:text-primary", compact: "text-body-xs-regular" },
     },
     defaultVariants: { level: 1, density: "comfortable" },
   }
