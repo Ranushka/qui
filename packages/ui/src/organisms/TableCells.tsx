@@ -68,18 +68,26 @@ export interface TextCellProps extends CellActionProps {
   tone?: "default" | "link";
 }
 
+/**
+ * Two lines sit tight as one unit at line-height 1, instead of each line carrying its own leading. The padding
+ * cancelled by a negative margin gives descenders room inside `truncate`'s clip without adding height.
+ */
+const stackedLineClass = "py-[0.15em] -my-[0.15em] leading-none";
+
 function TextLines({ primary, secondary, tone }: Pick<TextCellProps, "primary" | "secondary" | "tone">) {
+  const stacked = secondary != null;
   return (
     <span className="flex min-w-0 flex-col">
       <span
         className={cn(
           "truncate text-body-sm-medium",
+          stacked && stackedLineClass,
           tone === "link" ? "text-link-primary group-hover/cell:text-link-primary-hover group-hover/cell:underline" : "text-primary"
         )}
       >
         {primary}
       </span>
-      {secondary != null ? <span className="truncate text-caption-md-regular text-tertiary">{secondary}</span> : null}
+      {secondary != null ? <span className={cn("truncate text-caption-md-regular text-tertiary", stackedLineClass)}>{secondary}</span> : null}
     </span>
   );
 }

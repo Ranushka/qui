@@ -2,6 +2,7 @@ import * as React from "react";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
+import { scrollFadeClass, useScrollFade } from "../lib/scroll-fade";
 
 type TableDensity = "comfortable" | "compact";
 type SortDirection = "ascending" | "descending";
@@ -39,19 +40,27 @@ export interface TableProps extends NoClass<React.ComponentPropsWithoutRef<"tabl
  * A semantic `<table>` in a scrollable, bordered frame. `density` flows down to every cell; with `stickyHeader`
  * (the default) the frame scrolls both ways within its parent's height and the header stays on top.
  */
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", stickyHeader = true, verticalLines = true, striped = true, ...props }, ref) => (
-  <TableDensityContext.Provider value={density}>
-    <TableStripedContext.Provider value={striped}>
-      <TableStickyHeaderContext.Provider value={stickyHeader}>
-        <TableVerticalLinesContext.Provider value={verticalLines}>
-          <div className={cn("w-full rounded-lg border-sm border-subtle bg-layer-2", stickyHeader ? "max-h-full overflow-auto" : "overflow-x-auto")}>
-            <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
-          </div>
-        </TableVerticalLinesContext.Provider>
-      </TableStickyHeaderContext.Provider>
-    </TableStripedContext.Provider>
-  </TableDensityContext.Provider>
-));
+export const Table = React.forwardRef<HTMLTableElement, TableProps>(({ density = "comfortable", stickyHeader = true, verticalLines = true, striped = true, ...props }, ref) => {
+  const scroller = React.useRef<HTMLDivElement>(null);
+  // Fade whichever side has columns scrolled past it, so a clipped column reads as "more this way". The fade is on an
+  // inner scroller so the frame's border stays crisp.
+  useScrollFade(scroller);
+  return (
+    <TableDensityContext.Provider value={density}>
+      <TableStripedContext.Provider value={striped}>
+        <TableStickyHeaderContext.Provider value={stickyHeader}>
+          <TableVerticalLinesContext.Provider value={verticalLines}>
+            <div className={cn("flex w-full flex-col overflow-hidden rounded-lg border-sm border-subtle bg-layer-2", stickyHeader && "max-h-full")}>
+              <div ref={scroller} className={cn("min-h-0", stickyHeader ? "overflow-auto" : "overflow-x-auto", scrollFadeClass)}>
+                <table ref={ref} className={cn("w-full border-collapse text-left text-body-sm-regular text-secondary")} {...props} />
+              </div>
+            </div>
+          </TableVerticalLinesContext.Provider>
+        </TableStickyHeaderContext.Provider>
+      </TableStripedContext.Provider>
+    </TableDensityContext.Provider>
+  );
+});
 Table.displayName = "Table";
 
 export const TableHeader = React.forwardRef<HTMLTableSectionElement, NoClass<React.ComponentPropsWithoutRef<"thead">>>(({ ...props }, ref) => {
@@ -100,28 +109,52 @@ export interface TableHeadProps extends NoClass<Omit<React.ComponentPropsWithout
   align?: CellAlign;
 }
 
-/** A column header. With `onSort` it renders a keyboard-operable button and reports `aria-sort`. */
+/** Lines the sort button's label up with the column: digits stay flush right on `end` columns. */
+const sortButtonJustify: Record<CellAlign, string> = { start: "justify-start", center: "justify-center", end: "flex-row-reverse justify-start" };
+
+/**
+ * A column header. With `onSort` the whole cell is a keyboard-operable button reporting `aria-sort`. The sort arrow
+ * stays hidden until the header is hovered or focused, except on the sorted column; its space is always reserved so
+ * nothing shifts. On `end` columns it sits before the label, keeping the label flush with the digits below.
+ */
 export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(({ sortDirection, onSort, align = "start", children, ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
   const verticalLines = React.useContext(TableVerticalLinesContext);
   const sortable = onSort != null;
+  const sorted = sortDirection === "ascending" || sortDirection === "descending";
   const SortIcon = sortDirection === "ascending" ? ArrowUp : sortDirection === "descending" ? ArrowDown : ChevronsUpDown;
   return (
     <th
       ref={ref}
       scope="col"
       aria-sort={sortable ? (sortDirection ?? "none") : undefined}
-      className={cn("px-3 text-body-xs-medium text-tertiary whitespace-nowrap", density === "compact" ? "h-7" : "h-9", alignClass[align], verticalLines && columnRuleClass)}
+      className={cn(
+        "text-body-xs-medium whitespace-nowrap",
+        sortable ? "p-0" : "px-3",
+        sorted ? "text-secondary" : "text-tertiary",
+        density === "compact" ? "h-7" : "h-9",
+        alignClass[align],
+        verticalLines && columnRuleClass
+      )}
       {...props}
     >
       {sortable ? (
         <button
           type="button"
           onClick={onSort}
-          className="-mx-1 inline-flex cursor-pointer items-center gap-1 rounded-sm px-1 outline-none hover:text-secondary focus-visible:ring-2 focus-visible:ring-accent-strong"
+          className={cn(
+            "group/sort flex h-full w-full cursor-pointer items-center gap-1 px-3 outline-none transition-colors hover:bg-layer-transparent-hover hover:text-primary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-strong",
+            sortButtonJustify[align]
+          )}
         >
-          {children}
-          <SortIcon aria-hidden className={cn("size-3", sortDirection && sortDirection !== "none" ? "text-primary" : "text-icon-placeholder")} />
+          <span>{children}</span>
+          <SortIcon
+            aria-hidden
+            className={cn(
+              "size-3 shrink-0 transition-opacity",
+              sorted ? "text-icon-primary" : "text-icon-tertiary opacity-0 group-hover/sort:opacity-100 group-focus-visible/sort:opacity-100"
+            )}
+          />
         </button>
       ) : (
         children

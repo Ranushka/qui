@@ -106,32 +106,42 @@ function stepsFor(row: Log): QUI.StatusIconsCellItem[] {
 
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-type SortKey = "account" | "amount" | "balanceUpdatedAt" | "id" | "ledgerAmount";
-type Sort = { key: SortKey; direction: "ascending" | "descending" };
+type Direction = "ascending" | "descending";
+type Sort = { key: string; direction: Direction };
 
-const columns: { key: SortKey | null; label: string; align?: "end" }[] = [
-  { key: "account", label: "Account" },
-  { key: null, label: "Account manager" },
-  { key: null, label: "Card" },
-  { key: "amount", label: "Amount", align: "end" },
-  { key: null, label: "Balance", align: "end" },
-  { key: "ledgerAmount", label: "Ledger amount", align: "end" },
-  { key: null, label: "Trend (3M)" },
-  { key: null, label: "Status" },
-  { key: "balanceUpdatedAt", label: "Balance updated" },
-  { key: null, label: "Created" },
-  { key: "id", label: "ID" },
-  { key: null, label: "Issuer" },
-  { key: null, label: "Account status" },
-  { key: null, label: "Approvers" },
-  { key: null, label: "Credit limit", align: "end" },
-  { key: null, label: "Limit used" },
-  { key: null, label: "Net flow (MTD)", align: "end" },
-  { key: null, label: "MoM", align: "end" },
-  { key: null, label: "Transactions", align: "end" },
-  { key: null, label: "Avg. settlement", align: "end" },
-  { key: null, label: "Statement period" },
+/**
+ * The table's columns. `value` is what a column sorts by; a column without one can't be sorted. Text sorts A→Z on the
+ * first click, numbers and dates largest/newest first.
+ */
+const columns: { label: string; align?: "end"; value?: (row: Log) => string | number }[] = [
+  { label: "Account", value: (row) => row.account ?? "" },
+  { label: "Account manager", value: (row) => row.manager?.name ?? "" },
+  { label: "Card", value: (row) => row.card },
+  { label: "Amount", align: "end", value: (row) => row.amount },
+  { label: "Balance", align: "end" },
+  { label: "Ledger amount", align: "end", value: (row) => row.ledgerAmount },
+  { label: "Trend (3M)", value: (row) => row.ledgerAmount - trendFor(row)[0]! },
+  { label: "Status", value: (row) => row.id % 5 },
+  { label: "Balance updated", value: (row) => row.balanceUpdatedAt },
+  { label: "Created", value: (row) => row.createdAt },
+  { label: "ID", value: (row) => row.id },
+  { label: "Issuer", value: (row) => row.issuer },
+  { label: "Account status", value: (row) => row.status },
+  { label: "Approvers", value: (row) => row.approvers.length },
+  { label: "Credit limit", align: "end", value: (row) => row.creditLimit },
+  { label: "Limit used", value: (row) => row.limitUsed },
+  { label: "Net flow (MTD)", align: "end", value: (row) => row.netFlow },
+  { label: "MoM", align: "end", value: (row) => row.momChange },
+  { label: "Transactions", align: "end", value: (row) => row.transactions },
+  { label: "Avg. settlement", align: "end", value: (row) => row.avgSettlement },
+  { label: "Statement period", value: (row) => row.periodStart },
 ];
+
+/** Dates are ISO strings, so they sort as text but read as "newest first" like numbers. */
+const firstDirection = (label: string): Direction => {
+  const sample = columns.find((c) => c.label === label)!.value!(logs[0]!);
+  return typeof sample === "number" || /^\d{4}-\d{2}-\d{2}T/.test(sample) ? "descending" : "ascending";
+};
 
 const pageSize = 50;
 
@@ -174,11 +184,14 @@ function writeFilters(state: QUI.FilterState) {
 }
 
 function sortLogs(rows: Log[], sort: Sort) {
+  const value = columns.find((c) => c.label === sort.key)?.value;
+  if (!value) return rows;
   const sign = sort.direction === "ascending" ? 1 : -1;
+  const text = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
   return [...rows].sort((a, b) => {
-    const x = a[sort.key] ?? "";
-    const y = b[sort.key] ?? "";
-    return (x < y ? -1 : x > y ? 1 : 0) * sign;
+    const x = value(a);
+    const y = value(b);
+    return (typeof x === "number" && typeof y === "number" ? x - y : text.compare(String(x), String(y))) * sign;
   });
 }
 
@@ -252,7 +265,7 @@ function LogsTable({
 }: {
   rows: Log[];
   sort: Sort;
-  onSort: (key: SortKey) => void;
+  onSort: (key: string) => void;
   selected: Set<number>;
   onSelect: (ids: number[], checked: boolean) => void;
   onFilter: (key: string, value: string) => void;
@@ -274,8 +287,8 @@ function LogsTable({
             <QUI.TableHead
               key={column.label}
               align={column.align}
-              sortDirection={column.key ? (sort.key === column.key ? sort.direction : "none") : undefined}
-              onSort={column.key ? () => onSort(column.key!) : undefined}
+              sortDirection={column.value ? (sort.key === column.label ? sort.direction : "none") : undefined}
+              onSort={column.value ? () => onSort(column.label) : undefined}
             >
               {column.label}
             </QUI.TableHead>
@@ -358,7 +371,7 @@ function LogsTable({
 export function BalanceLogsPage() {
   const [query, setQuery] = React.useState("");
   const [filters, setFilters] = React.useState(readFilters);
-  const [sort, setSort] = React.useState<Sort>({ key: "id", direction: "descending" });
+  const [sort, setSort] = React.useState<Sort>({ key: "ID", direction: "descending" });
   const [page, setPage] = React.useState(1);
   const [selected, setSelected] = React.useState<Set<number>>(() => new Set());
 
@@ -382,8 +395,8 @@ export function BalanceLogsPage() {
     writeFilters(next);
     setPage(1);
   };
-  const toggleSort = (key: SortKey) => {
-    setSort((s) => ({ key, direction: s.key === key && s.direction === "descending" ? "ascending" : "descending" }));
+  const toggleSort = (key: string) => {
+    setSort((s) => ({ key, direction: s.key === key ? (s.direction === "descending" ? "ascending" : "descending") : firstDirection(key) }));
     setPage(1);
   };
   const select = (ids: number[], checked: boolean) =>

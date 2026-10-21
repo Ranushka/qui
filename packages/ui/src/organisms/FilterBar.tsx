@@ -10,6 +10,8 @@ import { FilterChip } from "../molecules/FilterChip";
 import { Menu, MenuContent, MenuGroup, MenuGroupLabel, MenuItem, MenuTrigger } from "../molecules/Menu";
 import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "../molecules/Popover";
 import { Calendar } from "./Calendar";
+import { cn } from "../lib/cn";
+import { scrollFadeClass, useScrollFade } from "../lib/scroll-fade";
 
 /* ── Fields and values ─────────────────────────────────────────────────────────────────────────── */
 
@@ -401,23 +403,7 @@ export function FilterBar<Row>({
   const scroller = React.useRef<HTMLDivElement>(null);
 
   // Fade whichever edge has chips scrolled past it, so a clipped chip reads as "more this way".
-  React.useEffect(() => {
-    const el = scroller.current;
-    if (!el) return;
-    const update = () => {
-      el.toggleAttribute("data-fade-start", el.scrollLeft > 1);
-      el.toggleAttribute("data-fade-end", el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-    };
-    update();
-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
-    observer?.observe(el);
-    for (const child of el.children) observer?.observe(child);
-    el.addEventListener("scroll", update, { passive: true });
-    return () => {
-      observer?.disconnect();
-      el.removeEventListener("scroll", update);
-    };
-  });
+  useScrollFade(scroller);
 
   // Bring the chip whose editor opens into view, e.g. one just added at the scrolled-off end of the row.
   React.useEffect(() => {
@@ -468,7 +454,7 @@ export function FilterBar<Row>({
       {/* Always one line: chips that don't fit scroll sideways while "More filters" and "Clear all" stay in view. On
           phones the filters take a row of their own under the search. */}
       <div role="group" aria-label="Filters" className="flex min-w-0 flex-1 items-center gap-2 max-sm:order-last max-sm:basis-full">
-        <div ref={scroller} className="-my-1 flex min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain py-1 [scrollbar-width:none] [--fade-end:black] [--fade-start:black] data-fade-end:[--fade-end:transparent] data-fade-start:[--fade-start:transparent] [mask-image:linear-gradient(to_right,var(--fade-start),black_2rem,black_calc(100%-2rem),var(--fade-end))]">
+        <div ref={scroller} className={cn("-my-1 flex min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain py-1 [scrollbar-width:none]", scrollFadeClass)}>
           {shown.map((field) => {
             const current = value[field.key];
             const isApplied = applied(field);
