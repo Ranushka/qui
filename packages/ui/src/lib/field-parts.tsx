@@ -14,7 +14,8 @@ export type FieldSize = "md" | "lg" | "xl" | "2xl";
 
 /**
  * Label text: sized to match the control it names, one step down from the control's own type scale.
- * `inset` drops a horizontal label (with no description beneath it) onto the control's text baseline.
+ * `inset` drops a horizontal label (with no description beneath it) so its line centres on the control beside it:
+ * half of what the control's height has over the label's line height.
  */
 export const fieldLabelVariants = cva("inline-flex items-center gap-0.5 text-primary", {
   variants: {
@@ -24,13 +25,13 @@ export const fieldLabelVariants = cva("inline-flex items-center gap-0.5 text-pri
       xl: "text-body-sm-medium",
       "2xl": "text-body-sm-medium",
     },
-    inset: { true: "", false: "" },
+    inset: { true: "pt-[calc((var(--field-control-height)-1lh)/2)]", false: "" },
   },
   compoundVariants: [
-    { size: "md", inset: true, class: "pt-1" },
-    { size: "lg", inset: true, class: "pt-[7px]" },
-    { size: "xl", inset: true, class: "pt-[9px]" },
-    { size: "2xl", inset: true, class: "pt-[13px]" },
+    { size: "md", inset: true, class: "[--field-control-height:var(--control-height-md)]" },
+    { size: "lg", inset: true, class: "[--field-control-height:var(--control-height-lg)]" },
+    { size: "xl", inset: true, class: "[--field-control-height:var(--control-height-xl)]" },
+    { size: "2xl", inset: true, class: "[--field-control-height:var(--control-height-2xl)]" },
   ],
 });
 
