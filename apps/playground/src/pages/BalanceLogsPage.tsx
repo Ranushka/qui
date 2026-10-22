@@ -106,42 +106,131 @@ function stepsFor(row: Log): QUI.StatusIconsCellItem[] {
 
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-type Direction = "ascending" | "descending";
-type Sort = { key: string; direction: Direction };
-
 /**
- * The table's columns. `value` is what a column sorts by; a column without one can't be sorted. Text sorts A→Z on the
- * first click, numbers and dates largest/newest first.
+ * The table's columns, built per render so cells can filter the table (`onFilter`). Every column but Balance sorts:
+ * text A→Z first, numbers and dates largest/newest first. `size` is each column's minimum width, which keeps columns
+ * steady in the virtualized focus view as rows scroll in and out.
  */
-const columns: { label: string; align?: "end"; value?: (row: Log) => string | number }[] = [
-  { label: "Account", value: (row) => row.account ?? "" },
-  { label: "Account manager", value: (row) => row.manager?.name ?? "" },
-  { label: "Card", value: (row) => row.card },
-  { label: "Amount", align: "end", value: (row) => row.amount },
-  { label: "Balance", align: "end" },
-  { label: "Ledger amount", align: "end", value: (row) => row.ledgerAmount },
-  { label: "Trend (3M)", value: (row) => row.ledgerAmount - trendFor(row)[0]! },
-  { label: "Status", value: (row) => row.id % 5 },
-  { label: "Balance updated", value: (row) => row.balanceUpdatedAt },
-  { label: "Created", value: (row) => row.createdAt },
-  { label: "ID", value: (row) => row.id },
-  { label: "Issuer", value: (row) => row.issuer },
-  { label: "Account status", value: (row) => row.status },
-  { label: "Approvers", value: (row) => row.approvers.length },
-  { label: "Credit limit", align: "end", value: (row) => row.creditLimit },
-  { label: "Limit used", value: (row) => row.limitUsed },
-  { label: "Net flow (MTD)", align: "end", value: (row) => row.netFlow },
-  { label: "MoM", align: "end", value: (row) => row.momChange },
-  { label: "Transactions", align: "end", value: (row) => row.transactions },
-  { label: "Avg. settlement", align: "end", value: (row) => row.avgSettlement },
-  { label: "Statement period", value: (row) => row.periodStart },
-];
-
-/** Dates are ISO strings, so they sort as text but read as "newest first" like numbers. */
-const firstDirection = (label: string): Direction => {
-  const sample = columns.find((c) => c.label === label)!.value!(logs[0]!);
-  return typeof sample === "number" || /^\d{4}-\d{2}-\d{2}T/.test(sample) ? "descending" : "ascending";
-};
+function logColumns(onFilter: (key: string, value: string) => void): QUI.DataTableColumn<Log>[] {
+  return [
+    {
+      id: "account",
+      header: "Account",
+      size: 160,
+      accessorFn: (row) => row.account ?? "",
+      cell: ({ row: { original: row } }) => <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" onClick={() => onFilter("account", row.account ?? "")} />,
+    },
+    {
+      id: "manager",
+      header: "Account manager",
+      size: 210,
+      accessorFn: (row) => row.manager?.name ?? "",
+      cell: ({ row: { original: row } }) => (row.manager ? <QUI.UserCell name={row.manager.name} secondary={row.manager.email} onClick={() => onFilter("manager", row.manager!.name)} /> : <QUI.EmptyCell />),
+    },
+    { id: "card", header: "Card", size: 133, accessorFn: (row) => row.card, cell: ({ row: { original: row } }) => <QUI.MaskedCell last={row.card} /> },
+    {
+      id: "amount",
+      header: "Amount",
+      size: 136,
+      meta: { align: "end" },
+      accessorFn: (row) => row.amount,
+      cell: ({ row: { original: row } }) => <QUI.MoneyCell amount={row.amount} currency={row.currency} display="code" locale="en-US" />,
+    },
+    { id: "balance", header: "Balance", size: 73, meta: { align: "end" }, enableSorting: false, cell: ({ row: { original: row } }) => <QUI.MoneyCell amount={null} currency={row.currency} /> },
+    {
+      id: "ledger",
+      header: "Ledger amount",
+      size: 130,
+      meta: { align: "end" },
+      accessorFn: (row) => row.ledgerAmount,
+      cell: ({ row: { original: row } }) => <QUI.MoneyCell amount={row.ledgerAmount} currency={row.currency} display="none" minor="subdued" locale="en-US" />,
+    },
+    {
+      id: "trend",
+      header: "Trend (3M)",
+      size: 105,
+      accessorFn: (row) => row.ledgerAmount - trendFor(row)[0]!,
+      cell: ({ row: { original: row } }) => <QUI.TrendCell values={trendFor(row)} label="Ledger balance, last 3 months" locale="en-US" />,
+    },
+    { id: "steps", header: "Status", size: 141, accessorFn: (row) => row.id % 5, cell: ({ row: { original: row } }) => <QUI.StatusIconsCell items={stepsFor(row)} /> },
+    {
+      id: "updated",
+      header: "Balance updated",
+      size: 150,
+      sortDescFirst: true,
+      accessorFn: (row) => row.balanceUpdatedAt,
+      cell: ({ row: { original: row } }) => <QUI.DateCell value={row.balanceUpdatedAt} format="datetime" locale="en-GB" />,
+    },
+    {
+      id: "created",
+      header: "Created",
+      size: 124,
+      sortDescFirst: true,
+      accessorFn: (row) => row.createdAt,
+      cell: ({ row: { original: row } }) => <QUI.DateCell value={row.createdAt} format="relative" now={now} locale="en-US" />,
+    },
+    { id: "id", header: "ID", size: 92, accessorFn: (row) => row.id },
+    { id: "issuer", header: "Issuer", size: 89, accessorFn: (row) => row.issuer, cell: ({ row: { original: row } }) => <QUI.TagCell label={row.issuer} color="indigo" /> },
+    {
+      id: "status",
+      header: "Account status",
+      size: 129,
+      accessorFn: (row) => row.status,
+      cell: ({ row: { original: row } }) => <QUI.TagCell label={row.status} color={statusColor[row.status]} onClick={() => onFilter("status", row.status)} />,
+    },
+    { id: "approvers", header: "Approvers", size: 121, accessorFn: (row) => row.approvers.length, cell: ({ row: { original: row } }) => <QUI.UsersCell users={row.approvers} /> },
+    {
+      id: "limit",
+      header: "Credit limit",
+      size: 110,
+      meta: { align: "end" },
+      accessorFn: (row) => row.creditLimit,
+      cell: ({ row: { original: row } }) => <QUI.MoneyCell amount={row.creditLimit} currency={row.currency} display="code" notation="compact" locale="en-US" />,
+    },
+    {
+      id: "used",
+      header: "Limit used",
+      size: 121,
+      accessorFn: (row) => row.limitUsed,
+      cell: ({ row: { original: row } }) => (
+        <QUI.ProgressCell value={row.limitUsed} variant={row.limitUsed >= 90 ? "danger" : row.limitUsed >= 70 ? "warning" : "brand"} aria-label="Credit limit used" />
+      ),
+    },
+    {
+      id: "netFlow",
+      header: "Net flow (MTD)",
+      size: 136,
+      meta: { align: "end" },
+      accessorFn: (row) => row.netFlow,
+      cell: ({ row: { original: row } }) => <QUI.MoneyCell amount={row.netFlow} currency={row.currency} display="none" negative="parentheses" locale="en-US" />,
+    },
+    { id: "mom", header: "MoM", size: 83, meta: { align: "end" }, accessorFn: (row) => row.momChange, cell: ({ row: { original: row } }) => <QUI.ChangeCell value={row.momChange} locale="en-US" /> },
+    {
+      id: "transactions",
+      header: "Transactions",
+      size: 117,
+      meta: { align: "end" },
+      accessorFn: (row) => row.transactions,
+      cell: ({ row: { original: row } }) => <QUI.NumberCell value={row.transactions} format="integer" locale="en-US" />,
+    },
+    {
+      id: "settlement",
+      header: "Avg. settlement",
+      size: 134,
+      meta: { align: "end" },
+      accessorFn: (row) => row.avgSettlement,
+      cell: ({ row: { original: row } }) => <QUI.NumberCell value={row.avgSettlement} format="duration" />,
+    },
+    {
+      id: "period",
+      header: "Statement period",
+      size: 144,
+      sortDescFirst: true,
+      accessorFn: (row) => row.periodStart,
+      cell: ({ row: { original: row } }) => <QUI.DateRangeCell start={row.periodStart} end={row.periodEnd} locale="en-GB" />,
+    },
+  ];
+}
 
 const pageSize = 50;
 
@@ -174,25 +263,49 @@ const filterFields: QUI.FilterField<Log>[] = [
   { key: "created", label: "Created", icon: <QUI.Icon icon={Icons.CalendarPlus} />, kind: "date", get: (row) => row.createdAt },
 ];
 
-/** Filters live in the hash's query (`#/examples/tables/?status=Frozen`), so a filtered view can be shared or reloaded. */
-const readFilters = () => QUI.filtersFromParams(filterFields, new URLSearchParams(window.location.hash.split("?")[1] ?? ""));
-function writeFilters(state: QUI.FilterState) {
-  const [path, query] = window.location.hash.split("?");
-  const params = QUI.filtersToParams(filterFields, state, new URLSearchParams(query ?? "")).toString();
-  const base = path!.endsWith("/") || !params ? path : `${path}/`;
-  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${base}${params ? `?${params}` : ""}`);
+/** The hash's query (`#/examples/tables/?status=Frozen&view=focus`): filters and the focus view live there. */
+const hashParams = () => new URLSearchParams(window.location.hash.split("?")[1] ?? "");
+function writeHash(params: URLSearchParams, push = false) {
+  const path = window.location.hash.split("?")[0]!;
+  const query = params.toString();
+  const base = path.endsWith("/") || !query ? path : `${path}/`;
+  const url = `${window.location.pathname}${window.location.search}${base}${query ? `?${query}` : ""}`;
+  if (push) window.history.pushState(null, "", url);
+  else window.history.replaceState(null, "", url);
 }
 
-function sortLogs(rows: Log[], sort: Sort) {
-  const value = columns.find((c) => c.label === sort.key)?.value;
-  if (!value) return rows;
-  const sign = sort.direction === "ascending" ? 1 : -1;
-  const text = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
-  return [...rows].sort((a, b) => {
-    const x = value(a);
-    const y = value(b);
-    return (typeof x === "number" && typeof y === "number" ? x - y : text.compare(String(x), String(y))) * sign;
-  });
+/** Filters live in the URL, so a filtered view can be shared or reloaded. */
+const readFilters = () => QUI.filtersFromParams(filterFields, hashParams());
+const writeFilters = (state: QUI.FilterState) => writeHash(QUI.filtersToParams(filterFields, state, hashParams()));
+
+/** `view=focus` opens the table full screen, without the app's navigation. */
+const readFocus = () => hashParams().get("view") === "focus";
+function writeFocus(on: boolean, push: boolean) {
+  const params = hashParams();
+  if (on) params.set("view", "focus");
+  else params.delete("view");
+  writeHash(params, push);
+}
+
+const title = "Account balance logs";
+
+function HeaderActions() {
+  return (
+    <QUI.Inline gap="2" wrap={false}>
+      <QUI.Button variant="primary" icon={<QUI.Icon icon={Icons.Plus} />} label="Create" />
+      <QUI.Menu>
+        <QUI.MenuTrigger render={<QUI.Button variant="secondary" endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label="Actions" />} />
+        <QUI.MenuContent align="end">
+          <QUI.MenuItem icon={<QUI.Icon icon={Icons.Download} />}>Export CSV</QUI.MenuItem>
+          <QUI.MenuItem icon={<QUI.Icon icon={Icons.Upload} />}>Import</QUI.MenuItem>
+          <QUI.MenuSeparator />
+          <QUI.MenuItem variant="danger" icon={<QUI.Icon icon={Icons.Trash2} />}>
+            Delete selected
+          </QUI.MenuItem>
+        </QUI.MenuContent>
+      </QUI.Menu>
+    </QUI.Inline>
+  );
 }
 
 function PageHeader() {
@@ -201,248 +314,191 @@ function PageHeader() {
       <QUI.Inline gap="2" wrap={false}>
         <QUI.Icon icon={Icons.WalletCards} size="lg" tint="secondary" />
         <QUI.Heading level={1} size={5} weight="semibold" truncate>
-          Account balance logs
+          {title}
         </QUI.Heading>
       </QUI.Inline>
-      <QUI.Inline gap="2" wrap={false}>
-        <QUI.Button variant="primary" icon={<QUI.Icon icon={Icons.Plus} />} label="Create" />
-        <QUI.Menu>
-          <QUI.MenuTrigger render={<QUI.Button variant="secondary" endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label="Actions" />} />
-          <QUI.MenuContent align="end">
-            <QUI.MenuItem icon={<QUI.Icon icon={Icons.Download} />}>Export CSV</QUI.MenuItem>
-            <QUI.MenuItem icon={<QUI.Icon icon={Icons.Upload} />}>Import</QUI.MenuItem>
-            <QUI.MenuSeparator />
-            <QUI.MenuItem variant="danger" icon={<QUI.Icon icon={Icons.Trash2} />}>
-              Delete selected
-            </QUI.MenuItem>
-          </QUI.MenuContent>
-        </QUI.Menu>
-      </QUI.Inline>
+      <HeaderActions />
     </QUI.Inline>
   );
 }
 
-function Toolbar({ query, onQuery, filters, onFilters }: { query: string; onQuery: (q: string) => void; filters: QUI.FilterState; onFilters: (next: QUI.FilterState) => void }) {
-  return (
-    <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
-      <QUI.FilterBar
-        fields={filterFields}
-        value={filters}
-        onValueChange={onFilters}
-        rows={logs}
-        now={now}
-        search={
-          <QUI.Box width="3xs">
-            <QUI.Input
-              aria-label="Search balance logs"
-              placeholder="Search…"
-              value={query}
-              onChange={(event) => onQuery(event.target.value)}
-              startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />}
-            />
-          </QUI.Box>
-        }
-        actions={
-          <>
-            <QUI.IconButton variant="ghost" aria-label="Save view" icon={<QUI.Icon icon={Icons.Bookmark} />} />
-            <QUI.IconButton variant="secondary" aria-label="Choose columns" icon={<QUI.Icon icon={Icons.Columns3} />} />
-            <QUI.IconButton variant="secondary" aria-label="Refresh" icon={<QUI.Icon icon={Icons.RefreshCw} />} />
-          </>
-        }
-      />
-    </QUI.Box>
-  );
-}
-
-/** The records table. Clicking an account, manager or status filters the table to it via `onFilter`. */
-function LogsTable({
-  rows,
-  sort,
-  onSort,
-  selected,
-  onSelect,
-  onFilter,
+function Toolbar({
+  query,
+  onQuery,
+  filters,
+  onFilters,
+  table,
+  focus,
+  onFocus,
 }: {
-  rows: Log[];
-  sort: Sort;
-  onSort: (key: string) => void;
-  selected: Set<number>;
-  onSelect: (ids: number[], checked: boolean) => void;
-  onFilter: (key: string, value: string) => void;
+  query: string;
+  onQuery: (q: string) => void;
+  filters: QUI.FilterState;
+  onFilters: (next: QUI.FilterState) => void;
+  table: QUI.DataTableInstance<Log>;
+  /** Whether the focus view is open; the last button opens or leaves it. */
+  focus: boolean;
+  onFocus: () => void;
 }) {
-  const selectedOnPage = rows.filter((row) => selected.has(row.id)).length;
   return (
-    <QUI.Table aria-label="Account balance logs">
-      <QUI.TableHeader>
-        <QUI.TableRow>
-          <QUI.TableHead>
-            <QUI.Checkbox
-              aria-label="Select all rows on this page"
-              checked={rows.length > 0 && selectedOnPage === rows.length}
-              indeterminate={selectedOnPage > 0 && selectedOnPage < rows.length}
-              onCheckedChange={(checked) => onSelect(rows.map((row) => row.id), checked)}
-            />
-          </QUI.TableHead>
-          {columns.map((column) => (
-            <QUI.TableHead
-              key={column.label}
-              align={column.align}
-              sortDirection={column.value ? (sort.key === column.label ? sort.direction : "none") : undefined}
-              onSort={column.value ? () => onSort(column.label) : undefined}
-            >
-              {column.label}
-            </QUI.TableHead>
-          ))}
-        </QUI.TableRow>
-      </QUI.TableHeader>
-      <QUI.TableBody>
-        {rows.map((row) => (
-          <QUI.TableRow key={row.id} selected={selected.has(row.id)}>
-            <QUI.TableCell>
-              <QUI.Checkbox aria-label={`Select log ${row.id}`} checked={selected.has(row.id)} onCheckedChange={(checked) => onSelect([row.id], checked)} />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.TextCell primary={row.account} secondary={row.accountType} tone="link" onClick={() => onFilter("account", row.account ?? "")} />
-            </QUI.TableCell>
-            <QUI.TableCell>{row.manager ? <QUI.UserCell name={row.manager.name} secondary={row.manager.email} onClick={() => onFilter("manager", row.manager!.name)} /> : <QUI.EmptyCell />}</QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.MaskedCell last={row.card} />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.MoneyCell amount={row.amount} currency={row.currency} display="code" locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.MoneyCell amount={null} currency={row.currency} />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.MoneyCell amount={row.ledgerAmount} currency={row.currency} display="none" minor="subdued" locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.TrendCell values={trendFor(row)} label="Ledger balance, last 3 months" locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.StatusIconsCell items={stepsFor(row)} />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.DateCell value={row.balanceUpdatedAt} format="datetime" locale="en-GB" />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.DateCell value={row.createdAt} format="relative" now={now} locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell>{row.id}</QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.TagCell label={row.issuer} color="indigo" />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.TagCell label={row.status} color={statusColor[row.status]} onClick={() => onFilter("status", row.status)} />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.UsersCell users={row.approvers} />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.MoneyCell amount={row.creditLimit} currency={row.currency} display="code" notation="compact" locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.ProgressCell value={row.limitUsed} variant={row.limitUsed >= 90 ? "danger" : row.limitUsed >= 70 ? "warning" : "brand"} aria-label="Credit limit used" />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.MoneyCell amount={row.netFlow} currency={row.currency} display="none" negative="parentheses" locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.ChangeCell value={row.momChange} locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.NumberCell value={row.transactions} format="integer" locale="en-US" />
-            </QUI.TableCell>
-            <QUI.TableCell align="end">
-              <QUI.NumberCell value={row.avgSettlement} format="duration" />
-            </QUI.TableCell>
-            <QUI.TableCell>
-              <QUI.DateRangeCell start={row.periodStart} end={row.periodEnd} locale="en-GB" />
-            </QUI.TableCell>
-          </QUI.TableRow>
-        ))}
-      </QUI.TableBody>
-    </QUI.Table>
+    <QUI.FilterBar
+      fields={filterFields}
+      value={filters}
+      onValueChange={onFilters}
+      rows={logs}
+      now={now}
+      search={
+        <QUI.Box width="3xs">
+          <QUI.Input
+            aria-label="Search balance logs"
+            placeholder="Search…"
+            value={query}
+            onChange={(event) => onQuery(event.target.value)}
+            startSlot={<QUI.Icon icon={Icons.Search} tint="placeholder" />}
+          />
+        </QUI.Box>
+      }
+      actions={
+        <>
+          <QUI.IconButton variant="ghost" aria-label="Save view" icon={<QUI.Icon icon={Icons.Bookmark} />} />
+          <QUI.DataTableColumnsMenu table={table} />
+          <QUI.IconButton variant="secondary" aria-label="Refresh" icon={<QUI.Icon icon={Icons.RefreshCw} />} />
+          <QUI.IconButton
+            variant="secondary"
+            aria-label={focus ? "Exit focus view" : "Open focus view"}
+            icon={<QUI.Icon icon={focus ? Icons.Minimize2 : Icons.Maximize2} />}
+            onClick={onFocus}
+          />
+        </>
+      }
+    />
   );
 }
 
-/** Playground page: the balance-log records table in the Acme shell with the admin navigation. */
+/** Row count, bulk actions for the selection, and — outside the focus view — the pager. */
+function Footer({ table, paged }: { table: QUI.DataTableInstance<Log>; paged: boolean }) {
+  const total = table.getPrePaginatedRowModel().rows.length;
+  const { pageIndex, pageSize: size } = table.state.pagination;
+  const shown = table.getRowModel().rows.length;
+  const selected = table.getSelectedRowModel().rows.length;
+  const count = total === 0 ? "No records match these filters" : paged ? `${pageIndex * size + 1}–${pageIndex * size + shown} of ${total}` : `${total.toLocaleString("en-US")} records`;
+  return (
+    <QUI.Inline justify="between" gap="4">
+      <QUI.Text size="xs" color="tertiary" tabularNums>
+        {count}
+      </QUI.Text>
+      <QUI.ActionBar
+        placement="inline"
+        open={selected > 0}
+        aria-label="Bulk actions"
+        summary={`${selected} ${selected === 1 ? "record" : "records"} selected`}
+        onClear={() => table.resetRowSelection()}
+      >
+        <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => table.resetRowSelection()} />
+        <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.FileText} />} label="Statements" onClick={() => table.resetRowSelection()} />
+      </QUI.ActionBar>
+      {paged ? <QUI.Pagination page={pageIndex + 1} pageCount={Math.max(1, table.getPageCount())} onPageChange={(page) => table.setPageIndex(page - 1)} /> : null}
+    </QUI.Inline>
+  );
+}
+
+/**
+ * Playground page: the balance-log records table in the Acme shell with the admin navigation, paged; or, with
+ * `view=focus`, full screen with every row in one virtualized scroll.
+ */
 export function BalanceLogsPage() {
   const [query, setQuery] = React.useState("");
   const [filters, setFilters] = React.useState(readFilters);
-  const [sort, setSort] = React.useState<Sort>({ key: "ID", direction: "descending" });
-  const [page, setPage] = React.useState(1);
-  const [selected, setSelected] = React.useState<Set<number>>(() => new Set());
+  const [focus, setFocus] = React.useState(readFocus);
+  /** Whether this visit pushed the focus view's history entry, so leaving it can go back instead of adding another. */
+  const pushedFocus = React.useRef(false);
+  const filtersRef = React.useRef(filters);
+  filtersRef.current = filters;
 
-  const q = query.trim().toLowerCase();
-  const filtered = QUI.filterRows(logs, filterFields, filters, { now }).filter(
-    (row) =>
-      !q ||
-      String(row.id).includes(q) ||
-      (row.account ?? "").toLowerCase().includes(q) ||
-      (row.manager?.name ?? "").toLowerCase().includes(q) ||
-      row.status.toLowerCase() === q ||
-      money.format(row.amount).includes(q)
-  );
-  const sorted = sortLogs(filtered, sort);
-  const pageCount = Math.max(1, Math.ceil(sorted.length / pageSize));
-  const current = Math.min(page, pageCount);
-  const rows = sorted.slice((current - 1) * pageSize, current * pageSize);
+  // Back/forward toggles the focus view; the filters on screen stay and are written back into the URL.
+  React.useEffect(() => {
+    const onPopState = () => {
+      setFocus(readFocus());
+      writeFilters(filtersRef.current);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
-  const changeFilters = (next: QUI.FilterState) => {
+  const changeFilters = React.useCallback((next: QUI.FilterState) => {
     setFilters(next);
     writeFilters(next);
-    setPage(1);
+  }, []);
+
+  const q = query.trim().toLowerCase();
+  const data = React.useMemo(
+    () =>
+      QUI.filterRows(logs, filterFields, filters, { now }).filter(
+        (row) =>
+          !q ||
+          String(row.id).includes(q) ||
+          (row.account ?? "").toLowerCase().includes(q) ||
+          (row.manager?.name ?? "").toLowerCase().includes(q) ||
+          row.status.toLowerCase() === q ||
+          money.format(row.amount).includes(q)
+      ),
+    [filters, q]
+  );
+  const columns = React.useMemo(() => logColumns((key, value) => changeFilters({ ...filtersRef.current, [key]: [value] })), [changeFilters]);
+  const table = QUI.useDataTable({
+    data,
+    columns,
+    getRowId: (row) => String(row.id),
+    selectable: true,
+    pageSize: focus ? undefined : pageSize,
+    initialState: { sorting: [{ id: "id", desc: true }] },
+  });
+
+  const openFocus = () => {
+    writeFocus(true, true);
+    pushedFocus.current = true;
+    setFocus(true);
   };
-  const toggleSort = (key: string) => {
-    setSort((s) => ({ key, direction: s.key === key ? (s.direction === "descending" ? "ascending" : "descending") : firstDirection(key) }));
-    setPage(1);
+  const exitFocus = () => {
+    if (pushedFocus.current) {
+      pushedFocus.current = false;
+      window.history.back();
+    } else {
+      writeFocus(false, false);
+      setFocus(false);
+    }
   };
-  const select = (ids: number[], checked: boolean) =>
-    setSelected((prev) => {
-      const next = new Set(prev);
-      for (const id of ids) checked ? next.add(id) : next.delete(id);
-      return next;
-    });
+
+  const toolbar = <Toolbar query={query} onQuery={setQuery} filters={filters} onFilters={changeFilters} table={table} focus={focus} onFocus={focus ? exitFocus : openFocus} />;
+  const dataTable = <QUI.DataTable table={table} aria-label={title} virtual={focus} />;
+
+  if (focus) {
+    return (
+      <QUI.FocusView
+        title={title}
+        icon={<QUI.Icon icon={Icons.WalletCards} size="lg" tint="secondary" />}
+        actions={<HeaderActions />}
+        toolbar={toolbar}
+        footer={<Footer table={table} paged={false} />}
+        onExit={exitFocus}
+        exitButton={false}
+      >
+        {dataTable}
+      </QUI.FocusView>
+    );
+  }
 
   return (
-    <AcmeShell current="Account balance logs" header={<PageHeader />} navigation={<AdminNavigation open="Accounts" />}>
-      <Toolbar
-        query={query}
-        onQuery={(value) => {
-          setQuery(value);
-          setPage(1);
-        }}
-        filters={filters}
-        onFilters={changeFilters}
-      />
-      <QUI.Box grow overflow="hidden" paddingX="4">
-        <LogsTable
-          rows={rows}
-          sort={sort}
-          onSort={toggleSort}
-          selected={selected}
-          onSelect={select}
-          onFilter={(key, value) => changeFilters({ ...filters, [key]: [value] })}
-        />
+    <AcmeShell current={title} header={<PageHeader />} navigation={<AdminNavigation open="Accounts" />}>
+      <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
+        {toolbar}
       </QUI.Box>
-      <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
-        <QUI.Text size="xs" color="tertiary" tabularNums>
-          {sorted.length === 0 ? "No records match these filters" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${sorted.length}`}
-        </QUI.Text>
-        <QUI.ActionBar
-          placement="inline"
-          open={selected.size > 0}
-          aria-label="Bulk actions"
-          summary={`${selected.size} ${selected.size === 1 ? "record" : "records"} selected`}
-          onClear={() => setSelected(new Set())}
-        >
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.Download} />} label="Export" onClick={() => setSelected(new Set())} />
-          <QUI.ActionBarButton icon={<QUI.Icon icon={Icons.FileText} />} label="Statements" onClick={() => setSelected(new Set())} />
-        </QUI.ActionBar>
-        <QUI.Pagination page={current} pageCount={pageCount} onPageChange={setPage} />
-      </QUI.Inline>
+      <QUI.Box grow overflow="hidden" paddingX="4">
+        {dataTable}
+      </QUI.Box>
+      <QUI.Box paddingX="4" paddingY="3">
+        <Footer table={table} paged />
+      </QUI.Box>
     </AcmeShell>
   );
 }

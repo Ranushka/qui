@@ -104,9 +104,11 @@ export interface TableHeadProps extends NoClass<Omit<React.ComponentPropsWithout
   /** Current sort state of this column. Omit for a non-sortable column. */
   sortDirection?: SortDirection | "none";
   /** Makes the header a button; called when the user activates it. */
-  onSort?: () => void;
+  onSort?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   /** Text alignment; use `end` over numeric columns so headers line up with their digits. @default "start" */
   align?: CellAlign;
+  /** The column's minimum width in px; it can still grow to fit its content. */
+  minWidth?: number;
 }
 
 /** Lines the sort button's label up with the column: digits stay flush right on `end` columns. */
@@ -117,7 +119,7 @@ const sortButtonJustify: Record<CellAlign, string> = { start: "justify-start", c
  * stays hidden until the header is hovered or focused, except on the sorted column; its space is always reserved so
  * nothing shifts. On `end` columns it sits before the label, keeping the label flush with the digits below.
  */
-export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(({ sortDirection, onSort, align = "start", children, ...props }, ref) => {
+export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(({ sortDirection, onSort, align = "start", minWidth, children, ...props }, ref) => {
   const density = React.useContext(TableDensityContext);
   const verticalLines = React.useContext(TableVerticalLinesContext);
   const sortable = onSort != null;
@@ -136,6 +138,7 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
         alignClass[align],
         verticalLines && columnRuleClass
       )}
+      style={minWidth != null ? { minWidth } : undefined}
       {...props}
     >
       {sortable ? (
