@@ -80,7 +80,7 @@ function TextLines({ primary, secondary, tone }: Pick<TextCellProps, "primary" |
     <span className="flex min-w-0 flex-col">
       <span
         className={cn(
-          "truncate text-body-sm-medium",
+          "truncate text-body-sm-regular",
           stacked && stackedLineClass,
           tone === "link" ? "text-link-primary group-hover/cell:text-link-primary-hover group-hover/cell:underline" : "text-primary"
         )}
