@@ -16,8 +16,8 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
   variants: {
     variant: {
       contained: "items-center gap-0.5 rounded-md bg-layer-3 p-0.5",
-      // A full-width hairline baseline, drawn as an inset shadow so the active tab's accent bar paints over it.
-      underline: "items-stretch gap-5 shadow-[inset_0_-1px_0_0_var(--border-color-subtle)]",
+      // A full-width baseline as thick as the active bar (both 2px, flush at the bottom), drawn as an inset shadow so the active tab's accent bar paints over it.
+      underline: "items-stretch gap-5 shadow-[inset_0_-2px_0_0_var(--border-color-subtle)]",
       card: "items-stretch gap-2 overflow-x-auto",
     },
     stretch: {
@@ -43,8 +43,8 @@ const tabVariants = cva(tabBase, {
       contained:
         "inline-flex h-6 items-center justify-center gap-1.5 rounded-sm px-2 text-body-xs-medium [--node-size:var(--control-glyph-sm)] data-active:bg-layer-2 data-active:font-semibold data-active:shadow-raised-200",
       underline:
-        "relative inline-flex h-9 items-center justify-center gap-1.5 rounded-xs text-body-sm-medium focus-visible:ring-inset [--node-size:var(--control-glyph-md)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:transition-colors not-aria-disabled:hover:after:bg-layer-3-hover data-active:font-semibold data-active:after:bg-accent-primary",
-      card: "flex min-w-36 max-w-56 shrink-0 flex-col items-start justify-between gap-1.5 rounded-md border-sm border-subtle bg-layer-2 px-3 py-2 text-start text-caption-md-medium [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:border-strong data-active:border-accent-strong data-active:ring-1 data-active:ring-inset data-active:ring-accent-strong",
+        "relative inline-flex h-9 items-center justify-center gap-1.5 rounded-xs text-body-sm-medium focus-visible:ring-inset [--node-size:var(--control-glyph-md)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:transition-colors not-aria-disabled:not-data-active:hover:after:bg-layer-3-hover data-active:font-semibold data-active:after:bg-accent-primary",
+      card: "flex min-w-36 max-w-56 shrink-0 flex-col items-start justify-between gap-1.5 rounded-md border-sm border-subtle bg-layer-2 px-3 py-2 text-start text-caption-md-medium [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:border-strong data-active:border-transparent data-active:bg-accent-subtle",
     },
     stretch: { auto: "", full: "flex-1" },
   },

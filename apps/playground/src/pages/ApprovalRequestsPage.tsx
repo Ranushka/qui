@@ -117,7 +117,7 @@ export function FilterMenu({ name, value, options, onChange }: { name: string; v
   return (
     <QUI.Menu>
       <QUI.MenuTrigger
-        render={<QUI.Pill variant={active ? "soft" : "outline"} label={active ? `${name}: ${chosen?.label}` : name} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} />}
+        render={<QUI.FilterChip label={name} value={active ? chosen?.label : undefined} onRemove={() => onChange(options[0]!.value)} />}
       />
       <QUI.MenuContent align="start">
         {options.map((option) => (
