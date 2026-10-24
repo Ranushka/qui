@@ -132,7 +132,7 @@ export function FilterMenu({ name, value, options, onChange }: { name: string; v
 
 function PageHeader({ inbox, onInbox }: { inbox: string; onInbox: (value: string) => void }) {
   return (
-    <QUI.Box as="header" border="subtle" borderEdge="bottom" paddingX="4" paddingTop="3">
+    <QUI.Box as="header" paddingX="4" paddingTop="3">
       <QUI.Stack gap="2">
         <QUI.Inline justify="between" gap="4" wrap={false}>
           <QUI.Inline gap="2" wrap={false}>
