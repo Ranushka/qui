@@ -185,40 +185,38 @@ function PolicyDrawer({
                     <QUI.Banner variant="warning">This rule would catch {Math.round((caught.length / transactions.length) * 100)}% of all payments — approvers may get swamped.</QUI.Banner>
                   ) : null}
                   {caught.length > 0 ? (
-                    <QUI.Box border="subtle" radius="lg" overflow="hidden">
-                      <QUI.Table aria-label="Payments this rule would have caught">
-                        <QUI.TableHeader>
-                          <QUI.TableRow>
-                            <QUI.TableHead>Merchant</QUI.TableHead>
-                            <QUI.TableHead>Cardholder</QUI.TableHead>
-                            <QUI.TableHead>Category</QUI.TableHead>
-                            <QUI.TableHead align="end">Amount</QUI.TableHead>
-                            <QUI.TableHead>Date</QUI.TableHead>
+                    <QUI.Table aria-label="Payments this rule would have caught">
+                      <QUI.TableHeader>
+                        <QUI.TableRow>
+                          <QUI.TableHead>Merchant</QUI.TableHead>
+                          <QUI.TableHead>Cardholder</QUI.TableHead>
+                          <QUI.TableHead>Category</QUI.TableHead>
+                          <QUI.TableHead align="end">Amount</QUI.TableHead>
+                          <QUI.TableHead>Date</QUI.TableHead>
+                        </QUI.TableRow>
+                      </QUI.TableHeader>
+                      <QUI.TableBody>
+                        {caught.slice(0, 6).map((t) => (
+                          <QUI.TableRow key={t.id}>
+                            <QUI.TableCell>
+                              <QUI.TextCell primary={t.merchant} secondary={t.department} />
+                            </QUI.TableCell>
+                            <QUI.TableCell>
+                              <QUI.UserCell name={t.cardholder.name} />
+                            </QUI.TableCell>
+                            <QUI.TableCell>
+                              <QUI.TagCell label={t.category} color={categoryColor[t.category as keyof typeof categoryColor]} />
+                            </QUI.TableCell>
+                            <QUI.TableCell align="end">
+                              <QUI.MoneyCell amount={t.amount} currency="AED" display="code" locale="en-US" />
+                            </QUI.TableCell>
+                            <QUI.TableCell>
+                              <QUI.DateCell value={t.date} format="relative" now={today} locale="en-US" />
+                            </QUI.TableCell>
                           </QUI.TableRow>
-                        </QUI.TableHeader>
-                        <QUI.TableBody>
-                          {caught.slice(0, 6).map((t) => (
-                            <QUI.TableRow key={t.id}>
-                              <QUI.TableCell>
-                                <QUI.TextCell primary={t.merchant} secondary={t.department} />
-                              </QUI.TableCell>
-                              <QUI.TableCell>
-                                <QUI.UserCell name={t.cardholder.name} />
-                              </QUI.TableCell>
-                              <QUI.TableCell>
-                                <QUI.TagCell label={t.category} color={categoryColor[t.category as keyof typeof categoryColor]} />
-                              </QUI.TableCell>
-                              <QUI.TableCell align="end">
-                                <QUI.MoneyCell amount={t.amount} currency="AED" display="code" locale="en-US" />
-                              </QUI.TableCell>
-                              <QUI.TableCell>
-                                <QUI.DateCell value={t.date} format="relative" now={today} locale="en-US" />
-                              </QUI.TableCell>
-                            </QUI.TableRow>
-                          ))}
-                        </QUI.TableBody>
-                      </QUI.Table>
-                    </QUI.Box>
+                        ))}
+                      </QUI.TableBody>
+                    </QUI.Table>
                   ) : null}
                   {caught.length > 6 ? (
                     <QUI.Text size="xs" color="tertiary">

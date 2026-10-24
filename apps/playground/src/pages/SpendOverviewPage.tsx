@@ -166,25 +166,23 @@ export function SpendOverviewPage() {
           </QUI.Grid>
 
           <QUI.Grid columns={3} collapseBelow="lg" gap="4">
-            <QUI.Box>
-              <Panel
-                title="Spend vs budget pace"
-                subtitle={`Cumulative, AED thousands · on track for ${compact.format(projected)} against ${compact.format(totalBudget)}`}
-                action={<QUI.Badge size="xs" variant={projected > totalBudget ? "danger" : "success"} label={projected > totalBudget ? "Over pace" : "On pace"} />}
-              >
-                <QUI.LineChart
-                  aria-label="Cumulative October spend against an even budget pace, AED thousands"
-                  height={240}
-                  categoryKey="day"
-                  series={[
-                    { key: "Spend", label: "Spend" },
-                    { key: "Budget", label: "Budget pace" },
-                  ]}
-                  data={paceData}
-                  valueFormatter={(v) => `${v}K`}
-                />
-              </Panel>
-            </QUI.Box>
+            <Panel
+              title="Spend vs budget pace"
+              subtitle={`Cumulative, AED thousands · on track for ${compact.format(projected)} against ${compact.format(totalBudget)}`}
+              action={<QUI.Badge size="xs" variant={projected > totalBudget ? "danger" : "success"} label={projected > totalBudget ? "Over pace" : "On pace"} />}
+            >
+              <QUI.LineChart
+                aria-label="Cumulative October spend against an even budget pace, AED thousands"
+                height={240}
+                categoryKey="day"
+                series={[
+                  { key: "Spend", label: "Spend" },
+                  { key: "Budget", label: "Budget pace" },
+                ]}
+                data={paceData}
+                valueFormatter={(v) => `${v}K`}
+              />
+            </Panel>
             <Panel title="By category" subtitle="October, AED">
               <QUI.DonutChart
                 aria-label="October spend by category"

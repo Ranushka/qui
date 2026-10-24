@@ -149,42 +149,40 @@ function TravelChart() {
 
 function SpendTable() {
   return (
-    <QUI.Box border="subtle" radius="md" overflow="hidden">
-      <QUI.Table aria-label="Spend by category, Q2 vs Q3" density="compact" stickyHeader={false}>
-        <QUI.TableHeader>
-          <QUI.TableRow>
-            <QUI.TableHead>Category</QUI.TableHead>
-            <QUI.TableHead align="end">Q2</QUI.TableHead>
-            <QUI.TableHead align="end">Q3</QUI.TableHead>
-            <QUI.TableHead align="end">Change</QUI.TableHead>
-            <QUI.TableHead align="end">Cards</QUI.TableHead>
-            <QUI.TableHead>Budget owner</QUI.TableHead>
+    <QUI.Table aria-label="Spend by category, Q2 vs Q3" density="compact" stickyHeader={false}>
+      <QUI.TableHeader>
+        <QUI.TableRow>
+          <QUI.TableHead>Category</QUI.TableHead>
+          <QUI.TableHead align="end">Q2</QUI.TableHead>
+          <QUI.TableHead align="end">Q3</QUI.TableHead>
+          <QUI.TableHead align="end">Change</QUI.TableHead>
+          <QUI.TableHead align="end">Cards</QUI.TableHead>
+          <QUI.TableHead>Budget owner</QUI.TableHead>
+        </QUI.TableRow>
+      </QUI.TableHeader>
+      <QUI.TableBody>
+        {spendRows.map((row) => (
+          <QUI.TableRow key={row.category}>
+            <QUI.TableCell>{row.category}</QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.NumberCell value={row.q2} format="integer" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.NumberCell value={row.q3} format="integer" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.ChangeCell value={Math.round(((row.q3 - row.q2) / row.q2) * 1000) / 10} good="down" />
+            </QUI.TableCell>
+            <QUI.TableCell align="end">
+              <QUI.NumberCell value={row.cards} format="integer" />
+            </QUI.TableCell>
+            <QUI.TableCell>
+              <QUI.UserCell name={row.owner} />
+            </QUI.TableCell>
           </QUI.TableRow>
-        </QUI.TableHeader>
-        <QUI.TableBody>
-          {spendRows.map((row) => (
-            <QUI.TableRow key={row.category}>
-              <QUI.TableCell>{row.category}</QUI.TableCell>
-              <QUI.TableCell align="end">
-                <QUI.NumberCell value={row.q2} format="integer" />
-              </QUI.TableCell>
-              <QUI.TableCell align="end">
-                <QUI.NumberCell value={row.q3} format="integer" />
-              </QUI.TableCell>
-              <QUI.TableCell align="end">
-                <QUI.ChangeCell value={Math.round(((row.q3 - row.q2) / row.q2) * 1000) / 10} good="down" />
-              </QUI.TableCell>
-              <QUI.TableCell align="end">
-                <QUI.NumberCell value={row.cards} format="integer" />
-              </QUI.TableCell>
-              <QUI.TableCell>
-                <QUI.UserCell name={row.owner} />
-              </QUI.TableCell>
-            </QUI.TableRow>
-          ))}
-        </QUI.TableBody>
-      </QUI.Table>
-    </QUI.Box>
+        ))}
+      </QUI.TableBody>
+    </QUI.Table>
   );
 }
 
