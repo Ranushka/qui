@@ -146,7 +146,7 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
-          <Section title="Box" align="block" props={{"background":["canvas","surface-1","surface-2","layer-1","layer-2","layer-3"],"border":["subtle","strong"],"borderEdge":["all","top","bottom","start","end"],"dashed":"boolean","radius":["sm","md","lg","xl","full"],"shadow":["raised-100","raised-200","raised-300","overlay-100","overlay-200"],"overflow":["hidden","auto"],"position":["relative"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
+          <Section title="Box" align="block" props={{"background":["canvas","surface-1","surface-2","layer-1","layer-2","layer-3","glass"],"border":["subtle","strong"],"borderEdge":["all","top","bottom","start","end"],"dashed":"boolean","radius":["sm","md","lg","xl","full"],"shadow":["raised-100","raised-200","raised-300","overlay-100","overlay-200"],"overflow":["hidden","auto"],"position":["relative"],"padding / paddingX / paddingY":["0","0.5","1","1.5","2","3","4","5","6","8","10","12","16"],"width":["full","auto","3xs","2xs","xs","sm","md","lg","xl","2xl"],"maxWidth":["3xs","2xs","xs","sm","md","lg","xl","2xl"],"grow":"boolean","shrink":"boolean","hideBelow / hideAbove":["sm","md","lg"],"as":["div","section","article","header","footer","main","nav","aside","ul","ol","li","form"]}}>
 <QUI.Grid columns={3} collapseBelow="md" gap="4" padding="4" width="full">
   <QUI.Box background="layer-1" border="subtle" radius="lg" padding="4">
     <QUI.Text>Card: layer-1, subtle border, lg radius</QUI.Text>
@@ -169,7 +169,7 @@ export function ComponentsPage() {
   </QUI.Box>
 </QUI.Grid>
           </Section>
-          <Section title="Button" align="block" props={{"variant":["primary","secondary","tertiary","ghost","danger","danger-outline"],"size":["xs","sm","md","lg"],"stretch":["auto","full"],"iconPosition":["start","end"],"loading":"boolean","disabled":"boolean"}}>
+          <Section title="Button" align="block" props={{"variant":["primary","secondary","tertiary","ghost","danger","danger-outline","glass"],"size":["xs","sm","md","lg","xl","2xl"],"stretch":["auto","full"],"iconPosition":["start","end"],"loading":"boolean","disabled":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <div className="flex flex-wrap items-center gap-3">
     <QUI.Button variant="primary" label="Primary" />
@@ -180,10 +180,17 @@ export function ComponentsPage() {
     <QUI.Button variant="danger-outline" label="Danger outline" />
   </div>
   <div className="flex flex-wrap items-center gap-3">
+    <QUI.Button variant="glass" size="2xl" label="Get started" endIcon={<QUI.Icon icon={Icons.ChevronRight} />} />
+    <QUI.Button variant="glass" size="lg" icon={<QUI.Icon icon={Icons.Sparkles} />} label="Glass" />
+    <QUI.Button variant="glass" label="Disabled" disabled />
+  </div>
+  <div className="flex flex-wrap items-center gap-3">
     <QUI.Button size="xs" label="xs" />
     <QUI.Button size="sm" label="sm" />
     <QUI.Button size="md" label="md" />
     <QUI.Button size="lg" label="lg" />
+    <QUI.Button size="xl" label="xl" />
+    <QUI.Button size="2xl" label="2xl" />
   </div>
   <div className="flex flex-wrap items-center gap-3">
     <QUI.Button label="Loading" loading />
@@ -268,7 +275,7 @@ export function ComponentsPage() {
   <QUI.Icon icon={Icons.Settings} tint="placeholder" />
 </div>
           </Section>
-          <Section title="IconButton" align="block" props={{"variant":["primary","secondary","tertiary","ghost","danger","danger-outline"],"size":["xs","sm","md","lg"],"showTooltip":"boolean","loading":"boolean","disabled":"boolean"}}>
+          <Section title="IconButton" align="block" props={{"variant":["primary","secondary","tertiary","ghost","danger","danger-outline","glass"],"size":["xs","sm","md","lg","xl","2xl"],"showTooltip":"boolean","loading":"boolean","disabled":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
   <div className="flex flex-wrap items-center gap-3">
     <QUI.IconButton variant="primary" aria-label="Add" icon={<QUI.Icon icon={Icons.Plus} />} />
@@ -1251,7 +1258,7 @@ export function ComponentsPage() {
   <QUI.SwitchField label="Single sign-on" disabled hint="Available on the Business plan." />
 </div>
           </Section>
-          <Section title="Tabs" align="block" props={{"variant":["contained","underline","card"],"stretch":["auto","full"],"disabled":"boolean"}}>
+          <Section title="Tabs" align="block" props={{"variant":["contained","underline","card","glass"],"stretch":["auto","full"],"disabled":"boolean"}}>
 <div className="flex w-full flex-col gap-8 p-4">
   <QUI.Tabs defaultValue="board">
     <QUI.TabsList>
@@ -1278,6 +1285,14 @@ export function ComponentsPage() {
       <QUI.Tab value="all" label="All requests" count="13,924" />
       <QUI.Tab value="cards" label="Card and fund requests" count="0" />
       <QUI.Tab value="invoices" label="Invoices and reimbursements" count="12" />
+    </QUI.TabsList>
+  </QUI.Tabs>
+  <QUI.Tabs variant="glass" defaultValue="week">
+    <QUI.TabsList aria-label="Range">
+      <QUI.Tab value="day" label="Day" />
+      <QUI.Tab value="week" label="Week" />
+      <QUI.Tab value="month" label="Month" />
+      <QUI.Tab value="year" label="Year" />
     </QUI.TabsList>
   </QUI.Tabs>
 </div>

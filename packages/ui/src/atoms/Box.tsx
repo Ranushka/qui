@@ -10,6 +10,8 @@ const backgroundClass = {
   "layer-1": "bg-layer-1",
   "layer-2": "bg-layer-2",
   "layer-3": "bg-layer-3",
+  // The flat glass material (styles.css): translucent and blurred, lit at its corners. Brings its own border.
+  glass: "glass glass-flat",
 } as const;
 
 const borderColorClass = { subtle: "border-subtle", strong: "border-strong" } as const;
@@ -35,7 +37,7 @@ const shadowClass = {
 const overflowClass = { hidden: "overflow-hidden", auto: "overflow-auto" } as const;
 
 export type BoxProps = LayoutProps & {
-  /** Surface color token. Leave unset for a transparent box. */
+  /** Surface color token, or `glass` for the frosted material. Leave unset for a transparent box. */
   background?: keyof typeof backgroundClass;
   /** Border color token. Unset means no border. */
   border?: keyof typeof borderColorClass;
@@ -106,7 +108,7 @@ DOC__ */
 
 /* __PROPS
 {
-  "background": ["canvas", "surface-1", "surface-2", "layer-1", "layer-2", "layer-3"],
+  "background": ["canvas", "surface-1", "surface-2", "layer-1", "layer-2", "layer-3", "glass"],
   "border": ["subtle", "strong"],
   "borderEdge": ["all", "top", "bottom", "start", "end"],
   "dashed": "boolean",
