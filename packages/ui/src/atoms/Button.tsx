@@ -27,7 +27,7 @@ const buttonGeometryVariants = cva("whitespace-nowrap", {
 
 /** On glass the end icon sits in a solid bubble that swells on hover, e.g. the arrow of a "Get started". */
 const glassEndIconClass =
-  "-me-[calc(var(--node-size)*0.5)] inline-flex size-[calc(var(--node-size)*1.75)] shrink-0 items-center justify-center rounded-(--control-radius-sm) bg-inverse text-inverse shadow-raised-200 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 group-disabled:bg-layer-disabled group-disabled:text-on-color-disabled [--node-size:calc(var(--control-glyph-md)*0.9)]";
+  "-me-[calc(var(--node-size)*0.5)] inline-flex size-[calc(var(--node-size)*1.75)] shrink-0 items-center justify-center rounded-(--control-radius-sm) bg-inverse text-inverse transition-transform duration-200 group-hover:scale-110 group-active:scale-95 group-disabled:bg-layer-disabled group-disabled:text-on-color-disabled [--node-size:calc(var(--control-glyph-md)*0.9)]";
 
 export interface ButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">>, VariantProps<typeof controlChromeVariants>, VariantProps<typeof buttonGeometryVariants> {
   /** Visible button label. */
