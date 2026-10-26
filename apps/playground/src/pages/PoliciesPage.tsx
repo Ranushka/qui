@@ -2,7 +2,6 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 import { aed } from "../examples/acme/claims";
 import { categoryColor, departments, merchants, people, sum, today, transactions, type Transaction } from "../examples/acme/spend-data";
 
@@ -260,7 +259,7 @@ export function PoliciesPage() {
   return (
     <AcmeShell
       current="Policies"
-      navigation={<AdminNavigation open="Spend" />}
+     
       header={
         <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3" wrap={false}>
           <QUI.Inline gap="2" wrap={false}>

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { PlaceholderPage } from "../examples/acme/placeholder";
-import { workSections, workSlug } from "../examples/acme/shell";
+import { workEntries, workSlug } from "../examples/acme/shell";
 
 /** The Work entry's slug: what follows `#/examples/work/`. */
 function useSlug() {
@@ -17,6 +17,6 @@ function useSlug() {
 /** The Work sidebar entries without a sample of their own: an empty screen for each, e.g. `#/examples/work/drafts`. */
 export function WorkPage() {
   const slug = useSlug();
-  const entry = workSections.flatMap((s) => s.items).find((i) => workSlug(i.label) === slug) ?? workSections[0]!.items[0]!;
+  const entry = workEntries.find((i) => workSlug(i.label) === slug) ?? workEntries[0]!;
   return <PlaceholderPage key={entry.label} icon={entry.icon} label={entry.label} />;
 }

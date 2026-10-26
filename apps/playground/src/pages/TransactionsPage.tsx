@@ -2,7 +2,6 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 import { categoryColor, departments, merchants, people, syncColor, today, transactions as allTransactions, type Transaction } from "../examples/acme/spend-data";
 import { FilterMenu } from "./ApprovalRequestsPage";
 
@@ -232,7 +231,7 @@ export function TransactionsPage() {
   };
 
   return (
-    <AcmeShell current="Transactions" header={<PageHeader />} navigation={<AdminNavigation open="Spend" />}>
+    <AcmeShell current="Transactions" header={<PageHeader />}>
       <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
         <QUI.Tabs
           variant="card"

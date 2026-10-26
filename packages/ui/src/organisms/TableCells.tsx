@@ -4,10 +4,10 @@ import { Avatar } from "../atoms/Avatar";
 import { AvatarGroup } from "../atoms/AvatarGroup";
 import { LinearProgress } from "../atoms/LinearProgress";
 import { Tooltip } from "../atoms/Tooltip";
-import { ArrowDownRight, ArrowUpRight, Check, CircleDashed, CircleDot, CircleX, Minus } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Check, CircleDashed, CircleDot, CircleX, Minus, Triangle } from "lucide-react";
 
 /**
- * Typed cell content for `TableCell`: people, dates, money, numbers, changes, trends, statuses,
+ * Typed cell content for `TableCell`: people, dates, money, numbers, changes, metric tiles, trends, statuses,
  * progress, tags and masked numbers. Each formats its value with `Intl` (pass `locale` to pin it), renders an em dash for a
  * missing value, and sets its own type scale so a column reads the same everywhere. Put numeric
  * cells in a `TableCell align="end"` so their digits line up.
@@ -273,6 +273,19 @@ function duration(minutes: number) {
   return minutes < 0 ? `−${text}` : text;
 }
 
+/** A number in one of `NumberCell`'s formats. */
+function formatNumber(value: number, format: NumberCellFormat, decimals: number | undefined, locale: Locale) {
+  return format === "duration"
+    ? duration(value)
+    : format === "percent"
+      ? new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: decimals ?? 0, minimumFractionDigits: decimals ?? 0 }).format(value / 100)
+      : format === "compact"
+        ? new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(value)
+        : format === "integer"
+          ? new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)
+          : new Intl.NumberFormat(locale, { maximumFractionDigits: decimals ?? 2, minimumFractionDigits: decimals ?? 0 }).format(value);
+}
+
 export interface NumberCellProps {
   value: number | null | undefined;
   /**
@@ -290,16 +303,7 @@ export interface NumberCellProps {
 /** A number in the column's format, with tabular digits; put it in a `TableCell align="end"`. */
 export function NumberCell({ value, format = "decimal", decimals, unit, locale }: NumberCellProps) {
   if (value == null || Number.isNaN(value)) return <EmptyCell />;
-  const text =
-    format === "duration"
-      ? duration(value)
-      : format === "percent"
-        ? new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: decimals ?? 0, minimumFractionDigits: decimals ?? 0 }).format(value / 100)
-        : format === "compact"
-          ? new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(value)
-          : format === "integer"
-            ? new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)
-            : new Intl.NumberFormat(locale, { maximumFractionDigits: decimals ?? 2, minimumFractionDigits: decimals ?? 0 }).format(value);
+  const text = formatNumber(value, format, decimals, locale);
   return (
     <span className="whitespace-nowrap tabular-nums text-primary">
       {text}
@@ -368,6 +372,64 @@ export function ChangeCell({ value, format = "percent", currency = "USD", good =
       <Arrow aria-hidden className="size-3.5 shrink-0" />
       <span className="sr-only">{direction} </span>
       {text}
+    </span>
+  );
+}
+
+const metricPalette = ["grey", "indigo", "purple", "pink", "crimson", "orange", "yellow", "emerald"] as const;
+
+export interface MetricCellProps {
+  /** The figure on the tile's top line. */
+  value: number | null | undefined;
+  /** How `value` is written, as in `NumberCell`. @default "compact" */
+  format?: NumberCellFormat;
+  /** Fraction digits for `value` (`decimal` and `percent`). */
+  decimals?: number;
+  /** The change under the figure, as a percentage (12.5 = 12.5%). Leave unset for the figure alone. */
+  change?: number | null;
+  /** Fraction digits of the change. @default 0 */
+  changeDecimals?: number;
+  /** Which direction of change is green. @default "up" */
+  good?: GoodDirection;
+  /**
+   * The tile's colour: a palette name (as on `TagCell`) or any CSS colour, e.g. "#0e7490" or "var(--my-brand)".
+   * @default "indigo"
+   */
+  color?: TagColor | (string & {});
+  /**
+   * How strongly the tile is tinted, 0–1 — e.g. each value's share of the column's largest, for a heatmap. Text
+   * stays readable at every step. @default 0.25
+   */
+  intensity?: number;
+  locale?: Locale;
+}
+
+/**
+ * A figure with its change underneath on a tinted tile: "2.5M / ▲ 135%". The tile takes a palette name or any
+ * colour, and `intensity` deepens it, so a column of them reads as a heatmap. Put it in a `TableCell align="end"`.
+ */
+export function MetricCell({ value, format = "compact", decimals, change, changeDecimals = 0, good = "up", color = "indigo", intensity = 0.25, locale }: MetricCellProps) {
+  if (value == null || Number.isNaN(value)) return <EmptyCell />;
+  const base = (metricPalette as readonly string[]).includes(color) ? `var(--extended-color-${color}-500)` : color;
+  const strength = Math.round(6 + Math.min(1, Math.max(0, intensity)) * 34);
+  const hasChange = change != null && !Number.isNaN(change);
+  return (
+    <span
+      className="flex w-full min-w-20 flex-col items-end gap-1 rounded-md bg-(--metric-tint) px-2.5 py-1.5 tabular-nums"
+      style={{ "--metric-tint": `color-mix(in oklab, ${base} ${strength}%, transparent)` } as React.CSSProperties}
+    >
+      <span className="whitespace-nowrap text-body-sm-regular leading-none text-primary">{formatNumber(value, format, decimals, locale)}</span>
+      {hasChange ? (
+        <span className={cn("inline-flex items-center gap-1 whitespace-nowrap text-caption-md-medium leading-none", changeTone(change, good))}>
+          {change === 0 ? (
+            <Minus aria-hidden className="size-2.5 shrink-0" />
+          ) : (
+            <Triangle aria-hidden className={cn("size-2.5 shrink-0 fill-current", change < 0 && "rotate-180")} />
+          )}
+          <span className="sr-only">{change > 0 ? "Up" : change < 0 ? "Down" : "No change"} </span>
+          {new Intl.NumberFormat(locale, { style: "percent", minimumFractionDigits: changeDecimals, maximumFractionDigits: changeDecimals }).format(Math.abs(change) / 100)}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -629,6 +691,36 @@ export function MaskedCell({ last, groups = 3 }: MaskedCellProps) {
       </QUI.TableRow>
     </QUI.TableBody>
   </QUI.Table>
+  <QUI.Table aria-label="Spend by region" stickyHeader={false}>
+    <QUI.TableHeader>
+      <QUI.TableRow>
+        <QUI.TableHead>Region</QUI.TableHead>
+        <QUI.TableHead align="end">Q1</QUI.TableHead>
+        <QUI.TableHead align="end">Q2</QUI.TableHead>
+        <QUI.TableHead align="end">Q3</QUI.TableHead>
+      </QUI.TableRow>
+    </QUI.TableHeader>
+    <QUI.TableBody>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="UAE" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={2500000} change={42993} color="#0e7490" intensity={0.3} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={5900000} change={135} color="#0e7490" intensity={1} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={2200000} change={-62} color="#0e7490" intensity={0.25} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Saudi Arabia" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={1100000} change={12} color="emerald" intensity={0.2} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={1800000} change={64} color="emerald" intensity={0.5} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={3400000} change={89} color="emerald" intensity={0.8} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Card fees" secondary="Costs" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={48200} change={8} good="down" color="orange" intensity={0.6} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={39100} change={-19} good="down" color="orange" intensity={0.35} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={36400} change={0} good="down" color="orange" /></QUI.TableCell>
+      </QUI.TableRow>
+    </QUI.TableBody>
+  </QUI.Table>
 </div>
 DOC__ */
 
@@ -644,6 +736,9 @@ DOC__ */
   "ChangeCell.format": ["percent", "number", "money"],
   "ChangeCell.good": ["up", "down"],
   "TrendCell.good": ["up", "down"],
+  "MetricCell.format": ["decimal", "integer", "percent", "compact", "duration"],
+  "MetricCell.good": ["up", "down"],
+  "MetricCell.color": ["grey", "indigo", "purple", "pink", "crimson", "orange", "yellow", "emerald"],
   "TrendCell.showChange": "boolean",
   "NumberCell.format": ["decimal", "integer", "percent", "compact", "duration"],
   "ProgressCell.variant": ["auto", "brand", "success", "warning", "danger"],

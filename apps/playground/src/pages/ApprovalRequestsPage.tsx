@@ -2,7 +2,6 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 
 /**
  * An approvals inbox — "Approval requests" — in the Acme shell with the admin navigation: request-type tiles
@@ -358,7 +357,7 @@ export function ApprovalRequestsPage() {
           }}
         />
       }
-      navigation={<AdminNavigation open="Accounts" />}
+     
     >
       <QUI.Box paddingX="4" paddingY="3">
         <QUI.Tabs

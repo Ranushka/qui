@@ -2,7 +2,6 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 
 /**
  * An admin records table — "Account balance logs" — in the Acme shell with an admin navigation tree:
@@ -489,7 +488,7 @@ export function BalanceLogsPage() {
   }
 
   return (
-    <AcmeShell current={title} header={<PageHeader />} navigation={<AdminNavigation open="Accounts" />}>
+    <AcmeShell current={title} header={<PageHeader />}>
       <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
         {toolbar}
       </QUI.Box>

@@ -3,7 +3,6 @@ import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import type { IconComponent } from "../examples/acme/data";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 import { budgets as departmentBudgets, people, sum, transactions } from "../examples/acme/spend-data";
 
 /**
@@ -297,7 +296,7 @@ export function BudgetsPage() {
   return (
     <AcmeShell
       current="Budgets"
-      navigation={<AdminNavigation open="Spend" />}
+     
       header={
         <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3" wrap={false}>
           <QUI.Inline gap="2" wrap={false}>

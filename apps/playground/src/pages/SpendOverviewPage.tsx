@@ -3,7 +3,6 @@ import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import type { IconComponent } from "../examples/acme/data";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 import { budgets, merchants, sum, transactions } from "../examples/acme/spend-data";
 
 /**
@@ -135,7 +134,7 @@ export function SpendOverviewPage() {
   const budgetUsed = Math.round((spent / totalBudget) * 100);
   const projected = Math.round((spent / dayOfMonth) * daysInMonth);
   return (
-    <AcmeShell current="Spend overview" header={<PageHeader period={period} onPeriod={setPeriod} />} navigation={<AdminNavigation open="Spend" />} panel={false}>
+    <AcmeShell current="Spend overview" header={<PageHeader period={period} onPeriod={setPeriod} />} panel={false}>
       <QUI.Box grow overflow="auto" paddingX="4" paddingBottom="4">
         <QUI.Stack gap="4">
           <QUI.Grid columns={4} collapseBelow="lg" gap="4">

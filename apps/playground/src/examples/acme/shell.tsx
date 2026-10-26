@@ -2,6 +2,7 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import type { IconComponent } from "./data";
+import { adminHref, adminMainItems, adminSections } from "./admin-nav";
 
 /**
  * The "Acme Inc." app chrome shared by the example screens: top bar with the app switcher, sidebar and project
@@ -102,16 +103,18 @@ function TopBar() {
   );
 }
 
-/** Sidebar entries that open another example screen. */
-/** The Work sidebar: every entry opens a screen — a sample where there is one, an empty one otherwise. */
-export const workSections: { label: string | null; items: { icon: IconComponent; label: string }[] }[] = [
-  {
-    label: null,
-    items: [
-      { icon: Icons.House, label: "Home" },
-      { icon: Icons.UserRound, label: "Your work" },
-    ],
-  },
+type NavEntry = { icon: IconComponent; label: string; href?: string };
+
+/** The entries above the sections. */
+const mainEntries: NavEntry[] = [
+  { icon: Icons.House, label: "Home" },
+  { icon: Icons.UserRound, label: "Your work" },
+  { icon: Icons.Bot, label: "AI chat", href: "#/examples/ai-chat" },
+  ...adminMainItems.map((i) => ({ icon: i.icon, label: i.label, href: adminHref(i) })),
+];
+
+/** The Work sections: every entry opens a screen — a sample where there is one, an empty one otherwise. */
+export const workSections: { label: string; items: NavEntry[] }[] = [
   {
     label: "Workspace",
     items: [
@@ -136,6 +139,9 @@ export const workSections: { label: string | null; items: { icon: IconComponent;
   },
 ];
 
+/** Every Work entry, for looking one up by its URL slug. */
+export const workEntries: NavEntry[] = [...mainEntries.filter((e) => !e.href), ...workSections.flatMap((s) => s.items)];
+
 /** A Work entry's URL slug, e.g. "Your work" → "your-work". */
 export const workSlug = (label: string) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
@@ -159,7 +165,7 @@ export function NavLink({ icon, label, href = navHrefs[label] ?? `#/examples/wor
   );
 }
 
-/** The sidebar lists a screen shows instead of the Work navigation; set by the shell's `navigation` prop. */
+/** Extra sidebar lists for one screen, e.g. AI chat's history; set by the shell's `navigation` prop. */
 const NavigationContext = React.createContext<React.ReactNode>(null);
 
 /** Sidebar navigation; shown docked from lg up and in the ☰ drawer below that, where `endAction` is its close button. */
@@ -168,31 +174,39 @@ function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
   const navigation = React.useContext(NavigationContext);
   return (
     <QUI.NavSidebar title={app.label} endAction={endAction}>
-      {navigation ?? <WorkNavigation />}
+      <AcmeNavigation extra={navigation} />
     </QUI.NavSidebar>
   );
 }
 
-function WorkNavigation() {
+/**
+ * The one sidebar every example shares: the main entries, the screen's own lists (`extra`), then the Work and admin
+ * sections. The section holding the current entry starts open; when none does, the Work sections do.
+ */
+function AcmeNavigation({ extra }: { extra?: React.ReactNode }) {
+  const current = React.useContext(CurrentNavContext);
+  const sections = [
+    ...workSections,
+    ...adminSections.map((section) => ({ label: section.label, items: section.items.map((i) => ({ icon: i.icon, label: i.label, href: adminHref(i) })) })),
+  ];
+  const holder = sections.find((section) => section.items.some((i) => i.label === current));
   return (
     <>
-      {workSections.map((section) =>
-        section.label ? (
-          <QUI.ListSection key={section.label} label={section.label} defaultOpen>
-            <QUI.List aria-label={section.label}>
-              {section.items.map((i) => (
-                <NavLink key={i.label} icon={i.icon} label={i.label} />
-              ))}
-            </QUI.List>
-          </QUI.ListSection>
-        ) : (
-          <QUI.List key="main" aria-label="Main">
+      <QUI.List aria-label="Main">
+        {mainEntries.map((i) => (
+          <NavLink key={i.label} icon={i.icon} label={i.label} href={i.href} />
+        ))}
+      </QUI.List>
+      {extra}
+      {sections.map((section) => (
+        <QUI.ListSection key={section.label} label={section.label} defaultOpen={holder ? holder === section : workSections.includes(section as never)}>
+          <QUI.List aria-label={section.label}>
             {section.items.map((i) => (
-              <NavLink key={i.label} icon={i.icon} label={i.label} />
+              <NavLink key={i.label} icon={i.icon} label={i.label} href={i.href} />
             ))}
           </QUI.List>
-        )
-      )}
+        </QUI.ListSection>
+      ))}
     </>
   );
 }
@@ -221,7 +235,7 @@ export const ViewToolbar = QUI.ViewToolbar;
 /**
  * Top bar (with the app switcher), sidebar and a header around a screen's content, which fills the rest. `current`
  * is the sidebar entry to mark and names the content region; `header` defaults to the Core product project header;
- * `navigation` replaces the sidebar's Work lists.
+ * `navigation` adds lists of the screen's own to the shared sidebar.
  */
 export function AcmeShell({
   current = "Core product",
@@ -232,7 +246,7 @@ export function AcmeShell({
 }: {
   current?: string;
   header?: React.ReactNode;
-  /** Sidebar lists to show instead of the Work navigation, e.g. an admin tree of `ListSection`s. */
+  /** Lists of this screen's own, shown in the shared sidebar under its main entries, e.g. AI chat's history. */
   navigation?: React.ReactNode;
   /**
    * Frames the header and content in a white panel. Turn it off for screens of cards, e.g. dashboards, so the cards

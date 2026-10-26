@@ -2,7 +2,6 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 import { FilterMenu } from "./ApprovalRequestsPage";
 
 /**
@@ -356,7 +355,7 @@ function PageHeader() {
 export function UsdAccountSummaryPage() {
   const [tab, setTab] = React.useState("cards");
   return (
-    <AcmeShell current="USD account summary" header={<PageHeader />} navigation={<AdminNavigation open="Accounts" />}>
+    <AcmeShell current="USD account summary" header={<PageHeader />}>
       <QUI.Box paddingX="4" paddingBottom="4" shrink={false}>
         <BalanceCard />
       </QUI.Box>

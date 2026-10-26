@@ -2,7 +2,6 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { AcmeShell } from "../examples/acme/shell";
-import { AdminNavigation } from "../examples/acme/admin-nav";
 import { ClaimDrawer, NewClaimDialog, aed, claimStatusColor, formatDay } from "../examples/acme/claims";
 import { cards, claims as allClaims, people, transactions as allTransactions, type Transaction } from "../examples/acme/spend-data";
 
@@ -131,7 +130,7 @@ export function MySpendPage() {
   return (
     <AcmeShell
       current="My spend"
-      navigation={<AdminNavigation open="Spend" />}
+     
       header={
         <QUI.Inline justify="between" gap="3" paddingX="4" paddingY="3">
           <QUI.Stack gap="0.5">

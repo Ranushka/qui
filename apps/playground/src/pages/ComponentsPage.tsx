@@ -1639,7 +1639,7 @@ export function ComponentsPage() {
   </QUI.Table>
 </div>
           </Section>
-          <Section title="TableCells" align="block" props={{"DateCell.format":["short","medium","long","datetime","relative"],"DateCell.tone":["default","warning","danger"],"MoneyCell.display":["symbol","code","none"],"MoneyCell.minor":["inline","subdued","hidden"],"MoneyCell.signed":"boolean","MoneyCell.notation":["standard","compact"],"MoneyCell.negative":["minus","parentheses"],"ChangeCell.format":["percent","number","money"],"ChangeCell.good":["up","down"],"TrendCell.good":["up","down"],"TrendCell.showChange":"boolean","NumberCell.format":["decimal","integer","percent","compact","duration"],"ProgressCell.variant":["auto","brand","success","warning","danger"],"TagCell.color":["grey","indigo","purple","pink","crimson","orange","yellow","emerald"],"TextCell.tone":["default","link"]}}>
+          <Section title="TableCells" align="block" props={{"DateCell.format":["short","medium","long","datetime","relative"],"DateCell.tone":["default","warning","danger"],"MoneyCell.display":["symbol","code","none"],"MoneyCell.minor":["inline","subdued","hidden"],"MoneyCell.signed":"boolean","MoneyCell.notation":["standard","compact"],"MoneyCell.negative":["minus","parentheses"],"ChangeCell.format":["percent","number","money"],"ChangeCell.good":["up","down"],"TrendCell.good":["up","down"],"MetricCell.format":["decimal","integer","percent","compact","duration"],"MetricCell.good":["up","down"],"MetricCell.color":["grey","indigo","purple","pink","crimson","orange","yellow","emerald"],"TrendCell.showChange":"boolean","NumberCell.format":["decimal","integer","percent","compact","duration"],"ProgressCell.variant":["auto","brand","success","warning","danger"],"TagCell.color":["grey","indigo","purple","pink","crimson","orange","yellow","emerald"],"TextCell.tone":["default","link"]}}>
 <div className="flex w-full flex-col gap-4 p-4">
   <QUI.Table aria-label="Projects" stickyHeader={false}>
     <QUI.TableHeader>
@@ -1730,6 +1730,36 @@ export function ComponentsPage() {
         <QUI.TableCell align="end"><QUI.ChangeCell value={-12.5} good="down" /></QUI.TableCell>
         <QUI.TableCell><QUI.TrendCell values={[110, 104, 96]} good="down" label="Spend, last 3 months" /></QUI.TableCell>
         <QUI.TableCell><QUI.StatusIconsCell items={[{ label: "Approved", status: "done" }, { label: "Invoice", icon: Icons.ReceiptText, status: "done" }, { label: "Reviewed", icon: Icons.SquarePen, status: "done" }, { label: "Stamped", icon: Icons.Stamp, status: "done" }]} /></QUI.TableCell>
+      </QUI.TableRow>
+    </QUI.TableBody>
+  </QUI.Table>
+  <QUI.Table aria-label="Spend by region" stickyHeader={false}>
+    <QUI.TableHeader>
+      <QUI.TableRow>
+        <QUI.TableHead>Region</QUI.TableHead>
+        <QUI.TableHead align="end">Q1</QUI.TableHead>
+        <QUI.TableHead align="end">Q2</QUI.TableHead>
+        <QUI.TableHead align="end">Q3</QUI.TableHead>
+      </QUI.TableRow>
+    </QUI.TableHeader>
+    <QUI.TableBody>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="UAE" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={2500000} change={42993} color="#0e7490" intensity={0.3} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={5900000} change={135} color="#0e7490" intensity={1} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={2200000} change={-62} color="#0e7490" intensity={0.25} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Saudi Arabia" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={1100000} change={12} color="emerald" intensity={0.2} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={1800000} change={64} color="emerald" intensity={0.5} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={3400000} change={89} color="emerald" intensity={0.8} /></QUI.TableCell>
+      </QUI.TableRow>
+      <QUI.TableRow>
+        <QUI.TableCell><QUI.TextCell primary="Card fees" secondary="Costs" /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={48200} change={8} good="down" color="orange" intensity={0.6} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={39100} change={-19} good="down" color="orange" intensity={0.35} /></QUI.TableCell>
+        <QUI.TableCell align="end"><QUI.MetricCell value={36400} change={0} good="down" color="orange" /></QUI.TableCell>
       </QUI.TableRow>
     </QUI.TableBody>
   </QUI.Table>

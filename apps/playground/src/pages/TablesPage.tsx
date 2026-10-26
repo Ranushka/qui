@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
-import { AdminNavigation, adminItems } from "../examples/acme/admin-nav";
+import { adminItems } from "../examples/acme/admin-nav";
 import { PlaceholderPage } from "../examples/acme/placeholder";
 import { ApprovalRequestsPage } from "./ApprovalRequestsPage";
 import { BalanceLogsPage } from "./BalanceLogsPage";
@@ -43,5 +43,5 @@ export function TablesPage() {
   if (slug === "bills") return <BillsPage />;
   if (slug === "travel") return <TravelPage />;
   const entry = adminItems.find((e) => e.item.slug === slug);
-  return entry ? <PlaceholderPage key={slug} icon={entry.item.icon} label={entry.item.label} navigation={<AdminNavigation open={entry.section} />} /> : <BalanceLogsPage />;
+  return entry ? <PlaceholderPage key={slug} icon={entry.item.icon} label={entry.item.label} /> : <BalanceLogsPage />;
 }

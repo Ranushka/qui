@@ -1,7 +1,5 @@
-import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import type { IconComponent } from "./data";
-import { NavLink } from "./shell";
 
 export type AdminItem = { label: string; icon: IconComponent; slug: string };
 export type AdminSection = { label: string; items: AdminItem[] };
@@ -12,8 +10,8 @@ const item = (label: string, icon: IconComponent = Icons.Folder): AdminItem => (
   slug: label.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
 });
 
-/** The top-level entries above the sections. */
-const mainItems = [item("Home", Icons.House), item("Developer portal", Icons.CodeXml)];
+/** Admin entries that sit with the sidebar's main entries, above the sections. */
+export const adminMainItems = [item("Developer portal", Icons.CodeXml)];
 
 /** Every section of the admin console's navigation tree. */
 export const adminSections: AdminSection[] = [
@@ -58,33 +56,11 @@ export const adminSections: AdminSection[] = [
 
 /** Every admin entry, for looking one up by its URL slug. */
 export const adminItems: { item: AdminItem; section: string | null }[] = [
-  ...mainItems.map((i) => ({ item: i, section: null })),
+  ...adminMainItems.map((i) => ({ item: i, section: null })),
   ...adminSections.flatMap((s) => s.items.map((i) => ({ item: i, section: s.label }))),
 ];
 
 /** Where an entry opens: balance logs and approval requests have their own screens, the rest a generic one. */
 export function adminHref(entry: AdminItem) {
   return entry.slug === "account-balance-logs" ? "#/examples/tables" : `#/examples/tables/${entry.slug}`;
-}
-
-/** The admin console's navigation tree shared by the table screens; `open` is the section the current screen is in. */
-export function AdminNavigation({ open }: { open: string | null }) {
-  return (
-    <>
-      <QUI.List aria-label="Main">
-        {mainItems.map((i) => (
-          <NavLink key={i.slug} icon={i.icon} label={i.label} href={adminHref(i)} />
-        ))}
-      </QUI.List>
-      {adminSections.map((section) => (
-        <QUI.ListSection key={section.label} label={section.label} defaultOpen={open === section.label}>
-          <QUI.List aria-label={section.label}>
-            {section.items.map((i) => (
-              <NavLink key={i.slug} icon={i.icon} label={i.label} href={adminHref(i)} />
-            ))}
-          </QUI.List>
-        </QUI.ListSection>
-      ))}
-    </>
-  );
 }
