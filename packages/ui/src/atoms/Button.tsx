@@ -14,8 +14,6 @@ const buttonGeometryVariants = cva("whitespace-nowrap", {
       sm: "h-(--control-height-sm) min-w-10 gap-(--control-gap-sm) px-(--control-padding-x-sm) rounded-(--control-radius-sm) text-body-xs-medium [--node-size:var(--control-glyph-sm)]",
       md: "h-(--control-height-md) min-w-12 gap-(--control-gap-md) px-(--control-padding-x-md) rounded-(--control-radius-md) text-body-xs-medium [--node-size:var(--control-glyph-md)]",
       lg: "h-(--control-height-lg) min-w-13 gap-(--control-gap-lg) px-(--control-padding-x-lg) rounded-(--control-radius-lg) text-body-sm-medium [--node-size:var(--control-glyph-lg)]",
-      xl: "h-(--control-height-xl) min-w-14 gap-(--control-gap-xl) px-(--control-padding-x-xl) rounded-(--control-radius-xl) text-body-sm-medium [--node-size:var(--control-glyph-xl)]",
-      "2xl": "h-(--control-height-2xl) min-w-16 gap-(--control-gap-2xl) px-(--control-padding-x-2xl) rounded-(--control-radius-2xl) text-body-md-medium [--node-size:var(--control-glyph-2xl)]",
     },
     stretch: {
       auto: "",
@@ -24,10 +22,6 @@ const buttonGeometryVariants = cva("whitespace-nowrap", {
   },
   defaultVariants: { size: "md", stretch: "auto" },
 });
-
-/** On glass the end icon sits in a solid bubble that swells on hover, e.g. the arrow of a "Get started". */
-const glassEndIconClass =
-  "-me-[calc(var(--node-size)*0.5)] inline-flex size-[calc(var(--node-size)*1.75)] shrink-0 items-center justify-center rounded-(--control-radius-sm) bg-inverse text-inverse transition-transform duration-200 group-hover:scale-110 group-active:scale-95 group-disabled:bg-layer-disabled group-disabled:text-on-color-disabled [--node-size:calc(var(--control-glyph-md)*0.9)]";
 
 export interface ButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseButton>, "children" | "render">>, VariantProps<typeof controlChromeVariants>, VariantProps<typeof buttonGeometryVariants> {
   /** Visible button label. */
@@ -69,7 +63,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {iconPosition === "start" ? iconSlot : null}
         <span className="truncate">{label}</span>
         {iconPosition === "end" ? iconSlot : null}
-        {variant === "glass" && endIcon != null ? <span className={glassEndIconClass}>{endIcon}</span> : endIcon}
+        {endIcon}
       </BaseButton>
     );
   }
@@ -87,17 +81,10 @@ Button.displayName = "Button";
     <QUI.Button variant="danger-outline" label="Danger outline" />
   </div>
   <div className="flex flex-wrap items-center gap-3">
-    <QUI.Button variant="glass" size="2xl" label="Get started" endIcon={<QUI.Icon icon={Icons.ChevronRight} />} />
-    <QUI.Button variant="glass" size="lg" icon={<QUI.Icon icon={Icons.Sparkles} />} label="Glass" />
-    <QUI.Button variant="glass" label="Disabled" disabled />
-  </div>
-  <div className="flex flex-wrap items-center gap-3">
     <QUI.Button size="xs" label="xs" />
     <QUI.Button size="sm" label="sm" />
     <QUI.Button size="md" label="md" />
     <QUI.Button size="lg" label="lg" />
-    <QUI.Button size="xl" label="xl" />
-    <QUI.Button size="2xl" label="2xl" />
   </div>
   <div className="flex flex-wrap items-center gap-3">
     <QUI.Button label="Loading" loading />
@@ -111,5 +98,5 @@ Button.displayName = "Button";
 DOC__ */
 
 /* __PROPS
-{ "variant": ["primary", "secondary", "tertiary", "ghost", "danger", "danger-outline", "glass"], "size": ["xs", "sm", "md", "lg", "xl", "2xl"], "stretch": ["auto", "full"], "iconPosition": ["start", "end"], "loading": "boolean", "disabled": "boolean" }
+{ "variant": ["primary", "secondary", "tertiary", "ghost", "danger", "danger-outline"], "size": ["xs", "sm", "md", "lg"], "stretch": ["auto", "full"], "iconPosition": ["start", "end"], "loading": "boolean", "disabled": "boolean" }
 PROPS__ */

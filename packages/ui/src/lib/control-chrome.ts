@@ -25,9 +25,6 @@ export const controlChromeVariants = cva(
           "bg-layer-3 text-secondary hover:bg-layer-3-hover active:bg-layer-3-active disabled:bg-transparent disabled:text-disabled aria-disabled:bg-transparent aria-disabled:text-disabled aria-busy:bg-transparent aria-busy:text-disabled",
         ghost:
           "bg-layer-transparent text-secondary hover:bg-layer-transparent-hover active:bg-layer-transparent-active disabled:bg-transparent disabled:text-disabled aria-disabled:bg-transparent aria-disabled:text-disabled aria-busy:bg-transparent aria-busy:text-disabled",
-        // The glass material (styles.css): lifts slightly on hover, presses in on click. Reads best over color or imagery.
-        glass:
-          "glass text-primary hover:-translate-y-px hover:bg-(--qui-glass-tint-hover) active:translate-y-0 active:scale-[0.97] disabled:text-disabled disabled:opacity-60 disabled:hover:translate-y-0 aria-disabled:text-disabled aria-disabled:opacity-60 aria-busy:text-disabled",
         danger:
           "bg-danger-primary text-on-color hover:bg-danger-primary-hover active:bg-danger-primary-active disabled:bg-layer-disabled disabled:text-on-color-disabled aria-disabled:bg-layer-disabled aria-disabled:text-on-color-disabled aria-busy:bg-layer-disabled aria-busy:text-on-color-disabled",
         "danger-outline":

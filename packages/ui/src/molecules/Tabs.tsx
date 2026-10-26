@@ -5,7 +5,7 @@ import { cn } from "../lib/cn";
 import { StableLabel } from "../lib/stable-label";
 import type { NoClass } from "../lib/no-class";
 
-type TabsVariant = "contained" | "underline" | "card" | "glass";
+type TabsVariant = "contained" | "underline" | "card";
 type TabsStretch = "auto" | "full";
 
 /** Shares the set's `variant`/`stretch` from `Tabs` down to `TabsList`/`Tab` without repeating them. */
@@ -19,8 +19,6 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
       // A full-width 1px baseline, drawn as an inset shadow so the active tab's accent bar paints over it.
       underline: "items-stretch gap-5 shadow-[inset_0_-1px_0_0_var(--border-color-subtle)]",
       card: "items-stretch gap-2 overflow-x-auto",
-      // A flat glass track; scrolls sideways when the tabs outgrow a narrow screen.
-      glass: "glass glass-flat scrollbar-hide items-center gap-1 overflow-x-auto rounded-md p-0.5",
     },
     stretch: {
       auto: "inline-flex",
@@ -47,9 +45,6 @@ const tabVariants = cva(tabBase, {
       underline:
         "relative inline-flex h-9 items-center justify-center gap-1.5 rounded-xs text-body-sm-medium focus-visible:ring-inset [--node-size:var(--control-glyph-md)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:transition-colors not-aria-disabled:not-data-active:hover:after:bg-layer-3-hover data-active:font-semibold data-active:after:bg-accent-primary",
       card: "flex min-w-36 max-w-56 shrink-0 flex-col items-start justify-between gap-1.5 rounded-md border-sm border-subtle bg-layer-2 px-3 py-2 text-start text-caption-md-medium [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:border-strong data-active:border-accent-strong data-active:bg-accent-subtle",
-      // The active tab becomes a glass pill on the glass track.
-      glass:
-        "inline-flex h-6 shrink-0 items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-body-xs-medium transition-[color,background-color,transform] duration-200 [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:bg-(--qui-glass-tint-hover) active:scale-95 data-active:glass data-active:font-semibold",
     },
     stretch: { auto: "", full: "flex-1" },
   },
@@ -61,7 +56,7 @@ const countChipClass =
   "inline-flex h-4 min-w-4 items-center justify-center rounded-xs bg-layer-3 px-1 text-caption-sm-medium tabular-nums text-tertiary group-data-active/tab:bg-layer-3-selected group-data-active/tab:text-secondary";
 
 export interface TabsProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseTabs.Root>, "className">> {
-  /** Pill-in-a-track chrome, a flat row with a sliding underline, tiles with counts, or a glass pill on a glass track. @default "contained" */
+  /** Pill-in-a-track chrome, or a flat row with a sliding underline. @default "contained" */
   variant?: TabsVariant;
   /** Whether the tab strip hugs its content or stretches to fill the row. @default "auto" */
   stretch?: TabsStretch;
@@ -163,17 +158,9 @@ TabsPanel.displayName = "TabsPanel";
       <QUI.Tab value="invoices" label="Invoices and reimbursements" count="12" />
     </QUI.TabsList>
   </QUI.Tabs>
-  <QUI.Tabs variant="glass" defaultValue="week">
-    <QUI.TabsList aria-label="Range">
-      <QUI.Tab value="day" label="Day" />
-      <QUI.Tab value="week" label="Week" />
-      <QUI.Tab value="month" label="Month" />
-      <QUI.Tab value="year" label="Year" />
-    </QUI.TabsList>
-  </QUI.Tabs>
 </div>
 DOC__ */
 
 /* __PROPS
-{ "variant": ["contained", "underline", "card", "glass"], "stretch": ["auto", "full"], "disabled": "boolean" }
+{ "variant": ["contained", "underline", "card"], "stretch": ["auto", "full"], "disabled": "boolean" }
 PROPS__ */

@@ -15,8 +15,6 @@ const iconButtonGeometryVariants = cva("", {
       sm: "size-(--control-height-sm) rounded-(--control-radius-sm) [--node-size:var(--control-glyph-sm)]",
       md: "size-(--control-height-md) rounded-(--control-radius-md) [--node-size:var(--control-glyph-md)]",
       lg: "size-(--control-height-lg) rounded-(--control-radius-lg) [--node-size:var(--control-glyph-lg)]",
-      xl: "size-(--control-height-xl) rounded-(--control-radius-xl) [--node-size:var(--control-glyph-xl)]",
-      "2xl": "size-(--control-height-2xl) rounded-(--control-radius-2xl) [--node-size:var(--control-glyph-2xl)]",
     },
   },
   defaultVariants: { size: "md" },
@@ -83,5 +81,5 @@ IconButton.displayName = "IconButton";
 DOC__ */
 
 /* __PROPS
-{ "variant": ["primary", "secondary", "tertiary", "ghost", "danger", "danger-outline", "glass"], "size": ["xs", "sm", "md", "lg", "xl", "2xl"], "showTooltip": "boolean", "loading": "boolean", "disabled": "boolean" }
+{ "variant": ["primary", "secondary", "tertiary", "ghost", "danger", "danger-outline"], "size": ["xs", "sm", "md", "lg"], "showTooltip": "boolean", "loading": "boolean", "disabled": "boolean" }
 PROPS__ */

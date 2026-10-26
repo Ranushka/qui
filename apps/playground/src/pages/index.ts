@@ -3,7 +3,6 @@ import { AiChatPage } from "./AiChatPage";
 import { BoardPage } from "./BoardPage";
 import { ComponentsPage } from "./ComponentsPage";
 import { DashboardPage } from "./DashboardPage";
-import { GlassPage } from "./GlassPage";
 import { IconsPage } from "./IconsPage";
 import { WorkItemsPage } from "./WorkItemsPage";
 import { TablesPage } from "./TablesPage";
@@ -28,7 +27,6 @@ export const pages: PlaygroundPage[] = [
   { path: "/examples/dashboard", title: "Dashboard", component: DashboardPage, fullBleed: true },
   { path: "/examples/ai-chat", title: "AI chat", component: AiChatPage, fullBleed: true },
   { path: "/examples/tables", title: "Tables", component: TablesPage, fullBleed: true },
-  { path: "/examples/glass", title: "Glass", component: GlassPage, fullBleed: true },
 ];
 
 /** Old links that should keep working. */

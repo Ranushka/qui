@@ -209,9 +209,9 @@ export function AcmeShell({
   navigation?: React.ReactNode;
   /**
    * Frames the header and content in a white panel. Turn it off for screens of cards, e.g. dashboards, so the cards
-   * sit straight on the shell's canvas instead of on a second surface. `"glass"` frames them in the glass material.
+   * sit straight on the shell's canvas instead of on a second surface.
    */
-  panel?: boolean | "glass";
+  panel?: boolean;
   children: React.ReactNode;
 }) {
   const [app, setApp] = React.useState<App>(apps[0]!);
@@ -224,7 +224,7 @@ export function AcmeShell({
               <TopBar />
               <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
                 <Sidebar />
-                <QUI.Box as="section" aria-label={current} grow overflow="hidden" {...(panel === "glass" ? ({ background: "glass", radius: "lg" } as const) : panel ? ({ background: "surface-1", border: "subtle", radius: "lg" } as const) : {})}>
+                <QUI.Box as="section" aria-label={current} grow overflow="hidden" {...(panel ? { background: "surface-1", border: "subtle", radius: "lg" } as const : {})}>
                   <QUI.Stack height="full">
                     {header}
                     {children}
