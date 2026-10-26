@@ -4,7 +4,7 @@ import * as Icons from "lucide-react";
 import { AcmeShell } from "../examples/acme/shell";
 import { AdminNavigation } from "../examples/acme/admin-nav";
 import { aed, formatDay } from "../examples/acme/claims";
-import { cards, departments, people, today } from "../examples/acme/spend-data";
+import { cards, departments, people, today, type Person } from "../examples/acme/spend-data";
 import {
   cities,
   cityOf,
@@ -225,6 +225,31 @@ function TripBasket({ flight, hotel, hotelNights, onRemoveFlight, onRemoveHotel,
 
 type Checkout = { name: string; purpose: string; department: string; reason: string };
 
+/** The invite form a "Travellers" search offers when the person isn't on the team yet. */
+function InviteForm({ query, onInvite, onCancel }: { query: string; onInvite: (person: Person) => void; onCancel: () => void }) {
+  const typedEmail = query.includes("@");
+  const [name, setName] = React.useState(typedEmail ? "" : query);
+  const [email, setEmail] = React.useState(typedEmail ? query : "");
+  const valid = name.trim() !== "" && /^\S+@\S+\.\S+$/.test(email);
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (valid) onInvite({ name: name.trim(), email: email.trim() });
+      }}
+    >
+      <QUI.Stack gap="3">
+        <QUI.InputField label="Name" size="md" autoFocus value={name} onChange={(e) => setName(e.target.value)} />
+        <QUI.InputField label="Work email" size="md" type="email" placeholder="name@acme.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <QUI.Inline justify="end" gap="2">
+          <QUI.Button variant="secondary" size="sm" label="Cancel" onClick={onCancel} />
+          <QUI.Button variant="primary" size="sm" type="submit" label="Send invite" disabled={!valid} />
+        </QUI.Inline>
+      </QUI.Stack>
+    </form>
+  );
+}
+
 function CheckoutDialog({
   open,
   onOpenChange,
@@ -244,6 +269,8 @@ function CheckoutDialog({
 }) {
   const [step, setStep] = React.useState(0);
   const [details, setDetails] = React.useState<Checkout>({ name: "", purpose: "", department: "", reason: "" });
+  const [team, setTeam] = React.useState<Person[]>(people);
+  const [travellers, setTravellers] = React.useState<Person[]>([me]);
   const [submitted, setSubmitted] = React.useState(false);
   React.useEffect(() => {
     if (open) {
@@ -287,6 +314,29 @@ function CheckoutDialog({
                     <QUI.SelectField label="Purpose" placeholder="Choose" value={details.purpose || null} onValueChange={(v) => set({ purpose: String(v ?? "") })} options={purposes.map((p) => ({ value: p, label: p }))} error={show("purpose")} />
                     <QUI.SelectField label="Charge to department" value={details.department} onValueChange={(v) => set({ department: String(v ?? "") })} options={departments.map((d) => ({ value: d, label: d }))} />
                   </QUI.Grid>
+                  <QUI.ComboboxField
+                    label="Travellers"
+                    multiple
+                    placeholder="Add people…"
+                    items={team}
+                    itemToStringLabel={(p: Person) => p.name}
+                    value={travellers}
+                    onValueChange={(next) => setTravellers(next as Person[])}
+                    create={{
+                      label: (query) => (query ? `Invite "${query}"` : "Invite someone"),
+                      title: "Invite to Acme",
+                      form: ({ query, done, cancel }) => (
+                        <InviteForm
+                          query={query}
+                          onCancel={cancel}
+                          onInvite={(person) => {
+                            setTeam((list) => [...list, person]);
+                            done(person);
+                          }}
+                        />
+                      ),
+                    }}
+                  />
                   {needsApproval ? (
                     <QUI.Stack gap="2">
                       <QUI.Banner variant="warning">

@@ -64,7 +64,7 @@ const attention: { icon: IconComponent; label: string; count: number; href: stri
 /** A bordered card with a title, an optional subtitle and a header action. */
 function Panel({ title, subtitle, action, children }: { title: string; subtitle?: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <QUI.Box as="section" aria-label={title} border="subtle" radius="lg" padding="4" background="surface-1">
+    <QUI.Box as="section" aria-label={title} border="subtle" radius="lg" padding="4" background="layer-2">
       <QUI.Stack gap="3">
         <QUI.Inline justify="between" gap="2" wrap={false}>
           <QUI.Stack gap="0.5">
@@ -87,7 +87,7 @@ function Panel({ title, subtitle, action, children }: { title: string; subtitle?
 
 function Stat({ icon, label, value, children }: { icon: IconComponent; label: string; value: string; children?: React.ReactNode }) {
   return (
-    <QUI.Box border="subtle" radius="lg" padding="4" background="surface-1">
+    <QUI.Box border="subtle" radius="lg" padding="4" background="layer-2">
       <QUI.Stack gap="2">
         <QUI.Inline justify="between" gap="2" wrap={false}>
           <QUI.Text size="xs" color="secondary">
@@ -135,7 +135,7 @@ export function SpendOverviewPage() {
   const budgetUsed = Math.round((spent / totalBudget) * 100);
   const projected = Math.round((spent / dayOfMonth) * daysInMonth);
   return (
-    <AcmeShell current="Spend overview" header={<PageHeader period={period} onPeriod={setPeriod} />} navigation={<AdminNavigation open="Spend" />}>
+    <AcmeShell current="Spend overview" header={<PageHeader period={period} onPeriod={setPeriod} />} navigation={<AdminNavigation open="Spend" />} panel={false}>
       <QUI.Box grow overflow="auto" paddingX="4" paddingBottom="4">
         <QUI.Stack gap="4">
           <QUI.Grid columns={4} collapseBelow="lg" gap="4">

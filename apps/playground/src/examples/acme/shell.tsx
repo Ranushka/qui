@@ -200,12 +200,18 @@ export function AcmeShell({
   current = "Core product",
   header = <CoreProductHeader />,
   navigation,
+  panel = true,
   children,
 }: {
   current?: string;
   header?: React.ReactNode;
   /** Sidebar lists to show instead of the Work navigation, e.g. an admin tree of `ListSection`s. */
   navigation?: React.ReactNode;
+  /**
+   * Frames the header and content in a white panel. Turn it off for screens of cards, e.g. dashboards, so the cards
+   * sit straight on the shell's canvas instead of on a second surface.
+   */
+  panel?: boolean;
   children: React.ReactNode;
 }) {
   const [app, setApp] = React.useState<App>(apps[0]!);
@@ -218,7 +224,7 @@ export function AcmeShell({
               <TopBar />
               <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
                 <Sidebar />
-                <QUI.Box as="section" aria-label={current} grow background="surface-1" border="subtle" radius="lg" overflow="hidden">
+                <QUI.Box as="section" aria-label={current} grow overflow="hidden" {...(panel ? { background: "surface-1", border: "subtle", radius: "lg" } as const : {})}>
                   <QUI.Stack height="full">
                     {header}
                     {children}

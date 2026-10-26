@@ -134,7 +134,7 @@ function Section({ title, columns, children }: { title: string; columns: 2 | 3 |
 /** A bordered card with a title, an optional count and "View all". */
 function Panel({ title, count, viewAll = true, children }: { title: string; count?: number; viewAll?: boolean; children: React.ReactNode }) {
   return (
-    <QUI.Box border="subtle" radius="lg" padding="4" background="surface-1">
+    <QUI.Box border="subtle" radius="lg" padding="4" background="layer-2">
       <QUI.Stack gap="3">
         <QUI.Inline justify="between" wrap={false}>
           <QUI.Inline gap="2" wrap={false}>
@@ -215,7 +215,7 @@ function AccountSnapshot() {
   return (
     <Section title="Account snapshot" columns={5}>
       {stats.map((stat) => (
-        <QUI.Box key={stat.label} border="subtle" radius="lg" padding="4" background="surface-1">
+        <QUI.Box key={stat.label} border="subtle" radius="lg" padding="4" background="layer-2">
           <QUI.Stack gap="3">
             <QUI.Inline justify="between" align="start" wrap={false} gap="2">
               <QUI.Text size="sm" color="secondary">
@@ -307,7 +307,7 @@ function ContractInfo() {
       <Panel title="Customer lifecycle">
         <QUI.Grid columns={2} gap="2">
           {lifecycle.map((stage) => (
-            <QUI.Box key={stage.stage} border="subtle" radius="md" padding="3" background="layer-1">
+            <QUI.Box key={stage.stage} border="subtle" radius="md" padding="3" background="surface-2">
               <QUI.Stack gap="2" align="start">
                 <QUI.Badge size="sm" variant={stage.tone} label={stage.stage} />
                 <QUI.Heading level={3} size={4} weight="semibold">
@@ -457,9 +457,9 @@ function TrendingMetrics() {
 /** Playground page: the dashboard in the Acme shell, with its own header instead of the project header. */
 export function DashboardPage() {
   return (
-    <AcmeShell current="Dashboards" header={<PageHeader />}>
+    <AcmeShell current="Dashboards" header={<PageHeader />} panel={false}>
       <QUI.Box grow overflow="auto">
-        <QUI.Stack gap="8" paddingX="6" paddingBottom="8">
+        <QUI.Stack gap="8" paddingX="6" paddingTop="6" paddingBottom="8">
           <Actions />
           <AccountSnapshot />
           <ContractInfo />

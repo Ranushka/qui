@@ -16,8 +16,8 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
   variants: {
     variant: {
       contained: "items-center gap-0.5 rounded-md bg-layer-3 p-0.5",
-      // A full-width baseline as thick as the active bar (both 2px, flush at the bottom), drawn as an inset shadow so the active tab's accent bar paints over it.
-      underline: "items-stretch gap-5 shadow-[inset_0_-2px_0_0_var(--border-color-subtle)]",
+      // A full-width 1px baseline, drawn as an inset shadow so the active tab's accent bar paints over it.
+      underline: "items-stretch gap-5 shadow-[inset_0_-1px_0_0_var(--border-color-subtle)]",
       card: "items-stretch gap-2 overflow-x-auto",
     },
     stretch: {

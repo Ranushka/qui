@@ -74,6 +74,76 @@ export const ComboboxInputGroup = React.forwardRef<HTMLDivElement, ComboboxInput
 );
 ComboboxInputGroup.displayName = "ComboboxInputGroup";
 
+/**
+ * The `multiple` frame: a chip per picked value, then the filter input, wrapping onto more lines as chips pile up.
+ * The block padding centres one row of chips in the control height, so one line matches `ComboboxInputGroup`.
+ */
+const comboboxChipsVariants = cva(cn(controlGroupClass, "w-full flex-wrap items-center gap-1"), {
+  variants: {
+    size: {
+      md: cn(controlSize.md, "rounded-(--control-radius-md) py-[calc((var(--control-height-md)-var(--control-height-xs))/2-1px)] ps-[calc((var(--control-height-md)-var(--control-height-xs))/2-1px)] pe-(--field-inset-md) [--chip-height:var(--control-height-xs)]"),
+      lg: cn(controlSize.lg, "rounded-(--control-radius-lg) py-[calc((var(--control-height-lg)-var(--control-height-xs))/2-1px)] ps-[calc((var(--control-height-lg)-var(--control-height-xs))/2-1px)] pe-(--field-inset-lg) [--chip-height:var(--control-height-xs)]"),
+      xl: cn(controlSize.xl, "rounded-(--control-radius-xl) py-[calc((var(--control-height-xl)-var(--control-height-sm))/2-1px)] ps-[calc((var(--control-height-xl)-var(--control-height-sm))/2-1px)] pe-(--field-inset-xl) [--chip-height:var(--control-height-sm)]"),
+      "2xl": cn(controlSize["2xl"], "rounded-(--control-radius-2xl) py-[calc((var(--control-height-2xl)-var(--control-height-sm))/2-1px)] ps-[calc((var(--control-height-2xl)-var(--control-height-sm))/2-1px)] pe-(--field-inset-2xl) [--chip-height:var(--control-height-sm)]"),
+    },
+  },
+  defaultVariants: { size: "md" },
+});
+
+export interface ComboboxChipsProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Chips>, "className" | "children">> {
+  size?: "md" | "lg" | "xl" | "2xl";
+  /** Placeholder shown in the filter input while nothing is picked. */
+  placeholder?: string;
+  /** A picked value's chip text. @default the value's `label`, else the value itself */
+  itemToLabel?: (item: any) => string;
+}
+
+/**
+ * The bordered field for a `multiple` combobox: each picked value as a removable chip, then the filter input.
+ * Backspace in the empty input removes the last chip; arrow keys move between chips.
+ */
+export const ComboboxChips = React.forwardRef<HTMLDivElement, ComboboxChipsProps>(({ size = "md", placeholder, itemToLabel = defaultItemLabel, ...props }, ref) => {
+  return (
+    <BaseCombobox.Chips ref={ref} className={cn(comboboxChipsVariants({ size }))} {...props}>
+      <BaseCombobox.Value>
+        {(value: unknown[]) => (
+          <>
+            {value.map((item, index) => (
+              <ComboboxChip key={index} label={itemToLabel(item)} />
+            ))}
+            <BaseCombobox.Input placeholder={value.length === 0 ? placeholder : undefined} className={cn(comboboxInputVariants(), "min-w-16")} />
+          </>
+        )}
+      </BaseCombobox.Value>
+      <BaseCombobox.Icon className={cn(nodeSlotClass, "ms-auto")}>
+        <Icon icon={ChevronDown} tint="secondary" />
+      </BaseCombobox.Icon>
+    </BaseCombobox.Chips>
+  );
+});
+ComboboxChips.displayName = "ComboboxChips";
+
+/** A picked value inside `ComboboxChips`, with a ✕ that unpicks it. */
+function ComboboxChip({ label }: { label: string }) {
+  return (
+    <BaseCombobox.Chip
+      aria-label={label}
+      className="inline-flex h-(--chip-height) max-w-full min-w-0 items-center gap-0.5 rounded-sm bg-layer-3 ps-1.5 text-caption-md-regular text-primary outline-none data-highlighted:ring-2 data-highlighted:ring-accent-strong"
+    >
+      <span className="truncate">{label}</span>
+      <BaseCombobox.ChipRemove aria-label={`Remove ${label}`} className="inline-flex h-full shrink-0 cursor-pointer items-center rounded-e-sm px-0.5 text-icon-secondary hover:bg-layer-3-hover hover:text-icon-primary">
+        <X aria-hidden className="size-3" />
+      </BaseCombobox.ChipRemove>
+    </BaseCombobox.Chip>
+  );
+}
+
+/** An option's display text: a record's `label`, else the value itself. */
+export function defaultItemLabel(item: unknown): string {
+  if (item != null && typeof item === "object" && "label" in item) return String((item as { label: unknown }).label);
+  return String(item);
+}
+
 export interface ComboboxContentProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Positioner>, "className" | "children">> {
   /** Message shown when nothing matches the current filter. */
   emptyMessage?: React.ReactNode;
@@ -99,12 +169,15 @@ export const ComboboxContent = React.forwardRef<HTMLDivElement, ComboboxContentP
 ComboboxContent.displayName = "ComboboxContent";
 
 export interface ComboboxItemProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.Item>, "className">> {
+  /** Icon or avatar before the label. */
+  icon?: React.ReactNode;
 }
 
-/** A single option row: label text plus a trailing check that shows only while selected. */
-export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(({ children, ...props }, ref) => {
+/** A single option row: optional icon, label text, plus a trailing check that shows only while selected. */
+export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(({ icon, children, ...props }, ref) => {
   return (
     <BaseCombobox.Item ref={ref} className={cn(comboboxItemVariants())} {...props}>
+      {icon != null ? <span className={nodeSlotClass}>{icon}</span> : null}
       <span className="min-w-0 flex-1 truncate">{children}</span>
       <BaseCombobox.ItemIndicator className={cn(nodeSlotClass, "h-5 w-4 text-icon-secondary not-data-selected:invisible")} keepMounted>
         <Check aria-hidden />
