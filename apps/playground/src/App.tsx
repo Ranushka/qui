@@ -19,7 +19,7 @@ function useRoute() {
   return route;
 }
 
-const examplePages = pages.filter((p) => p.fullBleed);
+const examplePages = pages.filter((p) => p.fullBleed && !p.hidden);
 const toolPages = pages.filter((p) => !p.fullBleed);
 const examplePaths = new Set(examplePages.map((p) => p.path));
 

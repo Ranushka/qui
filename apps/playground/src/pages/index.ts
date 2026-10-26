@@ -6,6 +6,7 @@ import { DashboardPage } from "./DashboardPage";
 import { IconsPage } from "./IconsPage";
 import { WorkItemsPage } from "./WorkItemsPage";
 import { TablesPage } from "./TablesPage";
+import { WorkPage } from "./WorkPage";
 import { SpecPage } from "../spec/SpecPage";
 
 export type PlaygroundPage = {
@@ -15,6 +16,8 @@ export type PlaygroundPage = {
   component: React.ComponentType;
   /** Example screens fill the viewport below the nav; others scroll with padding around them. */
   fullBleed?: boolean;
+  /** Reached only from inside an example (e.g. its sidebar), so it gets no nav entry of its own. */
+  hidden?: boolean;
 };
 
 /** Every playground page. Add a page here and it gets a nav tab and its own URL. */
@@ -27,6 +30,7 @@ export const pages: PlaygroundPage[] = [
   { path: "/examples/dashboard", title: "Dashboard", component: DashboardPage, fullBleed: true },
   { path: "/examples/ai-chat", title: "AI chat", component: AiChatPage, fullBleed: true },
   { path: "/examples/tables", title: "Tables", component: TablesPage, fullBleed: true },
+  { path: "/examples/work", title: "Work", component: WorkPage, fullBleed: true, hidden: true },
 ];
 
 /** Old links that should keep working. */

@@ -103,24 +103,58 @@ function TopBar() {
 }
 
 /** Sidebar entries that open another example screen. */
+/** The Work sidebar: every entry opens a screen — a sample where there is one, an empty one otherwise. */
+export const workSections: { label: string | null; items: { icon: IconComponent; label: string }[] }[] = [
+  {
+    label: null,
+    items: [
+      { icon: Icons.House, label: "Home" },
+      { icon: Icons.UserRound, label: "Your work" },
+    ],
+  },
+  {
+    label: "Workspace",
+    items: [
+      { icon: Icons.BriefcaseBusiness, label: "Projects" },
+      { icon: Icons.Lightbulb, label: "Initiatives" },
+      { icon: Icons.ChartNoAxesCombined, label: "Analytics" },
+      { icon: Icons.LayoutGrid, label: "Dashboards" },
+      { icon: Icons.PenLine, label: "Drafts" },
+      { icon: Icons.Layers, label: "Views" },
+      { icon: Icons.Ellipsis, label: "More" },
+    ],
+  },
+  {
+    label: "Projects",
+    items: [
+      { icon: Icons.Tractor, label: "Core product" },
+      { icon: Icons.Puzzle, label: "Wed Development" },
+      { icon: Icons.Rocket, label: "Plane Pro" },
+      { icon: Icons.Compass, label: "Discover" },
+      { icon: Icons.Ellipsis, label: "All projects" },
+    ],
+  },
+];
+
+/** A Work entry's URL slug, e.g. "Your work" → "your-work". */
+export const workSlug = (label: string) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+/** Work entries with a sample screen of their own; the rest open `#/examples/work/<slug>`. */
 const navHrefs: Record<string, string> = {
   Dashboards: "#/examples/dashboard",
+  Views: "#/examples/board",
   "Core product": "#/examples/work-items",
 };
 
 /** The nav entry the current screen belongs to; the shell sets it and `NavLink` marks it. */
 const CurrentNavContext = React.createContext("Core product");
 
-/** A sidebar entry; marked current when it is the shell's `current`, and a link when it has a screen (`href`, or a known one). */
-export function NavLink({ icon, label, href = navHrefs[label] }: { icon: IconComponent; label: string; href?: string }) {
+/** A sidebar entry: a link to its screen (`href`, or the Work one), marked current when it is the shell's `current`. */
+export function NavLink({ icon, label, href = navHrefs[label] ?? `#/examples/work/${workSlug(label)}` }: { icon: IconComponent; label: string; href?: string }) {
   const current = React.useContext(CurrentNavContext) === label ? "page" : undefined;
   return (
     <QUI.ListItem>
-      {href ? (
-        <QUI.ListItemLink href={href} aria-current={current} startIcon={<QUI.Icon icon={icon} />} label={label} />
-      ) : (
-        <QUI.ListItemButton aria-current={current} startIcon={<QUI.Icon icon={icon} />} label={label} />
-      )}
+      <QUI.ListItemLink href={href} aria-current={current} startIcon={<QUI.Icon icon={icon} />} label={label} />
     </QUI.ListItem>
   );
 }
@@ -142,30 +176,23 @@ function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
 function WorkNavigation() {
   return (
     <>
-      <QUI.List aria-label="Main">
-        <NavLink icon={Icons.House} label="Home" />
-        <NavLink icon={Icons.UserRound} label="Your work" />
-      </QUI.List>
-      <QUI.ListSection label="Workspace" defaultOpen>
-        <QUI.List aria-label="Workspace">
-          <NavLink icon={Icons.BriefcaseBusiness} label="Projects" />
-          <NavLink icon={Icons.Lightbulb} label="Initiatives" />
-          <NavLink icon={Icons.ChartNoAxesCombined} label="Analytics" />
-          <NavLink icon={Icons.LayoutGrid} label="Dashboards" />
-          <NavLink icon={Icons.PenLine} label="Drafts" />
-          <NavLink icon={Icons.Layers} label="Views" />
-          <NavLink icon={Icons.Ellipsis} label="More" />
-        </QUI.List>
-      </QUI.ListSection>
-      <QUI.ListSection label="Projects" defaultOpen>
-        <QUI.List aria-label="Projects">
-          <NavLink icon={Icons.Tractor} label="Core product" />
-          <NavLink icon={Icons.Puzzle} label="Wed Development" />
-          <NavLink icon={Icons.Rocket} label="Plane Pro" />
-          <NavLink icon={Icons.Compass} label="Discover" />
-          <NavLink icon={Icons.Ellipsis} label="More" />
-        </QUI.List>
-      </QUI.ListSection>
+      {workSections.map((section) =>
+        section.label ? (
+          <QUI.ListSection key={section.label} label={section.label} defaultOpen>
+            <QUI.List aria-label={section.label}>
+              {section.items.map((i) => (
+                <NavLink key={i.label} icon={i.icon} label={i.label} />
+              ))}
+            </QUI.List>
+          </QUI.ListSection>
+        ) : (
+          <QUI.List key="main" aria-label="Main">
+            {section.items.map((i) => (
+              <NavLink key={i.label} icon={i.icon} label={i.label} />
+            ))}
+          </QUI.List>
+        )
+      )}
     </>
   );
 }

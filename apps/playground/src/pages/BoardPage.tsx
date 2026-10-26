@@ -67,7 +67,7 @@ function Column({ group }: { group: StateGroup }) {
 /** The board view: dumb, renders whatever groups it's given. */
 export function Board({ groups, count }: { groups: StateGroup[]; count: number }) {
   return (
-    <AcmeShell>
+    <AcmeShell current="Views">
       <ViewToolbar layout="board" count={count} />
       <QUI.Box grow overflow="auto" paddingX="6" paddingBottom="4">
         <QUI.Inline height="full" wrap={false} align="stretch" gap="3">
