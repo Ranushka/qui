@@ -20,7 +20,7 @@ const tabsListVariants = cva("relative max-w-full overscroll-x-contain outline-n
       underline: "items-stretch gap-5 shadow-[inset_0_-1px_0_0_var(--border-color-subtle)]",
       card: "items-stretch gap-2 overflow-x-auto",
       // A flat glass track; scrolls sideways when the tabs outgrow a narrow screen.
-      glass: "glass glass-flat scrollbar-hide items-center gap-1 overflow-x-auto rounded-full p-1",
+      glass: "glass glass-flat scrollbar-hide items-center gap-1 overflow-x-auto rounded-md p-0.5",
     },
     stretch: {
       auto: "inline-flex",
@@ -49,7 +49,7 @@ const tabVariants = cva(tabBase, {
       card: "flex min-w-36 max-w-56 shrink-0 flex-col items-start justify-between gap-1.5 rounded-md border-sm border-subtle bg-layer-2 px-3 py-2 text-start text-caption-md-medium [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:border-strong data-active:border-accent-strong data-active:bg-accent-subtle",
       // The active tab becomes a glass pill on the glass track.
       glass:
-        "inline-flex h-7 shrink-0 items-center justify-center gap-1.5 rounded-full border border-transparent px-3 text-body-xs-medium transition-[color,background-color,transform] duration-200 [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:bg-(--qui-glass-tint-hover) active:scale-95 data-active:glass data-active:font-semibold",
+        "inline-flex h-6 shrink-0 items-center justify-center gap-1.5 rounded-sm border border-transparent px-2.5 text-body-xs-medium transition-[color,background-color,transform] duration-200 [--node-size:var(--control-glyph-sm)] not-aria-disabled:not-data-active:hover:bg-(--qui-glass-tint-hover) active:scale-95 data-active:glass data-active:font-semibold",
     },
     stretch: { auto: "", full: "flex-1" },
   },

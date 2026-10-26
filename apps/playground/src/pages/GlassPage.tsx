@@ -39,7 +39,7 @@ function PageHeader() {
 
 function Hero() {
   return (
-    <QUI.Box background="glass" radius="xl" padding="8">
+    <QUI.Box background="glass" radius="lg" padding="8">
       <QUI.Stack gap="6" align="center">
         <QUI.Stack gap="2" align="center">
           <QUI.Heading level={2} size={2} weight="semibold" align="center">

@@ -46,7 +46,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         disabled={disabled || loading}
         focusableWhenDisabled={loading || undefined}
         aria-busy={loading || undefined}
-        className={cn(controlChromeVariants({ variant }), iconButtonGeometryVariants({ size }), variant === "glass" && "rounded-full")}
+        className={cn(controlChromeVariants({ variant }), iconButtonGeometryVariants({ size }))}
         {...props}
       >
         {loading ? <Spinner /> : icon}
