@@ -177,21 +177,23 @@ function CountList({ label, rows }: { label: string; rows: CountRow[] }) {
 
 function PageHeader() {
   return (
-    <QUI.Inline justify="between" gap="4" paddingX="6" paddingY="4" stackBelow="md">
-      <QUI.Stack gap="0.5">
-        <QUI.Heading level={1} size={4} weight="semibold">
-          Welcome Ranu
-        </QUI.Heading>
-        <QUI.Text size="sm" color="tertiary">
-          Your customer success book of business
-        </QUI.Text>
-      </QUI.Stack>
-      <QUI.Inline gap="2">
-        <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.ListFilter} />} label="Filters" />
-        <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.Download} />} label="Export" />
-        <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.Calendar} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label="1–29 Sep 2026" />
+    <QUI.Box paddingX="6" paddingY="4">
+      <QUI.Inline justify="between" gap="4" stackBelow="md" maxWidth="6xl" centered>
+        <QUI.Stack gap="0.5">
+          <QUI.Heading level={1} size={4} weight="semibold">
+            Welcome Ranu
+          </QUI.Heading>
+          <QUI.Text size="sm" color="tertiary">
+            Your customer success book of business
+          </QUI.Text>
+        </QUI.Stack>
+        <QUI.Inline gap="2">
+          <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.ListFilter} />} label="Filters" />
+          <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.Download} />} label="Export" />
+          <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.Calendar} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label="1–29 Sep 2026" />
+        </QUI.Inline>
       </QUI.Inline>
-    </QUI.Inline>
+    </QUI.Box>
   );
 }
 
@@ -458,8 +460,8 @@ function TrendingMetrics() {
 export function DashboardPage() {
   return (
     <AcmeShell current="Dashboards" header={<PageHeader />} panel={false}>
-      <QUI.Box grow overflow="auto">
-        <QUI.Stack gap="8" paddingX="6" paddingTop="6" paddingBottom="8">
+      <QUI.Box grow overflow="auto" paddingX="6">
+        <QUI.Stack gap="8" paddingTop="6" paddingBottom="8" maxWidth="6xl" centered>
           <Actions />
           <AccountSnapshot />
           <ContractInfo />

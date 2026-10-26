@@ -22,6 +22,9 @@ export type LayoutTag =
 /** Tailwind's container scale: 3xs = 16rem, 2xs = 18rem, xs = 20rem, sm = 24rem, md = 28rem, lg = 32rem, xl = 36rem, 2xl = 42rem. */
 export type ContainerSize = "3xs" | "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
+/** The container scale plus the page widths: 3xl = 48rem, 4xl = 56rem, 5xl = 64rem, 6xl = 72rem, 7xl = 80rem. */
+export type MaxWidth = ContainerSize | "3xl" | "4xl" | "5xl" | "6xl" | "7xl";
+
 const widthClass: Record<ContainerSize | "full" | "auto", string> = {
   full: "w-full", auto: "w-auto",
   "3xs": "w-3xs", "2xs": "w-2xs", xs: "w-xs", sm: "w-sm", md: "w-md", lg: "w-lg", xl: "w-xl", "2xl": "w-2xl",
@@ -35,8 +38,9 @@ export type Breakpoint = "sm" | "md" | "lg";
 const hideBelowClass: Record<Breakpoint, string> = { sm: "max-sm:hidden", md: "max-md:hidden", lg: "max-lg:hidden" };
 const hideAboveClass: Record<Breakpoint, string> = { sm: "sm:hidden", md: "md:hidden", lg: "lg:hidden" };
 
-const maxWidthClass: Record<ContainerSize, string> = {
+const maxWidthClass: Record<MaxWidth, string> = {
   "3xs": "max-w-3xs", "2xs": "max-w-2xs", xs: "max-w-xs", sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-xl", "2xl": "max-w-2xl",
+  "3xl": "max-w-3xl", "4xl": "max-w-4xl", "5xl": "max-w-5xl", "6xl": "max-w-6xl", "7xl": "max-w-7xl",
 };
 
 export type LayoutProps = Omit<React.HTMLAttributes<HTMLElement>, "className" | "style" | "color"> & {
@@ -54,8 +58,10 @@ export type LayoutProps = Omit<React.HTMLAttributes<HTMLElement>, "className" | 
   paddingEnd?: Space;
   /** Fixed width from the container scale, or fill the parent. */
   width?: keyof typeof widthClass;
-  /** Cap the width from the container scale while still shrinking on narrow screens. */
-  maxWidth?: ContainerSize;
+  /** Cap the width from the container scale (or a page width, 3xl–7xl) while still shrinking on narrow screens. */
+  maxWidth?: MaxWidth;
+  /** Fill the parent's width up to `maxWidth` and sit in the middle of it, e.g. a page's content column. */
+  centered?: boolean;
   /** Fill the parent's height, or the viewport's (app shells). */
   height?: keyof typeof heightClass;
   /** Take the remaining space in a Stack column or Inline row, and let content inside truncate or scroll. */
@@ -80,6 +86,7 @@ export function layoutClasses<P extends LayoutProps>({
   paddingEnd,
   width,
   maxWidth,
+  centered,
   height,
   grow,
   shrink = true,
@@ -97,6 +104,7 @@ export function layoutClasses<P extends LayoutProps>({
     paddingEnd && paddingEndClass[paddingEnd],
     width && widthClass[width],
     maxWidth && maxWidthClass[maxWidth],
+    centered && "mx-auto w-full",
     height && heightClass[height],
     grow && "min-h-0 min-w-0 flex-1",
     !shrink && "shrink-0",

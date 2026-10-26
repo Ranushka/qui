@@ -130,23 +130,24 @@ export function MySpendPage() {
   return (
     <AcmeShell
       current="My spend"
-     
       header={
-        <QUI.Inline justify="between" gap="3" paddingX="4" paddingY="3">
-          <QUI.Stack gap="0.5">
-            <QUI.Heading level={1} size={5} weight="semibold">
-              Hi {me.name.split(" ")[0]}
-            </QUI.Heading>
-            <QUI.Text size="xs" color="tertiary">
-              {todo === 0 ? "You're all caught up." : `${todo} receipt${todo === 1 ? "" : "s"} to add before the 25th.`}
-            </QUI.Text>
-          </QUI.Stack>
-          <QUI.Button variant="primary" icon={<QUI.Icon icon={Icons.Plus} />} label="New claim" onClick={() => setCreating(true)} />
-        </QUI.Inline>
+        <QUI.Box paddingX="4" paddingY="3">
+          <QUI.Inline justify="between" gap="3" maxWidth="6xl" centered>
+            <QUI.Stack gap="0.5">
+              <QUI.Heading level={1} size={5} weight="semibold">
+                Hi {me.name.split(" ")[0]}
+              </QUI.Heading>
+              <QUI.Text size="xs" color="tertiary">
+                {todo === 0 ? "You're all caught up." : `${todo} receipt${todo === 1 ? "" : "s"} to add before the 25th.`}
+              </QUI.Text>
+            </QUI.Stack>
+            <QUI.Button variant="primary" icon={<QUI.Icon icon={Icons.Plus} />} label="New claim" onClick={() => setCreating(true)} />
+          </QUI.Inline>
+        </QUI.Box>
       }
     >
       <QUI.Box grow overflow="auto" paddingX="4" paddingBottom="4">
-        <QUI.Stack gap="4">
+        <QUI.Stack gap="4" maxWidth="6xl" centered>
           {notice ? (
             <QUI.Banner variant="success" onDismiss={() => setNotice(null)}>
               {notice}

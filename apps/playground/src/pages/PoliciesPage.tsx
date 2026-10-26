@@ -259,7 +259,6 @@ export function PoliciesPage() {
   return (
     <AcmeShell
       current="Policies"
-     
       header={
         <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3" wrap={false}>
           <QUI.Inline gap="2" wrap={false}>

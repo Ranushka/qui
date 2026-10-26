@@ -357,7 +357,6 @@ export function ApprovalRequestsPage() {
           }}
         />
       }
-     
     >
       <QUI.Box paddingX="4" paddingY="3">
         <QUI.Tabs

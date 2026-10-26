@@ -105,26 +105,28 @@ function Stat({ icon, label, value, children }: { icon: IconComponent; label: st
 
 function PageHeader({ period, onPeriod }: { period: string; onPeriod: (value: string) => void }) {
   return (
-    <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
-      <QUI.Inline gap="2" wrap={false}>
-        <QUI.Icon icon={Icons.ChartPie} size="lg" tint="secondary" />
-        <QUI.Heading level={1} size={5} weight="semibold" truncate>
-          Spend overview
-        </QUI.Heading>
+    <QUI.Box paddingX="4" paddingY="3">
+      <QUI.Inline justify="between" gap="4" maxWidth="6xl" centered>
+        <QUI.Inline gap="2" wrap={false}>
+          <QUI.Icon icon={Icons.ChartPie} size="lg" tint="secondary" />
+          <QUI.Heading level={1} size={5} weight="semibold" truncate>
+            Spend overview
+          </QUI.Heading>
+        </QUI.Inline>
+        <QUI.Inline gap="2" wrap={false}>
+          <QUI.Box shrink={false}>
+            <QUI.Tabs value={period} onValueChange={(value) => onPeriod(String(value))}>
+              <QUI.TabsList aria-label="Period">
+                <QUI.Tab value="month" label="October" />
+                <QUI.Tab value="quarter" label="Q4" />
+                <QUI.Tab value="year" label="2026" />
+              </QUI.TabsList>
+            </QUI.Tabs>
+          </QUI.Box>
+          <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.Download} />} label="Export" />
+        </QUI.Inline>
       </QUI.Inline>
-      <QUI.Inline gap="2" wrap={false}>
-        <QUI.Box shrink={false}>
-          <QUI.Tabs value={period} onValueChange={(value) => onPeriod(String(value))}>
-            <QUI.TabsList aria-label="Period">
-              <QUI.Tab value="month" label="October" />
-              <QUI.Tab value="quarter" label="Q4" />
-              <QUI.Tab value="year" label="2026" />
-            </QUI.TabsList>
-          </QUI.Tabs>
-        </QUI.Box>
-        <QUI.Button variant="secondary" icon={<QUI.Icon icon={Icons.Download} />} label="Export" />
-      </QUI.Inline>
-    </QUI.Inline>
+    </QUI.Box>
   );
 }
 
@@ -136,7 +138,7 @@ export function SpendOverviewPage() {
   return (
     <AcmeShell current="Spend overview" header={<PageHeader period={period} onPeriod={setPeriod} />} panel={false}>
       <QUI.Box grow overflow="auto" paddingX="4" paddingBottom="4">
-        <QUI.Stack gap="4">
+        <QUI.Stack gap="4" maxWidth="6xl" centered>
           <QUI.Grid columns={4} collapseBelow="lg" gap="4">
             <Stat icon={Icons.Wallet} label="Spent in October" value={aed.format(spent)}>
               <QUI.Inline gap="1">
