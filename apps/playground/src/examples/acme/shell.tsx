@@ -38,7 +38,19 @@ type App = (typeof apps)[number];
 /** The app the shell is showing; the switcher changes it and the sidebar is titled after it. */
 const AppContext = React.createContext<{ app: App; setApp: (app: App) => void }>({ app: apps[0]!, setApp: () => {} });
 
-/** The workspace logo, and the app switcher: the current app's icon and name, opening a dropdown of the apps. */
+/** The playground's other screens, so you can hop between the samples and back to the components without the side panel. */
+const playgroundLinks: { icon: IconComponent; label: string; href: string }[] = [
+  { icon: Icons.ListTodo, label: "Work items", href: "#/examples/work-items" },
+  { icon: Icons.Columns3, label: "Board", href: "#/examples/board" },
+  { icon: Icons.LayoutGrid, label: "Dashboard", href: "#/examples/dashboard" },
+  { icon: Icons.Bot, label: "AI chat", href: "#/examples/ai-chat" },
+  { icon: Icons.Table, label: "Tables", href: "#/examples/tables" },
+];
+
+/** Which sample the URL is in: `#/examples/tables/cards` belongs to Tables. */
+const inSample = (href: string) => window.location.hash === href || window.location.hash.startsWith(`${href}/`);
+
+/** The workspace logo, and the app switcher: the current app's icon and name, opening a dropdown of the apps and the playground's screens. */
 function AppSwitcher() {
   const { app: current, setApp } = React.useContext(AppContext);
   return (
@@ -59,6 +71,18 @@ function AppSwitcher() {
           </QUI.MenuGroup>
           <QUI.MenuSeparator />
           <QUI.MenuItem icon={<QUI.Icon icon={Icons.Settings} />}>Settings</QUI.MenuItem>
+          <QUI.MenuSeparator />
+          <QUI.MenuGroup>
+            <QUI.MenuGroupLabel>Playground</QUI.MenuGroupLabel>
+            {playgroundLinks.map((link) => (
+              <QUI.MenuItem key={link.href} icon={<QUI.Icon icon={link.icon} />} selected={inSample(link.href)} onClick={() => (window.location.hash = link.href)}>
+                {link.label}
+              </QUI.MenuItem>
+            ))}
+            <QUI.MenuItem icon={<QUI.Icon icon={Icons.Component} />} selected={false} onClick={() => (window.location.hash = "#/components")}>
+              Components
+            </QUI.MenuItem>
+          </QUI.MenuGroup>
         </QUI.MenuContent>
       </QUI.Menu>
     </QUI.Inline>

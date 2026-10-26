@@ -63,12 +63,9 @@ function PlaygroundSearch() {
 function SidePanel({ route }: { route: string }) {
   return (
     <QUI.Stack gap="4" padding="3">
-      <QUI.Stack gap="3">
-        <QUI.Box paddingX="2" paddingTop="1">
-          <QUI.Text weight="semibold" color="primary">qui playground</QUI.Text>
-        </QUI.Box>
-        <PlaygroundSearch />
-      </QUI.Stack>
+      <QUI.Box paddingX="2" paddingTop="1">
+        <QUI.Text weight="semibold" color="primary">qui playground</QUI.Text>
+      </QUI.Box>
 
       <QUI.List aria-label="Playground pages">
         {toolPages.map((p) => (
@@ -153,19 +150,20 @@ export function App() {
           <QUI.Box as="nav" aria-label="Playground" hideBelow="md" width="3xs" shrink={false} overflow="auto" background="surface-1" border="subtle" borderEdge="end">
             <SidePanel route={route} />
           </QUI.Box>
-          <QUI.Stack height="full" grow>
-            <QUI.Box hideAbove="md" background="surface-1" border="subtle" borderEdge="bottom" padding="3" shrink={false}>
-              <QUI.Inline gap="2" wrap={false}>
+          <QUI.Box as="main" key={page.path} grow overflow="auto">
+            {/* The search stays pinned to the top while the page scrolls; the components page sticks its titles under it (h-14). */}
+            <div className="sticky top-0 z-30 flex h-14 items-center gap-2 bg-canvas px-8 max-md:px-4">
+              <QUI.Box hideAbove="md">
                 <MobileNav route={route} />
-                <QUI.Box grow>
-                  <PlaygroundSearch />
-                </QUI.Box>
-              </QUI.Inline>
-            </QUI.Box>
-            <QUI.Box as="main" key={page.path} grow overflow="auto" padding="8">
+              </QUI.Box>
+              <QUI.Box grow maxWidth="md">
+                <PlaygroundSearch />
+              </QUI.Box>
+            </div>
+            <div className="px-8 pb-8 max-md:px-4">
               <Page />
-            </QUI.Box>
-          </QUI.Stack>
+            </div>
+          </QUI.Box>
         </QUI.Inline>
       </QUI.Box>
     </QUI.QuiProvider>

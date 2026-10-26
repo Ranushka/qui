@@ -75,7 +75,8 @@ function renderSection({ moduleName, demo, align, props }) {
 function renderCategory({ title }, components) {
   return [
     "      <div>",
-    `        <h1 className="mb-3 text-base font-semibold">${title}</h1>`,
+    // Sticks under the playground's search bar (h-14) while its group scrolls by; component titles stick under it.
+    `        <h1 className="sticky top-14 z-20 -mx-8 mb-1 flex h-10 items-center bg-canvas px-8 text-base max-md:-mx-4 max-md:px-4 font-semibold">${title}</h1>`,
     '        <div className="flex flex-col gap-6">',
     components.map(renderSection).join("\n"),
     "        </div>",
@@ -137,8 +138,8 @@ function Section({
   props?: PropsSpec;
 }) {
   return (
-    <section id={\`c-\${title}\`} className="flex scroll-mt-4 flex-col gap-3">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-tertiary">{title}</h2>
+    <section id={\`c-\${title}\`} className="flex flex-col gap-2">
+      <h2 className="sticky top-24 z-10 -mx-8 flex h-9 items-center bg-canvas px-8 text-sm max-md:-mx-4 max-md:px-4 font-semibold uppercase tracking-wide text-tertiary">{title}</h2>
       <div className="flex flex-col overflow-hidden rounded-lg border border-subtle bg-layer-1 md:flex-row">
         <div className={align === "row" ? "flex min-w-0 flex-1 flex-wrap items-center gap-4 p-4" : "min-w-0 flex-1 overflow-x-auto"}>{children}</div>
         {props ? <PropsPanel props={props} /> : null}
@@ -158,7 +159,8 @@ function useScrollToComponent() {
       const name = decodeURIComponent(window.location.hash.split("/")[2] ?? "");
       const target = name ? document.getElementById(\`c-\${name}\`) : null;
       const main = target?.closest("main");
-      if (target && main) main.scrollTop += target.getBoundingClientRect().top - main.getBoundingClientRect().top - 32;
+      // Clear the sticky search bar (3.5rem) and group title (2.5rem).
+      if (target && main) main.scrollTop += target.getBoundingClientRect().top - main.getBoundingClientRect().top - 96;
     };
     scroll();
     window.addEventListener("hashchange", scroll);

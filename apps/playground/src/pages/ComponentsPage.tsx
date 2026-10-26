@@ -46,8 +46,8 @@ function Section({
   props?: PropsSpec;
 }) {
   return (
-    <section id={`c-${title}`} className="flex scroll-mt-4 flex-col gap-3">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-tertiary">{title}</h2>
+    <section id={`c-${title}`} className="flex flex-col gap-2">
+      <h2 className="sticky top-24 z-10 -mx-8 flex h-9 items-center bg-canvas px-8 text-sm max-md:-mx-4 max-md:px-4 font-semibold uppercase tracking-wide text-tertiary">{title}</h2>
       <div className="flex flex-col overflow-hidden rounded-lg border border-subtle bg-layer-1 md:flex-row">
         <div className={align === "row" ? "flex min-w-0 flex-1 flex-wrap items-center gap-4 p-4" : "min-w-0 flex-1 overflow-x-auto"}>{children}</div>
         {props ? <PropsPanel props={props} /> : null}
@@ -67,7 +67,8 @@ function useScrollToComponent() {
       const name = decodeURIComponent(window.location.hash.split("/")[2] ?? "");
       const target = name ? document.getElementById(`c-${name}`) : null;
       const main = target?.closest("main");
-      if (target && main) main.scrollTop += target.getBoundingClientRect().top - main.getBoundingClientRect().top - 32;
+      // Clear the sticky search bar (3.5rem) and group title (2.5rem).
+      if (target && main) main.scrollTop += target.getBoundingClientRect().top - main.getBoundingClientRect().top - 96;
     };
     scroll();
     window.addEventListener("hashchange", scroll);
@@ -85,7 +86,7 @@ export function ComponentsPage() {
       </div>
 
       <div>
-        <h1 className="mb-3 text-base font-semibold">Atoms</h1>
+        <h1 className="sticky top-14 z-20 -mx-8 mb-1 flex h-10 items-center bg-canvas px-8 text-base max-md:-mx-4 max-md:px-4 font-semibold">Atoms</h1>
         <div className="flex flex-col gap-6">
           <Section title="AnchorButton" align="block" props={{"variant":["primary","secondary"],"size":["xs","sm","md","lg"],"iconPosition":["start","end"],"external":"boolean","disabled":"boolean"}}>
 <div className="flex flex-col gap-4 p-4">
@@ -591,7 +592,7 @@ export function ComponentsPage() {
       </div>
 
       <div>
-        <h1 className="mb-3 text-base font-semibold">Molecules</h1>
+        <h1 className="sticky top-14 z-20 -mx-8 mb-1 flex h-10 items-center bg-canvas px-8 text-base max-md:-mx-4 max-md:px-4 font-semibold">Molecules</h1>
         <div className="flex flex-col gap-6">
           <Section title="Accordion" align="block" props={{"multiple":"boolean","disabled":"boolean"}}>
 <div className="flex w-full flex-col p-4">
@@ -1362,7 +1363,7 @@ export function ComponentsPage() {
       </div>
 
       <div>
-        <h1 className="mb-3 text-base font-semibold">Organisms</h1>
+        <h1 className="sticky top-14 z-20 -mx-8 mb-1 flex h-10 items-center bg-canvas px-8 text-base max-md:-mx-4 max-md:px-4 font-semibold">Organisms</h1>
         <div className="flex flex-col gap-6">
           <Section title="ActionBar" align="block" props={{"open":"boolean","placement":["overlay","inline"]}}>
 <QUI.Box position="relative" width="full" background="layer-1" border="subtle" radius="lg" paddingX="4" paddingTop="4" paddingBottom="16">
