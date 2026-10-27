@@ -3,6 +3,7 @@ import * as QUI from "@qui/ui";
 import * as Icons from "lucide-react";
 import { adminItems } from "../examples/acme/admin-nav";
 import { PlaceholderPage } from "../examples/acme/placeholder";
+import { ActivityLogPage } from "./ActivityLogPage";
 import { ApprovalRequestsPage } from "./ApprovalRequestsPage";
 import { BalanceLogsPage } from "./BalanceLogsPage";
 import { BillsPage } from "./BillsPage";
@@ -42,6 +43,7 @@ export function TablesPage() {
   if (slug === "policies") return <PoliciesPage />;
   if (slug === "bills") return <BillsPage />;
   if (slug === "travel") return <TravelPage />;
+  if (slug === "activity-log") return <ActivityLogPage />;
   const entry = adminItems.find((e) => e.item.slug === slug);
   return entry ? <PlaceholderPage key={slug} icon={entry.item.icon} label={entry.item.label} /> : <BalanceLogsPage />;
 }

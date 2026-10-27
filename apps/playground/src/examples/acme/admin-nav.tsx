@@ -51,7 +51,7 @@ export const adminSections: AdminSection[] = [
   { label: "Companies", items: [item("Companies", Icons.Building2), item("Company users", Icons.UsersRound)] },
   { label: "Compliance", items: [item("KYC reviews", Icons.ScanFace), item("Screening", Icons.ShieldCheck)] },
   { label: "Payments", items: [item("Payments", Icons.Banknote), item("Payment links", Icons.Link), item("Refunds", Icons.Undo2)] },
-  { label: "Reporting", items: [item("Reports", Icons.ChartColumn), item("Exports", Icons.Download)] },
+  { label: "Reporting", items: [item("Reports", Icons.ChartColumn), item("Activity log", Icons.History), item("Exports", Icons.Download)] },
 ];
 
 /** Every admin entry, for looking one up by its URL slug. */

@@ -27,8 +27,11 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Columns3 } from "lucide-react";
 import { Checkbox } from "../atoms/Checkbox";
+import { CircularProgress } from "../atoms/CircularProgress";
 import { Icon } from "../atoms/Icon";
 import { IconButton } from "../atoms/IconButton";
+import { Inline } from "../atoms/Inline";
+import { Text } from "../atoms/Text";
 import { Menu, MenuCheckboxItem, MenuContent, MenuGroup, MenuGroupLabel, MenuTrigger } from "../molecules/Menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, type TableProps } from "./Table";
 
@@ -123,6 +126,14 @@ interface DataTableViewProps extends Omit<TableProps, "children"> {
    * @default false
    */
   virtual?: boolean;
+  /**
+   * Infinite scroll on a `virtual` table: called when the last rows scroll into view (or when the rows don't fill
+   * the table yet), to fetch the next page and append it to `data`. Called once per row count and never while
+   * `loadingMore`; leave it out once the last page is in.
+   */
+  onEndReached?: () => void;
+  /** Shows a loading row under the last row while the next page is on its way. @default false */
+  loadingMore?: boolean;
   /** Shown across the table when there are no rows. */
   emptyState?: React.ReactNode;
 }
@@ -142,13 +153,31 @@ export function DataTable<Row extends RowData>(props: DataTableProps<Row>) {
   return <DataTableFromOptions {...(props as DataTableViewProps & UseDataTableOptions<Row>)} />;
 }
 
-function DataTableFromOptions<Row extends RowData>({ virtual, emptyState, density, stickyHeader, verticalLines, striped, ...options }: DataTableViewProps & UseDataTableOptions<Row>) {
+function DataTableFromOptions<Row extends RowData>({
+  virtual,
+  onEndReached,
+  loadingMore,
+  emptyState,
+  density,
+  stickyHeader,
+  verticalLines,
+  striped,
+  ...options
+}: DataTableViewProps & UseDataTableOptions<Row>) {
   const { "aria-label": ariaLabel, ...tableOptions } = options as typeof options & { "aria-label"?: string };
   const table = useDataTable(tableOptions);
-  return <DataTableView table={table} aria-label={ariaLabel} {...{ virtual, emptyState, density, stickyHeader, verticalLines, striped }} />;
+  return <DataTableView table={table} aria-label={ariaLabel} {...{ virtual, onEndReached, loadingMore, emptyState, density, stickyHeader, verticalLines, striped }} />;
 }
 
-function DataTableView<Row extends RowData>({ table, virtual = false, emptyState, density = "comfortable", ...props }: DataTableViewProps & { table: DataTableInstance<Row> }) {
+function DataTableView<Row extends RowData>({
+  table,
+  virtual = false,
+  onEndReached,
+  loadingMore = false,
+  emptyState,
+  density = "comfortable",
+  ...props
+}: DataTableViewProps & { table: DataTableInstance<Row> }) {
   const tableRef = React.useRef<HTMLTableElement>(null);
   const rows = table.getRowModel().rows;
   const columns = table.getVisibleLeafColumns();
@@ -161,6 +190,19 @@ function DataTableView<Row extends RowData>({ table, virtual = false, emptyState
     getItemKey: (index) => rows[index]?.id ?? index,
     overscan: 10,
   });
+
+  // The last mounted row is `overscan` rows past the bottom edge, so the next page starts loading about ten rows early.
+  const lastMounted = virtual ? (virtualizer.getVirtualItems().at(-1)?.index ?? -1) : -1;
+  const endReached = React.useRef(onEndReached);
+  endReached.current = onEndReached;
+  const canLoad = virtual && onEndReached != null && !loadingMore;
+  /** The row count the last call was made at: one call per count, so re-renders and Strict Mode don't fetch a page twice. */
+  const calledAt = React.useRef<number | null>(null);
+  React.useEffect(() => {
+    if (!canLoad || lastMounted < rows.length - 1 || calledAt.current === rows.length) return;
+    calledAt.current = rows.length;
+    endReached.current?.();
+  }, [canLoad, lastMounted, rows.length]);
 
   const renderRow = (row: TanStackRow<Features, Row>, index: number) => (
     <TableRow
@@ -229,6 +271,18 @@ function DataTableView<Row extends RowData>({ table, virtual = false, emptyState
         ) : (
           body
         )}
+        {loadingMore ? (
+          <TableRow aria-busy>
+            <TableCell colSpan={columns.length}>
+              <Inline gap="2" justify="center">
+                <CircularProgress size="sm" indeterminate aria-label="Loading more rows" />
+                <Text size="sm" color="tertiary">
+                  Loading more…
+                </Text>
+              </Inline>
+            </TableCell>
+          </TableRow>
+        ) : null}
       </TableBody>
     </Table>
   );
@@ -279,5 +333,5 @@ export function DataTableColumnsMenu<Row extends RowData>({ table, label = "Choo
 DOC__ */
 
 /* __PROPS
-{ "virtual": "boolean", "selectable": "boolean", "density": ["comfortable", "compact"], "striped": "boolean" }
+{ "virtual": "boolean", "loadingMore": "boolean", "selectable": "boolean", "density": ["comfortable", "compact"], "striped": "boolean" }
 PROPS__ */

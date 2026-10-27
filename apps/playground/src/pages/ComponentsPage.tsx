@@ -1490,7 +1490,7 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
-          <Section title="DataTable" align="block" props={{"virtual":"boolean","selectable":"boolean","density":["comfortable","compact"],"striped":"boolean"}}>
+          <Section title="DataTable" align="block" props={{"virtual":"boolean","loadingMore":"boolean","selectable":"boolean","density":["comfortable","compact"],"striped":"boolean"}}>
 <div className="flex h-80 w-full flex-col gap-8 p-4">
   <QUI.DataTable
     aria-label="Work items"
