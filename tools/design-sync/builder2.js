@@ -78,64 +78,134 @@
   const DIR = { row: "row", "row-reverse": "row-reverse", column: "column", "column-reverse": "column-reverse" };
   const SIZE = { fix: "fix", hug: "auto", fill: "fill" };
 
-  // ---------- icons: one component per (Tabler name, px size), all living on the Foundations page ----------
-  // They must be created up front, on that page: a freshly created main instance gets pulled into whichever board is
-  // being built, so building and component creation never mix.
+  // ---------- icons: ONE "Icon" component with a Name variant per Tabler icon (item 9b3, user 2026-10-31) ----------
+  // Every variant is Tabler's own outline svg exactly as drawn (icons-asis.mjs -> icons-asis.json): 24x24 grid, 2px
+  // stroke, real Penpot strokes, nothing converted. The set is `Icons / Icon`; its Name property (the Tabler name) is
+  // the dropdown a designer picks the icon from. Size comes from resizing the instance. Penpot keeps the stroke number
+  // when a shape is resized, so B.fitIcon also overrides the instance's stroke width with what the browser draws at
+  // that size (2 * size / 24: 1.167 at 14, 1.333 at 16). The set is built up front on its own "Icons" page: a freshly
+  // created main instance gets pulled into whichever board is being built, so building and component creation never
+  // mix. Older icon components never match: 9b2's outlined ones (`Icons (outlined) / <name>`) and Lucide's
+  // (`Icons (lucide) / <size>`), both deleted in 9e.
   B.collectIcons = function (n, acc = {}) {
     if (!n) return acc;
-    if (n.t === "sv" && n.icon) acc[n.icon + "@" + Math.round(n.r.w)] = { icon: n.icon, size: Math.round(n.r.w), svg: n.svg };
+    if (n.t === "sv" && n.icon) acc[n.icon] = acc[n.icon] || { icon: n.icon, svg: n.svg };
     (n.ch || []).forEach((c) => B.collectIcons(c, acc));
     return acc;
   };
   // the browser scales an svg's stroke with its viewBox (2px on a 24 grid draws 1.17px at 14px); Penpot keeps the
-  // number as px after resizing, so bake the drawn width into the svg before importing it
+  // number as px after resizing, so bake the drawn width into a NON-icon svg before importing it
   B.scaleStroke = function (svg, w) {
     const vb = svg.match(/viewBox="[\d.-]+ [\d.-]+ ([\d.]+)/);
     const k = vb ? w / parseFloat(vb[1]) : 1;
     return k === 1 ? svg : svg.replace(/stroke-width="([\d.]+)"/g, (_, v) => `stroke-width="${+(parseFloat(v) * k).toFixed(3)}"`);
   };
   B._ic = null;
-  B.iconComponent = (name, size) => {
-    if (!B._ic) { B._ic = {}; for (const c of penpot.library.local.components) if (c.path.startsWith("Icons / ")) B._ic[c.name + "@" + c.path.slice(8)] = c; }
-    return B._ic[name + "@" + size] || null;
-  };
-  B.makeIcons = function (list) {
-    if (penpot.currentPage.name !== "Foundations") throw new Error("open the Foundations page first");
-    const made = [], have = [];
-    // one row per icon size, laid out on a free canvas area below everything else on Foundations
-    const top = B.topShapes().filter((s) => s.name !== "Icons").reduce((m, s) => Math.max(m, s.y + s.height), 0) + 160;
-    const row = {}; const sizes = [...new Set(list.map((i) => i.size))].sort((a, b) => a - b);
-    // the glyphs live on an "Icons" board (the page root no longer takes appendChild), one row per size
-    let board = B.topShapes().find((s) => s.name === "Icons" && s.type === "board");
-    const perSize = sizes.map((z) => list.filter((i) => i.size === z).length);
-    if (!board) {
-      board = penpot.createBoard(); board.name = "Icons"; board.x = 0; board.y = top;
-      board.resize(96 + Math.max(...perSize) * 48, 96 + sizes.length * 64);
-      B.bindToken(board, B.token("bg-canvas"), "fill"); board.borderRadius = 12;
+  B.ICON_PATH = "Icons";
+  B.ICON_SET = "Icon";
+  B.ICON_PAGE = "Icons";
+  B.ICON_OUTLINED_PATH = "Icons (outlined)";
+  /** The `Name=<name>` variant of the `Icons / Icon` set (null when missing). */
+  B.iconComponent = (name) => {
+    if (!B._ic) {
+      B._ic = {};
+      // the library lists one component per variant set: its variants come from c.variants
+      for (const c of penpot.library.local.components) if (c.path === B.ICON_PATH && c.variants)
+        for (const v of c.variants.variantComponents()) if (v.variantProps && v.variantProps.Name) B._ic[v.variantProps.Name] = v;
     }
-    for (const it of list) {
-      if (B.iconComponent(it.icon, it.size)) { have.push(it.icon + "@" + it.size); continue; }
-      const g = penpot.createShapeFromSvg(B.scaleStroke(it.svg, it.size).replace(/currentColor/g, "#313435"));
+    return B._ic[name] || null;
+  };
+  /** 9b2's outlined components (plain components, path `Icons`) move to `Icons (outlined)` so the Icon set owns `Icons`;
+   *  their instances keep working (the link is by id). Delete them in 9e once nothing uses them. */
+  B.retireOutlinedIcons = function () {
+    let n = 0;
+    for (const c of penpot.library.local.components) if (c.path === B.ICON_PATH && !c.variants) { c.path = B.ICON_OUTLINED_PATH; n++; }
+    B._ic = null;
+    return { moved: n };
+  };
+  /** Builds the `Icons / Icon` variant set from `list` (icons-asis.json: `{icon, svg}`, Tabler's 24px files) on the Icons
+   *  page: one 24x24 main per icon in a grid, strokes centred, stroke colour bound to txt.icon-secondary, combined into
+   *  one set with property Name. All 48 import in a few seconds, so it is one call. */
+  B.makeIconSet = function (list) {
+    if (penpot.currentPage.name !== B.ICON_PAGE) throw new Error('open the "' + B.ICON_PAGE + '" page first (await B.page(B.ICON_PAGE))');
+    if (B.iconComponent(list[0].icon)) return { have: true };
+    const cols = 12, gap = 24, top = B.topShapes().reduce((m, t) => Math.max(m, t.y + t.height), 0) + 160;
+    // new shapes land inside a board anyway (the page root takes no appendChild), so the mains get one of their own
+    const board = penpot.createBoard(); board.name = "Icon"; board.x = 0; board.y = top;
+    board.resize(gap + cols * (24 + gap), gap + Math.ceil(list.length / cols) * (24 + gap));
+    B.bindToken(board, B.token("bg-canvas"), "fill"); board.borderRadius = 12;
+    // Penpot imports closed shapes with inner strokes (half the line would vanish): Tabler's strokes are centred
+    const centre = (s) => { if (s.strokes && s.strokes.length) s.strokes = s.strokes.map((k) => ({ ...k, strokeAlignment: "center" })); (s.children || []).forEach(centre); };
+    const comps = [];
+    list.forEach((it, i) => {
+      const g = penpot.createShapeFromSvg(it.svg.replace(/currentColor/g, "#313435"));
       if (!g) throw new Error("svg import failed: " + it.icon);
-      g.name = it.icon; g.resize(it.size, it.size);
+      if (Math.abs(g.width - 24) > 0.01 || Math.abs(g.height - 24) > 0.01) { g.remove(); throw new Error(it.icon + " imported at " + g.width + "x" + g.height + ", not 24x24"); }
       board.appendChild(g);
-      const col = (row[it.size] = (row[it.size] || 0) + 1) - 1;
-      g.x = board.x + 48 + col * 48; g.y = board.y + 48 + sizes.indexOf(it.size) * 64;
-      // lucide strokes are centred; Penpot imports closed shapes with inner strokes (a 1px ellipsis dot then vanishes)
-      const centre = (s) => { if (s.strokes && s.strokes.length) s.strokes = s.strokes.map((k) => ({ ...k, strokeAlignment: "center" })); (s.children || []).forEach(centre); };
-      centre(g);
-      B.tint(g, { tk: "txt-icon-secondary", c: "#313435", a: 1 });
-      const comp = penpot.library.local.createComponent([g]);
-      comp.name = it.icon; comp.path = "Icons / " + it.size; (B._ic = B._ic || {})[it.icon + "@" + it.size] = comp;
-      made.push(it.icon + "@" + it.size);
-    }
+      g.name = it.icon; g.x = board.x + gap + (i % cols) * (24 + gap); g.y = board.y + gap + Math.floor(i / cols) * (24 + gap);
+      centre(g); B.tint(g, { tk: "txt-icon-secondary", c: "#313435", a: 1 });
+      const c = penpot.library.local.createComponent([g]); c.name = it.icon; comps.push(c);
+    });
+    const cont = comps[0].mainInstance().combineAsVariants(comps.slice(1).map((c) => c.mainInstance().id));
+    comps[0].variants.renameProperty(0, "Name");
+    comps.forEach((c, i) => c.setVariantProperty(0, list[i].icon));
+    // name the container first: renaming it resets the variants' path (and a path set on one variant applies to all)
+    cont.name = B.ICON_SET;
+    comps.forEach((c, i) => { if (c.path !== B.ICON_PATH) c.path = B.ICON_PATH; B._ic[list[i].icon] = c; });
     B.flushTokens();
-    return { made: made.length, have: have.length, top };
+    return { container: cont.id, variants: comps.length };
   };
+  /** Adds the icons of `list` (icons-asis.json) that the `Icons / Icon` set lacks as new Name variants, at most `max` per
+   *  call, appended into the existing variant container (grid continues after the last glyph). The existing variants
+   *  are not touched, so every instance keeps its link (rebuilding the set with makeIconSet would orphan them). */
+  B.addIcons = function (list, max = 12) {
+    if (penpot.currentPage.name !== B.ICON_PAGE) throw new Error('open the "' + B.ICON_PAGE + '" page first (await B.page(B.ICON_PAGE))');
+    B._ic = null; B.iconComponent("");
+    const any = Object.values(B._ic)[0]; if (!any) throw new Error("no Icons / Icon set: use B.makeIconSet");
+    const ref = any.mainInstance(); const vc = ref.parent;
+    if (!vc || !vc.isVariantContainer || !vc.isVariantContainer()) throw new Error("Icon variant container not found");
+    const todo = list.filter((it) => !B._ic[it.icon]).slice(0, max);
+    if (!todo.length) return { added: 0, total: Object.keys(B._ic).length };
+    const cols = 12, step = 48, kids = vc.children;
+    const x0 = Math.min(...kids.map((k) => k.x - vc.x)), y0 = Math.min(...kids.map((k) => k.y - vc.y)), n0 = kids.length;
+    const rows = Math.ceil((n0 + todo.length) / cols);
+    const outer = vc.parent; const grow = y0 * 2 + rows * step - (step - 24) - vc.height;
+    if (grow > 0) { vc.resize(vc.width, vc.height + grow); if (outer && outer.type === "board" && !outer.isVariantContainer()) outer.resize(outer.width, outer.height + grow); }
+    const centre = (s) => { if (s.strokes && s.strokes.length) s.strokes = s.strokes.map((k) => ({ ...k, strokeAlignment: "center" })); (s.children || []).forEach(centre); };
+    const added = [];
+    todo.forEach((it, i) => {
+      const g = penpot.createShapeFromSvg(it.svg.replace(/currentColor/g, "#313435"));
+      if (!g) throw new Error("svg import failed: " + it.icon);
+      if (Math.abs(g.width - 24) > 0.01 || Math.abs(g.height - 24) > 0.01) { g.remove(); throw new Error(it.icon + " imported at " + g.width + "x" + g.height + ", not 24x24"); }
+      outer.appendChild(g); g.name = it.icon; centre(g); B.tint(g, { tk: "txt-icon-secondary", c: "#313435", a: 1 });
+      const c = penpot.library.local.createComponent([g]); c.name = it.icon;
+      const m = c.mainInstance(); vc.appendChild(m);
+      const k = n0 + i; m.x = vc.x + x0 + (k % cols) * step; m.y = vc.y + y0 + Math.floor(k / cols) * step;
+      added.push({ it, m });
+    });
+    B._ic = null; B.iconComponent("");
+    const out = [];
+    for (const { it, m } of added) {
+      const c = m.component();
+      if (c && c.isVariant && c.isVariant()) { c.setVariantProperty(0, it.icon); if (c.path !== B.ICON_PATH) c.path = B.ICON_PATH; }
+      out.push({ icon: it.icon, variant: !!(c && c.isVariant && c.isVariant()), props: c && c.variantProps, name: m.name, path: c && c.path });
+    }
+    B._ic = null; B.flushTokens();
+    return { added: out.length, out };
+  };
+  /** Sizes an icon instance to w x h and sets its stroke width to what the browser draws there (Penpot keeps 2). */
+  B.fitIcon = function (inst, w, h) {
+    if (Math.abs(inst.width - w) > 0.01 || Math.abs(inst.height - h) > 0.01) inst.resize(w, h);
+    const sw = +((2 * w) / 24).toFixed(3);
+    const walk = (s) => { if (s.strokes && s.strokes.length && s.strokes.some((k) => k.strokeWidth !== sw)) s.strokes = s.strokes.map((k) => ({ ...k, strokeWidth: sw })); (s.children || []).forEach(walk); };
+    walk(inst);
+    return inst;
+  };
+  /** An instance of the icon, sized to the rendered w x h with the matching stroke width. */
   B.icon = function (name, svg, w, h) {
-    const comp = B.iconComponent(name, Math.round(w));
-    if (!comp) throw new Error("icon component missing: " + name + "@" + Math.round(w));
-    return comp.instance();
+    const comp = B.iconComponent(name);
+    if (!comp) throw new Error("icon missing from the Icon set: " + name + " (add it to icons-asis.json and rebuild the set)");
+    return B.fitIcon(comp.instance(), w, h);
   };
   B.tint = function (shape, color) {
     const want = color && color.tk ? B.token(color.tk) : null;
@@ -145,7 +215,9 @@
         else { s.strokes = s.strokes.map((k) => ({ ...k, strokeColor: color.c, strokeOpacity: color.a })); B.stat.hex++; }
       }
       if (s.fills && s.fills.length && s.type === "path" && s.fills.some((k) => k.fillColor)) {
-        if (want) B.bindToken(s, want, "fill"); else s.fills = s.fills.map((k) => (k.fillColor ? { ...k, fillColor: color.c, fillOpacity: color.a } : k));
+        // applying the token a copy already carries toggles it OFF (tested 2026-10-31: a fresh settings copy keeps
+        // txt.icon-secondary, re-applying it drops it), so only bind a fill whose token differs
+        if (want) { if (!s.tokens || s.tokens.fill !== want.name) B.bindToken(s, want, "fill"); } else s.fills = s.fills.map((k) => (k.fillColor ? { ...k, fillColor: color.c, fillOpacity: color.a } : k));
       }
       if (s.children) s.children.forEach(walk);
     };
@@ -294,10 +366,14 @@
 
   // ---------- component instances ----------
   B._vc = B._vc || {};
+  /** Library components of qui set `name`, never the icon library: the `Icons / Icon` set (and the old `Icons (outlined)` /
+   *  `Icons (lucide)` ones) share names with qui sets — B.dropOld("Icon") deleted the whole Icon set on 2026-10-31. */
+  B.isIconLib = (c) => c.path === B.ICON_PATH || /^Icons \(/.test(c.path || "");
+  B.setComps = (name) => penpot.library.local.components.filter((c) => c.name === name && !B.isIconLib(c));
   /** The variant component of library set `name` whose properties match `variant` (null when absent). */
   B.variantComponent = function (name, variant, fresh) {
     if (fresh || !B._vc[name]) {
-      const sets = penpot.library.local.components.filter((c) => c.name === name);
+      const sets = B.setComps(name);
       B._vc[name] = sets.flatMap((c) => (c.variants ? c.variants.variantComponents() : [c]));
     }
     if (!variant) return null;
@@ -317,6 +393,7 @@
         // a value-driven bar (LinearProgress' indicator, a slider fill / thumb): an absolute, childless, painted box whose
         // size and offset follow the value, so it is a slot too (resized and moved to what the page shows)
         if (B.isBar(c)) out.push({ k: "bx", node: c, par: n });
+        else if (c.t === "ps") out.push({ k: "ps", node: c, par: n }); // decor: placed like a bar (ovContent)
         else B.domLeaves(c, out, false, owner);
       }
     }
@@ -365,10 +442,11 @@
   B.ovSwap = function (d, s) {
     if (!s) return;
     if (d.k === "sv" && d.node.icon) {
-      const want = B.iconComponent(d.node.icon, Math.round(d.node.r.w)); const cur = s.component && s.component();
-      // a slot keeping its default glyph would silently show the wrong icon: the library must have it (B.makeIcons)
-      if (!want) throw new Error("icon component missing: " + d.node.icon + "@" + Math.round(d.node.r.w) + " (B.makeIcons on Foundations first)");
+      // the icon the DOM shows, at its rendered size; a slot keeping its default glyph would silently show the wrong icon
+      const r = d.node.r, want = B.iconComponent(d.node.icon); const cur = s.component && s.component();
+      if (!want) throw new Error("icon missing from the Icon set: " + d.node.icon);
       if (cur && cur.id !== want.id) s.swapComponent(want);
+      B.fitIcon(s, r.w, r.h);
     } else if (d.k === "comp") {
       const want = B.variantComponent(d.node.comp, d.node.variant); const cur = s.component && s.component();
       if (want && cur && cur.id !== want.id) s.swapComponent(want);
@@ -412,10 +490,29 @@
         // re-setting an identical fill on a copy drops its token, so only touch decor whose colour really differs
         const want = d.node.bg.tk ? B.token(d.node.bg.tk) : null; const cur = s.tokens && s.tokens.fill;
         if (want ? cur !== want.name : true) { s.fills = fill(d.node.bg); B.bind(s, d.node.bg, "fill"); }
+        // and its size / offset in its parent (Tab's ::after underline spans the tab the page widened: 9d 2026-10-31)
+        B.placePs(d, s);
       }
     }
   };
 
+  /** Puts a decor slot (pseudo-element) at the size and offset the page gives it inside its parent. */
+  B.placePs = function (d, s) {
+    const r = d.node.r, pr = d.par && d.par.r, P = s && s.parent; if (!pr || !P || !r) return 0;
+    if (Math.abs(s.width - r.w) > 0.05 || Math.abs(s.height - r.h) > 0.05) s.resize(Math.max(r.w, 0.01), Math.max(r.h, 0.01));
+    const x = P.x + (r.x - pr.x), y = P.y + (r.y - pr.y); let n = 0;
+    if (Math.abs(s.x - x) > 0.3) { s.x = x; n = 1; } if (Math.abs(s.y - y) > 0.3) { s.y = y; n = 1; }
+    return n;
+  };
+  /** Re-places the decor slots of an instance (and the instances nested in it) once it sits in its parent: an instance
+   *  overridden free-standing and then appended to a flex parent leaves its absolute decor behind (TabsList's selected
+   *  Tab underline sat 2 px low, outside the clip; 9d 2026-10-31). */
+  B.placeDecor = function (inst, n) {
+    const dom = B.ovPlan(inst, n, []); if (!dom) return 0;
+    const shp = B.shapeLeaves(inst).slice(0, dom.length); let k = 0;
+    dom.forEach((d, i) => { const s = shp[i]; if (!s) return; if (d.k === "ps") k += B.placePs(d, s); else if (d.k === "comp") k += B.placeDecor(s, d.node); });
+    return k;
+  };
   /** Turns an icon to the rotation the browser shows (extract2 `rot`, degrees clockwise: a closed disclosure chevron is 270). */
   B.turn = function (s, rot) {
     const want = ((rot || 0) % 360 + 360) % 360, cur = ((Math.round(s.rotation || 0)) % 360 + 360) % 360;
@@ -488,9 +585,10 @@
     for (const k of kids) {
       ctx.depth++; const c = make(k, ctx); ctx.depth--;
       b.appendChild(c);
-      // inline run ("ACME-45" + " " + title): a single-line text carries 3 px of slack (makeText), so the space after it
-      // gives that slack back, keeping the gap the browser shows (a lone space cannot wrap)
-      if (inl && k.t === "tx" && !k.s.trim() && prev && prev.t === "tx" && prev.s.trim() && !(prev.lines > 1)) c.resize(Math.max(k.r.w - 3, 0.3), c.height);
+      // inline run ("ACME-45" + " " + title): the space keeps the browser's width. (It used to give back the 3 px slack
+      // of the text before it, but Penpot now re-measures that auto-width text to its own glyphs, so the slack is gone and
+      // the give-back left a 0.3 px gap: "ACME-45Embed", 9d 2026-10-31.)
+      if (inl && k.t === "tx" && !k.s.trim() && prev && prev.t === "tx" && prev.s.trim() && !(prev.lines > 1)) c.resize(Math.max(k.r.w, 0.3), c.height);
       prev = k;
       if (flex) childProps(c, k, ctx, n);
       // Penpot has no baseline alignment: a baseline row stays top-aligned and each child drops by the offset the browser gave it
@@ -506,7 +604,9 @@
       const W = n.r.w, H = n.r.h, w = h.w;
       const bar = penpot.createRectangle(); bar.name = "rule"; bar.fills = fill(h.col); B.bind(bar, h.col, "fill");
       bar.resize(h.side === 0 || h.side === 2 ? W : w, h.side === 0 || h.side === 2 ? w : H);
-      b.appendChild(bar); if (flex) bar.layoutChild.absolute = true;
+      // bottom layer: an inset shadow paints under the children (ProjectHeader's rule hid the lower half of the selected
+      // Tab's 2 px underline when it was appended on top; 9d 2026-10-31)
+      if (b.insertChild) b.insertChild(0, bar); else b.appendChild(bar); if (flex) bar.layoutChild.absolute = true;
       if (h.side === 0 || h.side === 2) bar.constraintsHorizontal = "leftright"; else bar.constraintsVertical = "topbottom";
       if (h.side === 2) bar.constraintsVertical = "bottom"; if (h.side === 1) bar.constraintsHorizontal = "right";
       ctx.abs.push({ shape: bar, rel: { x: n.r.x + (h.side === 1 ? W - w : 0), y: n.r.y + (h.side === 2 ? H - w : 0) } });
@@ -705,7 +805,26 @@
         if (!(node.t === "ps" || (node.t === "el" && node.st && node.st.abs)) || !node.r) continue;
         const s = penpot.currentPage.getShapeById(id); if (!s) continue;
         s.x = root.x + node.r.x; s.y = root.y + node.r.y; n++;
+        // constraints from where it sits in its parent, so it follows a resized instance like the browser's inset box:
+        // Tab's ::after underline spans the tab at its bottom; with left/top it kept the main's width when a TabsList /
+        // ProjectHeader widened the Tab to its label (35.5 of 62 px, mostly clipped; 9d 2026-10-31)
+        const p = s.parent; if (!p || p.type === "root") continue;
+        const l = s.x - p.x, r = p.x + p.width - (s.x + s.width), t = s.y - p.y, b = p.y + p.height - (s.y + s.height), e = 0.75;
+        const ch = Math.abs(l) < e && Math.abs(r) < e ? "leftright" : Math.abs(r) < e && l > e ? "right" : null;
+        const cv = Math.abs(t) < e && Math.abs(b) < e ? "topbottom" : Math.abs(b) < e && t > e ? "bottom" : null;
+        try { if (ch && s.constraintsHorizontal !== ch) s.constraintsHorizontal = ch; if (cv && s.constraintsVertical !== cv) s.constraintsVertical = cv; } catch (err) {}
       }
+    }
+    return n;
+  };
+  /** After the finish (combine moves the variant roots, and nested instances' absolute decor is dragged off by it), puts
+   *  every nested instance's decor back where the page shows it (B.placeDecor). */
+  B.fixDecor = function (name) {
+    let n = 0;
+    for (const it of LIB[name].items) for (const { n: node, id } of it.map) {
+      if (!(node.comp && node.t === "el")) continue;
+      const s = penpot.currentPage.getShapeById(id);
+      if (s && s.isComponentInstance && s.isComponentInstance() && B.domLeaves(node).some((d) => d.k === "ps" || d.k === "comp")) n += B.placeDecor(s, node);
     }
     return n;
   };
@@ -797,7 +916,7 @@
   /** Removes every existing component set called `name` (removing its container on whichever page holds it removes the components). */
   B.dropOld = async function (name, ms = 90000) {
     const t0 = Date.now(); let n = 0;
-    for (const c of penpot.library.local.components.filter((x) => x.name === name)) {
+    for (const c of B.setComps(name)) {
       const main = c.mainInstance(); if (!main) continue;
       // a variant's parent is its set container; a plain component sits on the page itself, whose root ("Root Frame",
       // the zero uuid) must never be removed: that deletes the whole page. Remove only the set container or the main.
@@ -809,8 +928,8 @@
       if (!sh || sh.id === "00000000-0000-0000-0000-000000000000" || sh.name === "Root Frame") throw new Error("dropOld refused to remove a page root for " + name);
       sh.remove(); n++;
     }
-    while (penpot.library.local.components.some((x) => x.name === name) && Date.now() - t0 < ms) await B.nap(500);
-    return { removed: n, left: penpot.library.local.components.filter((x) => x.name === name).length, ms: Date.now() - t0 };
+    while (B.setComps(name).length && Date.now() - t0 < ms) await B.nap(500);
+    return { removed: n, left: B.setComps(name).length, ms: Date.now() - t0 };
   };
   /** Library level of every set: sets live on the Atoms / Molecules / Organisms page, never on a page of their own. */
   B.LEVEL = { Button: "Atoms", IconButton: "Atoms", Pill: "Atoms", Badge: "Atoms", Avatar: "Atoms", AvatarGroup: "Atoms", Swatch: "Atoms", Shortcut: "Atoms", Heading: "Atoms", WorkspaceAvatar: "Atoms", Input: "Atoms",
@@ -830,7 +949,7 @@
   /** Page cap (rule 8): a level page stays under PAGE_CAP shapes. A file whose sets would push its level page past it gets a
    *  page of its own, "<Level> · <File>"; every other file stays on the level page. Component paths do not change. */
   B.PAGE_CAP = 3000;
-  B.SPLIT_FILES = []; // e.g. "Organisms/Table" once the Organisms page would pass the cap
+  B.SPLIT_FILES = ["Organisms/Table"]; // 9d 2026-10-31: Organisms would pass the cap with the Tabler glyphs
   B.pageOf = function (name, cells) {
     const lvl = B.levelOf(name, cells), e = B.COMP_PATHS && B.COMP_PATHS[name];
     return e && B.SPLIT_FILES.includes(e.level + "/" + e.file) ? e.level + " · " + e.file : lvl;
@@ -839,7 +958,7 @@
    *  The page holding the main must be current. */
   B.applyPath = function (name) {
     const folder = B.folderOf(name); let n = 0;
-    for (const c of penpot.library.local.components.filter((x) => x.name === name)) {
+    for (const c of B.setComps(name)) {
       for (const v of c.variants ? c.variants.variantComponents() : [c]) { if (v.path !== folder) v.path = folder; n++; }
     }
     return { name, folder, comps: n };
@@ -847,7 +966,7 @@
   /** applyPath for a set already built, on whichever page holds it. */
   B.setPath = async function (name) {
     await B.loadPaths();
-    const c = penpot.library.local.components.find((x) => x.name === name); if (!c) throw new Error("no component " + name);
+    const c = B.setComps(name)[0]; if (!c) throw new Error("no component " + name);
     const id = c.mainInstance().id; const p = penpot.currentFile.pages.find((x) => x.getShapeById(id)); if (!p) throw new Error("no page holds " + name);
     await B.page(p.name);
     return Object.assign(B.applyPath(name), { page: p.name });
@@ -905,13 +1024,13 @@
         if (wait > 0) { await B.nap(Math.min(500, wait)); continue; }
         R.phase = "fix";
       } else if (R.phase === "fix") { B.fixAbs(name); B.fixRoots(name); R.phase = "finish"; }
-      else if (R.phase === "finish") { f = B.libFinishStep(name, 40); if (f.phase === "done") { R.phase = "done"; break; } }
+      else if (R.phase === "finish") { f = B.libFinishStep(name, 40); if (f.phase === "done") { R.decor = B.fixDecor(name); R.phase = "done"; break; } }
       last = Date.now() - tb;
       await B.nap(pause);
     }
     const d = B.stat.dim || { bound: 0, literal: 0, samples: {} };
     return { name, done: R.phase === "done", phase: R.phase, call: R.calls, built: L.idx, of: L.cells.length, finish: (L.fin && L.fin.phase) || null,
-      colours: B.stat.bound, hex: B.stat.hex, dims: d.bound, literal: d.literal, samples: d.samples, ms: Date.now() - t0 };
+      colours: B.stat.bound, hex: B.stat.hex, decor: R.decor, dims: d.bound, literal: d.literal, samples: d.samples, ms: Date.now() - t0 };
   };
   /** Runs the finishing phases (components, combine, properties, values) within a time budget, pausing between steps. */
   B.finish = async function (name, ms = 20000, pause = 300) {
@@ -921,7 +1040,7 @@
   };
   /** Token audit of a finished set: how many paints exist and how many are bound to a token. */
   B.audit = function (name) {
-    const c = penpot.library.local.components.find((x) => x.name === name); if (!c) return null;
+    const c = B.setComps(name)[0]; if (!c) return null;
     const vcs = c.variants ? c.variants.variantComponents() : [c]; let paints = 0, bound = 0; const hex = {};
     const walk = (s) => { for (const k of ["fills", "strokes"]) (s[k] || []).forEach((f) => { if (f.fillColor || f.strokeColor) { paints++; const prop = k === "fills" ? "fill" : "strokeColor"; if (s.tokens && s.tokens[prop]) bound++; else { const h = f.fillColor || f.strokeColor; hex[h] = (hex[h] || 0) + 1; } } }); (s.children || []).forEach(walk); };
     vcs.forEach((v) => walk(v.mainInstance()));

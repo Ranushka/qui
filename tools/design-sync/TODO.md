@@ -36,6 +36,17 @@ iteration. If an item is blocked (tab asleep, plugin not answering), write the b
    (`#/dashboard/recent?team-id=a9173937-72c5-8185-8008-bbf8c80db4b4`) sends every pending change (rev 251 → 253 with
    nothing lost, 2026-10-30), then double-click the qui file to reopen it. So on a stall the subagent stops and reports
    "needs flush"; the main session flushes, re-injects keep-awake, and resumes. A real reload is only for a 400.
+   **2026-10-31 update:** the dashboard flush lost unsent work twice (changes made after the shim was lost never left
+   the tab). What works: after any reload, inject the idle-callback timer shim (requestIdleCallback → setTimeout 20 ms,
+   cancelIdleCallback clears both) BEFORE any change, start the keep-awake oscillator — **1 Hz, gain 0.02** (inaudible,
+   but loud enough that Chrome counts the tab as playing audio; gain 0.0001 at 440 Hz was not, and the plugin iframe
+   was throttled to "no heartbeat" while hidden) — and if `__keep.state` is
+   "suspended" give the tab one click on empty canvas (a user gesture), then `resume()`. Confirm one save lands.
+   **Stall cause (found 2026-10-31 12:20):** the tab sends the save but the `update-file` POST stays *pending* forever
+   and never reaches Penpot's nginx (its log stops at the last good save), so it hangs before Penpot (Cloudflare tunnel
+   path, most likely). Penpot sends saves one at a time, so everything queues behind it. Shims don't help; only a reload
+   (which cancels it and loses that one unsaved change) does. Check with claude-in-chrome `read_network_requests`
+   (pattern `update-file`): a `pending` entry = this stall.
    Plugin details: One `execute_code` call ≤ ~90 s of work (the MCP times out at 120 s); reload the builder each call:
    `(0, eval)("(()=>{" + await (await fetch("/qui-tmp/builder2.js?" + Date.now())).text() + "})()")`.
    If calls fail with "suspended" or hang, and the MCP log shows "Duplicate connection", restart the MCP container
@@ -70,6 +81,16 @@ iteration. If an item is blocked (tab asleep, plugin not answering), write the b
 - Yields inside the plugin use `B.nap(ms)` (≤ 500 ms; races setTimeout with a tiny fetch, since a backgrounded tab
   throttles setTimeout — a 300 ms `B.sleep` measured 16 s). Never use long `B.sleep`s in a build.
 - Builder: `tools/design-sync/builder2.js` (push after every edit). Foundations: `foundations.js`.
+- Icons (from 9b2, 2026-10-31): ONE component per Tabler name, path `Icons / <name>`, 24×24 with strokes outlined to
+  filled paths, on page "Icons" (board "Icons", 12 per row). Instances are resized to the rendered size (`B.icon(name, svg,
+  w, h)`; `B.ovSwap` resizes after a swap), and the outline scales with them. `B.iconComponent(name)` looks up by name only.
+  New icon: add it to the store, `node icons-list.mjs <store>` → `icons-tabler.json`, `node outline-icons.mjs` →
+  `icons-outlined.json` (Inkscape), `./push.sh icons-outlined.json icons-outlined.js`, then `await B.page(B.ICON_PAGE);
+  B.makeIcons(JSON.parse(await (await fetch("/qui-tmp/icons-outlined.js")).text()))` (skips existing; it refuses a
+  stroked svg). The old Lucide set is `Icons (lucide) / <size>` on Foundations until 9e.
+  Since 9b3 the icons are ONE variant set `Icons / Icon` (Name). New icon (9e): add its name to the list, `node
+  icons-asis.mjs <names.json>` → `icons-asis.json`, push as `icons-asis.js`, then `await B.page(B.ICON_PAGE);
+  B.addIcons(list)` (appends only missing names into the existing set; never rebuild it with makeIconSet).
 
 ## Items
 
@@ -294,11 +315,223 @@ iteration. If an item is blocked (tab asleep, plugin not answering), write the b
       propagate (tested on house@16, reverted): needs makeIcons to scale strokes + a sweep over every icon copy (or
       rebuild of all sets). 3. known: donut slices are the set's sample plot (~2° off), ⌘ glyph garbled in Shortcut.
 
-- [ ] **9. Tabler icons** (user decision 2026-10-31: qui moves from Lucide to Tabler). The app side is done:
-  `packages/ui/src/icons.ts` maps qui's 171 icon names to Tabler and is exported as `Icons` from `@qui/ui`.
-  extract2.js now reads icon names from the `tabler-icon-<name>` class, and builder2.js bakes the drawn stroke width
-  into each svg before import (`B.scaleStroke`: 2px on a 24 grid → 1.167 at 14px, 1.333 at 16px). To do, in order:
-  re-extract the spec sheet (new store), build the Tabler icon components on Foundations (the old Lucide ones stay
-  until nothing uses them), rebuild every set that holds an icon in dependency order (atoms → molecules →
-  organisms), rebuild the Dashboard on a fresh page, then delete the old Lucide icon components. Check one icon's
-  stored strokeWidth after the first build (expect 1.167 at 14px). Rules 5–8 apply throughout.
+- [ ] **9. Tabler icons** (user decision 2026-10-31: qui moves from Lucide to Tabler). The app side is done and pushed
+  (00c5c4d): `packages/ui/src/icons.ts` maps qui's 171 icon names to Tabler, exported as `Icons` from `@qui/ui`.
+  extract2.js reads icon names from the `tabler-icon-<name>` class; builder2.js bakes the drawn stroke width into
+  each svg before import (`B.scaleStroke`: 2px on a 24 grid -> 1.167 at 14px, 1.333 at 16px). Rules 5-8 apply.
+  Tick 9 once 9a-9e are all ticked.
+  - [x] **9a. Re-extract.** Rebuild `@qui/ui` if dist is stale, capture the spec sheet into a new store, split it,
+    push the spec files. Confirm icons in the store carry Tabler names (e.g. `settings`, `chevron-down`).
+    **Done 2026-10-31** (Penpot not touched): dist current (no src newer), sheet 334 cells / 228 `tabler-icon` svgs / 0
+    lucide → `store-sall25.json`; 208 icon refs, 48 names, all in `@tabler/icons` 3.50 outline (e.g. `settings`,
+    `chevron-down`, `home`, `dots`, `layout-kanban`); 60 spec files split + pushed, server md5 = local; chevron `rot: 270`
+    kept (ListSection 1, NavSidebar 18); svgs store the raw `sw: 2px` (B.scaleStroke scales at import).
+  - [x] **9b. Icon components.** Build the Tabler icon components on their own **"Icons" page** (user, 2026-10-31:
+    not Foundations, to keep pages light; path `Icons / <size>`), leaving the old Lucide ones in place for now. Check
+    one stored strokeWidth (expect 1.167 at 14px, 1.333 at 16px) and export a few to compare with the browser.
+    **Done 2026-10-31, rev 410** (all update-file 200, no backend errors): 61 Tabler components (12px ×5, 14px ×17,
+    16px ×37, 20px ×2) on page "Icons", board "Icons"; strokes 1 / 1.167 / 1.333 / 1.667 at 12/14/16/20, all bound to
+    `txt.icon-secondary`; exports match `#/icons` side by side. Icons 364 shapes, Foundations 977.
+    _Notes: name clashes: the 80 old Lucide components were moved to path `Icons (lucide) / <size>` and their
+    Foundations board renamed "Icons (lucide)" (rev 396). `B.iconComponent` only matches `Icons / `, so it never takes a
+    Lucide glyph for a Tabler one, and existing instances keep working (the link is by id). They stay on Foundations
+    until 9e. List: `node icons-list.mjs store-sall25.json` → `icons-tabler.json` (pushed as `icons-tabler.js`).
+    builder2.js: `B.makeIcons` now runs only on `B.ICON_PAGE` ("Icons"; `await B.page(B.ICON_PAGE)` first), uses one
+    fixed row per size (`B.ICON_ROWS` 12/14/16/20/24) and goes on after the glyphs already in a row, so small batches
+    work (12 per call, ≤ 2 s each); the board grows as needed. The first build went onto Foundations (rev 398–403) before the
+    page decision: those 61 had 0 instances on every page and were removed (board deleted). The Icons page was
+    created with `B.page` and has its Root Frame (zero id); the plugin API cannot reorder pages, so it is last,
+    after "Dashboard · instances" (move it after Foundations by hand if wanted)._
+  - [x] **9b2. Icons the standard way** (user decision 2026-10-31, replaces the per-size components from 9b).
+    One component per icon (`Icons / <name>`, no size in the path), built at Tabler's native 24×24 with every stroke
+    **outlined to a filled path**, so resizing an instance scales the line weight exactly like the browser does
+    (2px at 24 → 1.17 at 14). Instances are sized by their container (Button 14, list row 16, …), like `--node-size`
+    in code. Colour: the fill is bound to the icon token; instances override it as before. Steps:
+    1. Outline the 48 icons in `icons-tabler.json` with Inkscape
+       (`/Applications/Inkscape.app/Contents/MacOS/inkscape in.svg --actions="select-all:all;object-stroke-to-path;export-plain-svg;export-filename:out.svg;export-do"`,
+       tested on settings), then clean each result: drop the root stroke attrs and the invisible 24×24 bounding path,
+       fills → `currentColor`. Keep the script and the outlined set (`icons-outlined.json`, pushed as `.js`).
+    2. Builder: `B.makeIcons` builds one 24px component per name from the outlined svg (no `B.scaleStroke`);
+       `B.iconComponent(name)` looks up by name only; `B.icon(name, svg, w, h)` makes an instance and resizes it to
+       w×h so the outline scales with it (set the inner paths' constraints to scale, or whatever Penpot needs, and
+       prove it: an instance at 14 must export the same as the browser's 14px icon). `B.tint` must bind fills.
+    3. Delete the 61 per-size components from 9b (0 instances; check first) and build the 48 on the Icons page.
+    4. Verify: export settings/check/chevron-down instances at 12, 14, 16 and compare with `#/icons` in the browser.
+    **Done 2026-10-31, rev 421** (all update-file 200, no backend errors): 48 components `Icons / <name>` (24×24, outlined,
+    fills bound to `txt.icon-secondary`) on page "Icons"; the 61 per-size 9b components removed (0 instances on every page,
+    checked first); Icons page 299 shapes; resize proof passed (instance at 14 → settings ring path 11.667 with a 1.167px
+    outline, check at 12 → 8.5×6); exports of settings/check/chevron-down at 12/14/16 match the browser.
+    _Notes: `outline-icons.mjs` (Inkscape stroke-to-path, fills → currentColor, checks no stroke is left) writes
+    `icons-outlined.json`, pushed as `icons-outlined.js`. Resize: Penpot's svg import wraps the paths in a group with
+    `scale` constraints, so resizing the instance board scales every path with no extra settings. Keep Penpot's hidden
+    24×24 `base-background` rect in each icon: without it the group shrinks to the paths' bounds (alert-circle went to
+    20px) and a resized instance scales from the wrong box (a first batch of 12 was built that way, deleted and rebuilt).
+    builder2.js: `B.iconComponent(name)` (path exactly `Icons`, so the Lucide set never matches), `B.collectIcons` keyed
+    by name, `B.makeIcons` 24px only and refuses a stroked svg, `B.icon` resizes the instance to w×h, `B.ovSwap` resizes a
+    swapped icon slot back to the rendered size, `B.tint` already binds path fills; `B.scaleStroke` is now only used for
+    non-icon svgs. Compare: browser vs Penpot ink per glyph is within ~5–10 % at 14/16 px (DPR 1). At 12 px Chrome at
+    DPR 1 draws the 1px stroke as a faint hairline (~3× lighter for settings) while the outline draws a full 1px; the
+    browser's own render of the outlined svg matches Penpot, and at DPR 2 outlined vs stroked are within ±3 %, so this is
+    only Chrome's DPR-1 hairline, not a geometry difference. Sets built before 9b2 still hold instances of the Lucide
+    components (link by id) until 9c/9d rebuild them._
+  - [x] **9b3. Icon: one component, Name dropdown** (user decision 2026-10-31, replaces 9b's per-size and 9b2's outlined
+    icons: "one icon, set the size, pick the icon from the drop down"; Tabler "is designed correctly on a 24 by 24 grid").
+    Done 2026-10-31 (main session), rev 457: variant set `Icons / Icon`, property **Name** = 48 Tabler names, on the Icons
+    page ("Icon" board). Every variant is Tabler's own file exactly as drawn — `@tabler/icons@3.50.0`
+    `icons/outline/<name>.svg` via `icons-asis.mjs` → `icons-asis.json` (pushed as `.js`): 24×24, 2px, real strokes
+    (centred), stroke bound to txt.icon-secondary. No outlining, no per-size copies. Size = resize the instance;
+    Penpot keeps the stroke number on resize, so `B.fitIcon(inst, w, h)` (used by `B.icon` and the slot swap in
+    `B.ovSwap`) also overrides the instance's stroke to the browser's `2 × size / 24` (16 → 1.333, 14 → 1.167).
+    Proof (settings, layout-grid, sparkles, check at 24/16/14): stored strokes 2 / 1.333 / 1.167, SVG export at 8×
+    identical to the browser render of Tabler's file (crisp corners, no seam). By hand in Penpot: resize with scale
+    (K) or set the stroke. The outlined 9b2 components (`Icons (outlined)`, "Icons" board) stay until 9c has moved
+    every set off them; delete them and the Lucide set in 9e (check instances).
+  - [x] **9c. Atoms.** Rebuild every atom set that holds an icon, in dependency order. **Restart from Icon** once 9b3
+    is done: the sets below were built on 9b2's outlined icons.
+    **Done 2026-10-31, rev 483** (all update-file 200): 14 icon-holding atom sets rebuilt on `Icons / Icon` (glyphs at the
+    rendered size, stroke 2·w/24 bound, hex 0), exports match `#/spec/<Name>`; Atoms 1,289 shapes.
+    _Order (atom sets with an icon: spec `t:"sv"` + `icon`, or nesting such an atom): Icon, Spinner, Checkbox,
+    CheckboxGroup, Badge, Button, IconButton, NumberField, Pill, Toggle, IconToggle, AnchorButton, TextButton, Input
+    (Icon is `inst:false` inside other sets, frame + glyph; Shortcut has no icon). Kept from the 9b2 run: `B.tint` skips
+    a paint whose token already matches (Penpot toggles a re-applied token OFF)._
+    _Run 2026-10-31 on 9b3's `Icons / Icon` (progress, updated as sets land; checks per set: B.run, update-file 200,
+    audit hex 0 / all paints bound, every glyph an `Icons / Icon` instance at the rendered size with stroke 2·w/24 bound
+    to its token, export vs `#/spec/<Name>`). Fix: the first `B.run("Icon")` DELETED the whole `Icons / Icon` set (rev 460):
+    `B.dropOld` removed every component named "Icon", and the icon set is called "Icon" too. builder2.js now has
+    `B.setComps(name)` (name match, never a component on path `Icons` / `Icons (…)`), used by dropOld, variantComponent,
+    applyPath, setPath and audit; pushed. The set was rebuilt with `B.makeIconSet(icons-asis)` on the Icons page (48
+    variants, Name, 2px centred strokes on txt.icon-secondary, rev 461; Icons page 646 shapes); nothing had used it yet.
+    Two empty stray "Icon" boards on Atoms removed. `fitIcon` + `tint` cooperate: no stroke-width reset, no token
+    toggled off. Built: Icon 8 (rev 462, settings 14/16/20, sw 1.167/1.333/1.667, 7 tokens), Atoms 1,225; Spinner 2
+    (463, loader-2 16/20), Atoms 1,227; Checkbox 8 (464, check/minus 12 sw 1 on txt.icon-on-color), Atoms 1,232;
+    CheckboxGroup 3 (465), Atoms 1,235. All four exports match `#/spec/<Name>` (export text falls back to serif, as before).
+    **Stopped ~12:10 UTC: needs flush.** Badge's first `B.run` call (12:05 UTC, old Badge dropped, 18/19 variants built,
+    hex 0) was never saved: rev stuck at 465 for 4+ min, no update-file request, no 400, no backend error, and the plugin
+    still answers. After the flush: `B.run("Badge", {restart:true})` (drops the half-built copy), then Button, IconButton,
+    NumberField, Pill, Toggle, IconToggle, AnchorButton, TextButton, Input. If the flush loses the unsaved changes, the
+    old Badge set is back as well: restart still drops it._
+    _After the flush (main session reloaded the tab, shim + 1 Hz keep-awake re-installed, probe rev 466/467): Badge 19
+    (2 calls, rev 468–469, 200), hex 0 (42/42), glyphs check@14/16 sw 1.167/1.333 bound, Atoms 1,237, export matches.
+    **Stopped again: needs flush.** Button `B.run({restart:true})` call 1 (18/18 variants built, rev 470, 200, last
+    update-file 12:15:08 UTC); call 2 (finish/combine, done:true, hex 0 64/64, 11 glyphs plus/chevron-down@16 sw 1.333
+    bound, browser icons are all 16px too; Atoms 1,248 on the plugin's view) was never saved: rev stuck at 470 for ~4 min,
+    no update-file request, no 400, no backend error; `export_shape` of the set failed (the exporter can't see it).
+    After the flush: if rev > 470 and the Button set exports, Button is done; otherwise `B.run("Button", {restart:true})`.
+    Then IconButton, NumberField, Pill, Toggle, IconToggle, AnchorButton, TextButton, Input._
+    _After the 2nd reload (probe rev 471/472; `storage.glyphs`/`storage.setId` re-created — a glyph is the first nested
+    shape whose `component()` is `Icons / Icon`, its icon name is its child group's name): Button 18 (`restart`, 2
+    calls, rev 473–474, 200), hex 0 (64/64), 11 glyphs plus/chevron-down@16 sw 1.333 bound, Atoms 1,248, export matches. IconButton 16 (2 calls, rev 475–476), hex 0 (62/62), 16 glyphs plus@14/16
+    bound, Atoms 1,264, export matches. NumberField 4 (rev 477), hex 0 (32/32), 8 glyphs plus/minus@14/16 bound, Atoms
+    1,272, export matches. Pill 9 (rev 478), hex 0 (29/29), 3 glyphs filter@14/16 bound, Atoms 1,275, export matches
+    (the whole-set export dropped every label twice, a single-variant export shows it: exporter render delay). Toggle 6 (rev 479, path `Atoms / Toggle`), hex 0 (20/20), 1
+    glyph flag@16 bound, Atoms 1,276, export matches. IconToggle 6 (rev 480), hex 0 (21/21), 6 glyphs star@14/16 bound,
+    Atoms 1,282, export matches. AnchorButton 9 (rev 481), hex 0 (17/17), 3 glyphs external-link/paperclip@16 bound,
+    Atoms 1,283, export matches. TextButton 6 (rev 482), hex 0 (13/13), 2 glyphs plus/arrow-right@16 bound, Atoms 1,286,
+    export matches. Input 8 (rev 483), hex 0 (35/35), 3 glyphs search@16 bound, Atoms 1,289, export matches (⌘ garbled,
+    known). Final scan: all 31 Atoms sets hold only `Icons / Icon` glyphs (none outlined/Lucide, none off-size)._
+  - [x] **9d. Molecules and organisms.** Rebuild every molecule and organism set that holds an icon, in order.
+    **Done 2026-10-31, rev 518** (all update-file 200, 0 backend errors): 16 sets rebuilt on `Icons / Icon` (9 molecules,
+    Table file moved whole to `Organisms · Table`, ChangeCell/NavSidebar/ProjectHeader/WorkItemCard), hex 0, every glyph at
+    the rendered size with sw 2·w/24 bound, no `Icons (…)` glyph left; Molecules 746, Organisms 1,677, Organisms · Table
+    1,301; 3 builder fixes (inline-run space, decor constraints/placement, hairline under children).
+    _List (2026-10-31, from `store-sall25.json` icons/nested comps + a `storage.glyphs` scan of every set: 16 sets hold
+    `Icons (lucide)` glyphs or nest a set rebuilt in 9c/9d; none hold `Icons (outlined)`). Molecules: Tab, TabsList
+    (nests Tab), ListItem, ListSection (nests ListItem), StateGroupHeader, Property, RailItem, ViewToolbar, WorkItemRow.
+    Organisms: ChangeCell, TableHead (also nests Checkbox), TableRow (nests TableHead), Table, NavSidebar, ProjectHeader,
+    WorkItemCard. Not needed (no icon, nest nothing rebuilt): TextCell, UserCell, TagCell, DateCell, MoneyCell,
+    NumberCell, ProgressCell, MaskedCell, EmptyCell, TableCell, ChartLegend, DonutChart, LineChart. Start: rev 483,
+    Molecules 733, Organisms 2,937._
+    _Page cap: Organisms has 63 shapes of headroom and its 5 sets to rebuild hold ~640 Lucide glyph shapes (an
+    `Icons / Icon` glyph is a little heavier than a Lucide one), so Organisms will very likely pass 3,000. Plan: after
+    the molecules, set `B.SPLIT_FILES = ["Organisms/Table"]` and rebuild the whole Table file (TableCell too, so the
+    file moves complete) onto `Organisms · Table` — TableCell → TableHead → TableRow → Table (~1,300 shapes off
+    Organisms) — then ChangeCell, NavSidebar, ProjectHeader, WorkItemCard on Organisms._
+    _**Stopped 2026-10-31 ~12:40 UTC before any build: needs flush.** No set rebuilt, nothing changed in Penpot (only
+    reads). Tab 74293166 has an `update-file` POST stuck `pending`; nginx's last update-file is 12:34:45 (200), rev 483.
+    After the flush: start at Tab._
+    _Run 2026-10-31 after the reload (probe rev 484/485; per set: B.run, savecheck revn + 200, audit hex 0, glyphs all
+    `Icons / Icon` at the rendered size with sw 2·w/24 bound, export vs `#/spec/<Name>`, page count). Tab 6 (rev 487),
+    hex 0 (11/11), 1 glyph settings@14 sw 1.167 bound, Molecules 734, export matches. TabsList 2 (rev 488), hex 0 (12/12), no own glyph (nests Tab), Molecules
+    734, export matches. ListItem 10 (rev 489), hex 0 (34/34), 5 glyphs home/chevron-right@16 sw 1.333 bound,
+    Molecules 742, export matches. ListSection 2 (rev 490), hex 0 (46/46), 11 glyphs @16 sw 1.333 bound (closed
+    chevron turned right), Molecules 748, export matches. StateGroupHeader 2 (rev 491), hex 0 (27/27), 3 glyphs
+    circle-dashed@16 / plus@14 bound, Molecules 751, export matches. Property 2 (rev 492), hex 0 (31/31), 3 glyphs
+    users/calendar-event@14 sw 1.167 bound, Molecules 745, export matches. RailItem 2 (rev 493), hex 0 (10/10), 2
+    glyphs box-multiple@16 bound, Molecules 745, export matches. ViewToolbar 2 (rev 494), hex 0 (100/100), 10 glyphs
+    @16 sw 1.333 bound, Molecules 770, export matches. WorkItemRow 4 (rev 495, rebuilt with `restart` rev 496), hex 0
+    (119/119), 12 glyphs sparkles@16 / calendar-event, antenna-bars-5, alert-circle@14 bound, Molecules 746, export
+    matches. Fix: the first build showed "ACME-45Embed" (0.31 px gap): Penpot now re-measures the auto-width id text to its
+    own glyphs (52 vs the browser's 59.4), so item 5's space give-back of 3 px slack left nothing — builder2.js: the space
+    in an inline run keeps the browser's width (3.31); pushed; gap 3.31 in all 4 variants. Molecules scan: no
+    `Icons (…)` glyph left (Molecules 746). Table file: `B.SPLIT_FILES = ["Organisms/Table"]` set in builder2.js, pushed.
+    TableCell 6 (rev 498) on new page `Organisms · Table`, path `Organisms / Table`, hex 0 (9/9), no glyph, export
+    matches; old TableCell dropped from Organisms (2,937 → 2,909), Organisms · Table 29. TableHead 10 (rev 499), hex 0
+    (28/28), 3 glyphs arrow-up/arrow-down/selector@12 sw 1 bound, export matches; Organisms 2,862, Organisms · Table 81. TableRow 6 (rev 500), hex 0 (142/142), export matches;
+    Organisms 2,524, Organisms · Table 419. Table 1 (2 calls, rev 501–502), hex 0 (356/356), export matches.
+    Table file moved whole: `Organisms · Table` holds exactly TableCell, TableHead, TableRow, Table (1,301 shapes); no
+    Table-file set left on Organisms (2,937 → 1,642). ChangeCell 5 (rev 503), path `Organisms / TableCells`, hex 0
+    (24/24), 5 glyphs arrow-up-right/arrow-down-right/minus@14 sw 1.167 bound, Organisms 1,647, export matches.
+    NavSidebar 2 (2 calls, rev 504–505), hex 0 (225/225), 51 glyphs @14/16 bound (closed chevrons right), Organisms
+    1,697, export matches (one export failed "No Penpot instance connected": the plugin websocket closed and reconnected
+    within 2 s; the retry worked). ProjectHeader 4 (2 calls, rev 506–507), hex 0 (108/108), 16 glyphs
+    tractor/link/dots@16, dots@14 bound — but its export had NO underline under the selected tab. Cause (also behind the
+    "faint" TabsList underline and item 6's "uneven underline shades"): Tab's `::after` decor is an absolute rect;
+    (a) its constraints were left/top, so a Tab instance widened to its label (62 px) kept the main's 35.5 px underline;
+    (b) an instance is overridden free-standing and then appended to its flex parent, and the finish step (combine)
+    moves the roots again, which dragged the nested instance's absolute decor 2 px low (y 36.06 in a 36 px tab, clipped).
+    builder2.js fixes, pushed: `B.fixAbs` sets an absolute shape's constraints from where it sits in its parent
+    (full width → leftright, flush bottom → bottom, …); `domLeaves` gives decor (`ps`) slots their parent and
+    `B.placePs` sizes/places them like value bars; new `B.fixDecor(name)` re-places every nested instance's decor right
+    after the finish (`B.run` reports `decor: <moved>`). Rebuilt Tab 6 (rev 508, decor leftright/bottom), TabsList 2
+    (rev 514 after 3 test rebuilds, decor y 34 h 2 w 35.48, export: solid underline). ProjectHeader rebuilt (rev 515):
+    underlines now span each tab (61/73.8/42.3/54.9) at y 34, but the header's 1 px hairline "rule" bar was appended ON
+    TOP of the children and covered the underline's lower half; builder2.js: an inset-hairline bar is inserted as the
+    bottom layer (`insertChild(0, …)`; the browser paints an inset shadow under the children), pushed. ProjectHeader 4
+    (rev 516), hex 0 (108/108), 16 glyphs bound, Organisms 1,705, export matches `#/spec/ProjectHeader` (solid 2 px
+    underline). WorkItemCard 6 (2 calls, rev 517–518), hex 0 (223/223), 25 glyphs @14 sw 1.167 bound, Organisms 1,677,
+    export matches (titles fit on one line in Penpot, two in the browser: the known narrower-font difference, item 8).
+    Final scan (Molecules 9 sets, Organisms 16, Organisms · Table 4): 0 `Icons (lucide)` / `Icons (outlined)` instances,
+    0 icon strokes off 2·w/24. Not touched: the Dashboard pages and "Test · Table" still hold copies of the old (now
+    replaced) Table / Tab / NavSidebar components — 9e rebuilds the Dashboard; the Atoms sets with value bars (built
+    before the fixAbs constraint change) were not rebuilt._
+  - [ ] **9e. Dashboard and clean-up.** Re-capture the Dashboard, rebuild it on a fresh page from instances only,
+    compare with the live page, then delete the old Lucide icon components and the superseded Dashboard page(s)
+    once nothing uses them (check instance counts first).
+    **Dashboard part done 2026-10-31, rev 531 (all update-file 200, 0 backend errors); the clean-up waits for the user
+    (nothing deleted).**
+    _Run 2026-10-31: re-captured `#/examples/dashboard` (1440×2110, root `#root`) → `store-scr-dashboard5.json`, pushed as
+    `scr-dashboard5.js`. Coverage: every qui node has its set + variant; 12 Tabler icons were missing from `Icons / Icon`
+    (alert-octagon, calendar, calendar-clock, clock, download, help-circle, inbox, refresh, target, trending-up,
+    user-check, wallet). `icons-asis.json` regenerated with 60 names (the first 48 byte-identical), pushed. New
+    `B.addIcons(list, max)` appends the missing names as new Name variants INTO the existing variant container
+    (`vc.appendChild(main)` + `setVariantProperty`), so existing instances keep their link (makeIconSet would have
+    orphaned them): 1 test (rev 519) + 11 (rev 520), 60 variants, 0 variantError, same structure as the others (hidden
+    base-background, centred 2px strokes on txt.icon-secondary), export checked; Icons page 731 shapes. Page
+    "Dashboard · Tabler" (rev 521), `B.screenPlan` 80 parts, 10 `B.screenStep` calls (~18–22 s, rev 522–531), 0 warnings.
+    Scan: 2,353 shapes; 97 screen-level instances (NavSidebar, Table, DonutChart ×2, LineChart, TabsList, ListItem ×21,
+    Heading ×17, Badge ×17, LinearProgress ×17, TextButton ×9, Button ×5, IconButton ×2, Input, Avatar, WorkspaceAvatar)
+    + 8 loose glyphs; 583 instance heads in all, every one's main on Atoms / Molecules / Organisms / Organisms · Table /
+    Icons (no copy of a replaced set); 90 glyphs, all `Icons / Icon` at the rendered size (14 / 16 / 24) with stroke
+    2·w/24 bound to a token (7 tokens); 0 `Icons (lucide)` / `Icons (outlined)`; 175 frames (Box 31, Stack 58, Inline 48,
+    Grid 8, List 4, Tabs 1, root "Frame" 1, Icon wrappers 8, "Label" spans 16), 55 text layers. Compared with a live
+    1440×2110 screenshot (scratchpad `v3-side.png`, `v3-overlay.png`, `v3-diff.png`): layout, positions, sizes, colours,
+    content match; diff 85k px (item 8's v2: 96k). Item 8's difference 2 (icon strokes heavier) is gone: glyph weight now
+    matches the browser. Left: the font (Penpot's static IBM Plex Sans is narrower; text sits ~1–2 px lower, "Total spend
+    (domestic + FX)" breaks after "+"), donut sample slices (~2° off), ⌘ garbled. Note: the headless browser kept 3 stray
+    `div#cmp` test overlays from an earlier session over the header (outside `#root`, so the capture was clean); reload
+    before a screenshot._
+    _Clean-up list (scan 2026-10-31, rev 531; per page: `Icons (lucide)` / `Icons (outlined)` instances, copies of
+    replaced/deleted sets):
+    - Dashboard (1,449 shapes): 0 / 0; all 142 instances point at deleted components (the first per-size Lucide icons
+      `Icons / 14|16|24 / <lucide name>` ×100 and path-less old sets: Heading 18, ListItem 11, TextButton 9, Button 3,
+      Badge 3, Tab 3, IconButton 2, ListSection 2, WorkspaceAvatar, Input, Shortcut). Wholly stale.
+    - Dashboard · instances (2,259): **90 `Icons (lucide)`** / 0; 285 copies of replaced sets (TableCell 168, ListItem
+      34, Badge 20, TableRow 15, TableHead 12, ListSection 10, TextButton 9, Button 5, IconButton 4, Tab 4, Table,
+      TabsList, NavSidebar, Input). Superseded by "Dashboard · Tabler".
+    - Test · Table (875): 0 / 0; 211 copies of replaced sets (TableCell 168, Checkbox 15, TableRow 15, TableHead 12,
+      Table).
+    - Foundations, Atoms, Molecules, Organisms, Organisms · Table, Icons, Dashboard · Tabler: 0 / 0, no stale copies.
+    - Old icon mains: 80 `Icons (lucide)` on Foundations (board "Icons (lucide)"), 48 `Icons (outlined)` on Icons
+      (board "Icons"). Only "Dashboard · instances" still uses the Lucide ones; nothing uses the outlined ones.
+    (The "Examples" page no longer exists.) If the user deletes Dashboard · instances first, both old icon sets have 0
+    instances; Dashboard and Test · Table hold only dead links._
