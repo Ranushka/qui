@@ -12,6 +12,15 @@
     font-optical-sizing: auto;
     font-kerning: normal;
   }
+
+  /* One line weight for every icon at every size: Tabler's strokes don't scale with the icon (non-scaling-stroke)
+     and take their width from --icon-stroke, whether the glyph sits in Icon or is drawn straight by a component. */
+  .tabler-icon {
+    stroke-width: var(--icon-stroke);
+  }
+  .tabler-icon * {
+    vector-effect: non-scaling-stroke;
+  }
 }
 
 /* Categorical chart palette (see organisms/ChartShared.tsx for how the slots were chosen). On :root so

@@ -167,7 +167,8 @@ import {
 /**
  * qui's icon set: every glyph the library and playground use, under one stable qui name, drawn by
  * Tabler (MIT, 24px grid, 2px rounded stroke). Components import from here, never from the pack, so
- * swapping the pack means editing only this file. Use as `<Icon icon={Icons.Settings} />`.
+ * swapping the pack means editing only this file (plus the `.tabler-icon` rule in styles.css that gives every
+ * glyph the --icon-stroke line weight). Use as `<Icon icon={Icons.Settings} />`.
  */
 export type Glyph = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
