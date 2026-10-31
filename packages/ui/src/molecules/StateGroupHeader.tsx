@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus } from "../icons";
 import type { NoClass } from "../lib/no-class";
 import { Badge } from "../atoms/Badge";
 import { Box } from "../atoms/Box";

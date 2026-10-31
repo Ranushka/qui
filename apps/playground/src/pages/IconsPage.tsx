@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import { icons } from "lucide-react";
+const icons = QUI.Icons;
 
 type IconName = keyof typeof icons;
 
-const allNames = Object.keys(icons) as IconName[];
+const allNames = Object.keys(icons).sort() as IconName[];
 
-/** Every lucide icon qui can render, searchable; picking one shows the code to use it. */
+/** Every icon in qui's set, searchable; picking one shows the code to use it. */
 export function IconsPage() {
   const [query, setQuery] = React.useState("");
   const [selected, setSelected] = React.useState<IconName>("Settings");
@@ -17,7 +17,7 @@ export function IconsPage() {
     return q ? allNames.filter((n) => n.toLowerCase().includes(q)) : allNames;
   }, [query]);
 
-  const snippet = `import { ${selected} } from "lucide-react";\n<Icon icon={${selected}} />`;
+  const snippet = `import { Icon, Icons } from "@qui/ui";\n<Icon icon={Icons.${selected}} />`;
 
   const copy = async () => {
     await navigator.clipboard.writeText(snippet);
@@ -30,7 +30,7 @@ export function IconsPage() {
       <QUI.Stack gap="1">
         <QUI.Heading level={1} size={4}>Icons</QUI.Heading>
         <QUI.Text color="secondary">
-          qui renders lucide icons through <QUI.Text weight="medium" color="primary">Icon</QUI.Text>, and every icon slot (Button, IconButton, Pill, ListItem, …) takes one. Click an icon to get its code.
+          qui ships its own icon set (drawn by Tabler) as <QUI.Text weight="medium" color="primary">Icons</QUI.Text> and renders them through <QUI.Text weight="medium" color="primary">Icon</QUI.Text>, and every icon slot (Button, IconButton, Pill, ListItem, …) takes one. Click an icon to get its code.
         </QUI.Text>
       </QUI.Stack>
 
@@ -42,7 +42,7 @@ export function IconsPage() {
             </QUI.Box>
             <QUI.Stack gap="1">
               <QUI.Text weight="semibold" color="primary">{selected}</QUI.Text>
-              <QUI.Text variant="caption" color="secondary">{`<Icon icon={${selected}} />`}</QUI.Text>
+              <QUI.Text variant="caption" color="secondary">{`<Icon icon={Icons.${selected}} />`}</QUI.Text>
             </QUI.Stack>
           </QUI.Inline>
           <QUI.Button

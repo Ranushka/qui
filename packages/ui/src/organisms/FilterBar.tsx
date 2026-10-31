@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ListFilter } from "lucide-react";
+import { ListFilter } from "../icons";
 import { Button } from "../atoms/Button";
 import { Checkbox } from "../atoms/Checkbox";
 import { Icon } from "../atoms/Icon";

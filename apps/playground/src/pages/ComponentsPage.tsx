@@ -5,7 +5,7 @@
 //   pnpm --filter playground run docs:gen
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 
 type PropsSpec = Record<string, ReadonlyArray<string | number> | "boolean">;
 

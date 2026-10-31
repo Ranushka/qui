@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete";
-import { Search, X } from "lucide-react";
+import { Search, X } from "../icons";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";

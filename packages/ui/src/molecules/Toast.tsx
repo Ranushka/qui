@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Toast as BaseToast, type ToastManagerAddOptions } from "@base-ui/react/toast";
-import { CircleCheck, CircleX, Info, TriangleAlert, CircleAlert, X } from "lucide-react";
+import { CircleCheck, CircleX, Info, TriangleAlert, CircleAlert, X } from "../icons";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";

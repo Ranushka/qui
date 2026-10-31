@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Check, Circle, CircleDashed, X } from "lucide-react";
+import { Check, Circle, CircleDashed, X } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Check } from "lucide-react";
+import { Check } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass, NoStyle } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";

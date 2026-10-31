@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import { ExternalLink, Menu } from "lucide-react";
 import { pages, redirects } from "./pages";
 import { componentGroups, componentNames } from "./pages/ComponentsPage";
 
@@ -84,7 +83,7 @@ function SidePanel({ route }: { route: string }) {
                 target="_blank"
                 rel="noopener"
                 label={p.title}
-                endIcon={<QUI.Icon icon={ExternalLink} />}
+                endIcon={<QUI.Icon icon={QUI.Icons.ExternalLink} />}
               />
             </QUI.ListItem>
           ))}
@@ -112,7 +111,7 @@ function MobileNav({ route }: { route: string }) {
   React.useEffect(() => setOpen(false), [route]);
   return (
     <QUI.Drawer open={open} onOpenChange={setOpen}>
-      <QUI.DrawerTrigger render={<QUI.IconButton variant="ghost" size="lg" aria-label="Open navigation" icon={<QUI.Icon icon={Menu} />} />} />
+      <QUI.DrawerTrigger render={<QUI.IconButton variant="ghost" size="lg" aria-label="Open navigation" icon={<QUI.Icon icon={QUI.Icons.Menu} />} />} />
       {/* Opened by touch, keep focus off the search box so the phone keyboard doesn't pop up. */}
       <QUI.DrawerContent side="start" aria-label="Playground navigation" initialFocus={(openType) => openType !== "touch"}>
         <QUI.Box grow overflow="auto">

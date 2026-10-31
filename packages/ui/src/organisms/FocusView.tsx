@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Minimize2 } from "lucide-react";
+import { Minimize2 } from "../icons";
 import { Button } from "../atoms/Button";
 import { Heading } from "../atoms/Heading";
 import { Icon } from "../atoms/Icon";

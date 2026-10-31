@@ -5,6 +5,7 @@ export { Button, type ButtonProps } from "./atoms/Button";
 export { IconButton, type IconButtonProps } from "./atoms/IconButton";
 export { Spinner, type SpinnerProps } from "./atoms/Spinner";
 export { Icon, type IconProps } from "./atoms/Icon";
+export * as Icons from "./icons";
 export { Tooltip, type TooltipProps } from "./atoms/Tooltip";
 export { Badge, type BadgeProps } from "./atoms/Badge";
 export { Pill, type PillProps } from "./atoms/Pill";

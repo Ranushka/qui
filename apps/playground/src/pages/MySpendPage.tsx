@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import { AcmeShell } from "../examples/acme/shell";
 import { ClaimDrawer, NewClaimDialog, aed, claimStatusColor, formatDay } from "../examples/acme/claims";
 import { cards, claims as allClaims, people, transactions as allTransactions, type Transaction } from "../examples/acme/spend-data";

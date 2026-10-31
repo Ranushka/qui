@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import { merchants, mileageRate, today, type Claim, type ClaimStatus, type Person } from "./spend-data";
 
 /**

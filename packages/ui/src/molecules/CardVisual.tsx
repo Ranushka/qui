@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
-import { Nfc, Snowflake } from "lucide-react";
+import { Nfc, Snowflake } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 

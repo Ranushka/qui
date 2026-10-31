@@ -25,7 +25,7 @@ import {
   type Updater,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Columns3 } from "lucide-react";
+import { Columns3 } from "../icons";
 import { Checkbox } from "../atoms/Checkbox";
 import { CircularProgress } from "../atoms/CircularProgress";
 import { Icon } from "../atoms/Icon";

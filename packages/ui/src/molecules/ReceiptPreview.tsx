@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FileImage, FileText, Upload } from "lucide-react";
+import { FileImage, FileText, Upload } from "../icons";
 import type { NoClass } from "../lib/no-class";
 import { Box } from "../atoms/Box";
 import { Button } from "../atoms/Button";

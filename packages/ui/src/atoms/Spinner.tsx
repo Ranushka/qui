@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";

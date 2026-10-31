@@ -1,5 +1,5 @@
 import type * as React from "react";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 
 /** Sample data for the "Acme Inc." example screens (list, board, …). */
 

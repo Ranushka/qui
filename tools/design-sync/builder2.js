@@ -3,9 +3,15 @@
 //   (0, eval)("(()=>{" + await (await fetch("/qui-tmp/builder2.js?" + Date.now())).text() + "})()")
 (() => {
   const B = (globalThis.__B = globalThis.__B || {});
+  /** qui components that render one styled text run: in Penpot they are a text layer with the matching text style. */
+  B.TEXT_STYLE_COMPS = ["Text"];
+  /** Components that keep a fixed number of slots and clip them (overflow hidden): a screen sets the width, the slots past
+   *  it are cut off, and only the visible slots are matched against the DOM. */
+  B.CLIP_COMPS = ["TableRow", "Table", "TabsList", "ListSection", "NavSidebar"];
   B.shapes = B.shapes || [];
 
-  const inter = () => penpot.fonts.all.find((f) => f.name === "Inter");
+  /** The Penpot font for a CSS family the page rendered with (IBM Plex Sans for qui), else the qui body font. */
+  const fontFor = (ff) => penpot.fonts.findByName(ff || "IBM Plex Sans") || penpot.fonts.findByName("IBM Plex Sans");
   const fill = (o) => [{ fillColor: o.c, fillOpacity: o.a }];
 
   // ---------- design tokens ----------
@@ -72,7 +78,7 @@
   const DIR = { row: "row", "row-reverse": "row-reverse", column: "column", "column-reverse": "column-reverse" };
   const SIZE = { fix: "fix", hug: "auto", fill: "fill" };
 
-  // ---------- icons: one component per (lucide name, px size), all living on the Foundations page ----------
+  // ---------- icons: one component per (Tabler name, px size), all living on the Foundations page ----------
   // They must be created up front, on that page: a freshly created main instance gets pulled into whichever board is
   // being built, so building and component creation never mix.
   B.collectIcons = function (n, acc = {}) {
@@ -80,6 +86,13 @@
     if (n.t === "sv" && n.icon) acc[n.icon + "@" + Math.round(n.r.w)] = { icon: n.icon, size: Math.round(n.r.w), svg: n.svg };
     (n.ch || []).forEach((c) => B.collectIcons(c, acc));
     return acc;
+  };
+  // the browser scales an svg's stroke with its viewBox (2px on a 24 grid draws 1.17px at 14px); Penpot keeps the
+  // number as px after resizing, so bake the drawn width into the svg before importing it
+  B.scaleStroke = function (svg, w) {
+    const vb = svg.match(/viewBox="[\d.-]+ [\d.-]+ ([\d.]+)/);
+    const k = vb ? w / parseFloat(vb[1]) : 1;
+    return k === 1 ? svg : svg.replace(/stroke-width="([\d.]+)"/g, (_, v) => `stroke-width="${+(parseFloat(v) * k).toFixed(3)}"`);
   };
   B._ic = null;
   B.iconComponent = (name, size) => {
@@ -90,16 +103,24 @@
     if (penpot.currentPage.name !== "Foundations") throw new Error("open the Foundations page first");
     const made = [], have = [];
     // one row per icon size, laid out on a free canvas area below everything else on Foundations
-    const top = (penpot.currentPage.root.children || []).filter((s) => s.name !== "Icons").reduce((m, s) => Math.max(m, s.y + s.height), 0) + 160;
+    const top = B.topShapes().filter((s) => s.name !== "Icons").reduce((m, s) => Math.max(m, s.y + s.height), 0) + 160;
     const row = {}; const sizes = [...new Set(list.map((i) => i.size))].sort((a, b) => a - b);
+    // the glyphs live on an "Icons" board (the page root no longer takes appendChild), one row per size
+    let board = B.topShapes().find((s) => s.name === "Icons" && s.type === "board");
+    const perSize = sizes.map((z) => list.filter((i) => i.size === z).length);
+    if (!board) {
+      board = penpot.createBoard(); board.name = "Icons"; board.x = 0; board.y = top;
+      board.resize(96 + Math.max(...perSize) * 48, 96 + sizes.length * 64);
+      B.bindToken(board, B.token("bg-canvas"), "fill"); board.borderRadius = 12;
+    }
     for (const it of list) {
       if (B.iconComponent(it.icon, it.size)) { have.push(it.icon + "@" + it.size); continue; }
-      const g = penpot.createShapeFromSvg(it.svg.replace(/currentColor/g, "#313435"));
+      const g = penpot.createShapeFromSvg(B.scaleStroke(it.svg, it.size).replace(/currentColor/g, "#313435"));
       if (!g) throw new Error("svg import failed: " + it.icon);
       g.name = it.icon; g.resize(it.size, it.size);
-      penpot.currentPage.root.appendChild(g); // new shapes land in whatever board sits under the viewport centre
+      board.appendChild(g);
       const col = (row[it.size] = (row[it.size] || 0) + 1) - 1;
-      g.x = 48 + col * 48; g.y = top + 96 + sizes.indexOf(it.size) * 64;
+      g.x = board.x + 48 + col * 48; g.y = board.y + 48 + sizes.indexOf(it.size) * 64;
       // lucide strokes are centred; Penpot imports closed shapes with inner strokes (a 1px ellipsis dot then vanishes)
       const centre = (s) => { if (s.strokes && s.strokes.length) s.strokes = s.strokes.map((k) => ({ ...k, strokeAlignment: "center" })); (s.children || []).forEach(centre); };
       centre(g);
@@ -133,7 +154,8 @@
 
   /** Binds the imported shapes of a non-icon svg, in document order, to the tokens recorded per part by extract2. */
   B.bindParts = function (g, parts, color) {
-    const leaves = []; const walk = (x) => { if (x.children && x.children.length) x.children.forEach(walk); else if (x.type !== "group" && x.type !== "board") leaves.push(x); };
+    // Penpot's svg import adds a hidden "base-background" rect of its own: it is no part of the drawing
+    const leaves = []; const walk = (x) => { if (x.children && x.children.length) x.children.forEach(walk); else if (x.type !== "group" && x.type !== "board" && x.name !== "base-background") leaves.push(x); };
     walk(g);
     leaves.forEach((sh, i) => {
       const p = parts[i] || {};
@@ -157,6 +179,20 @@
       if (uniform) { b.strokes = [{ strokeColor: st.bd[0].c, strokeOpacity: st.bd[0].a, strokeWidth: st.bw[0], strokeAlignment: "inner", strokeStyle: "solid" }]; B.bind(b, st.bd[0], "strokeColor"); B.bindDim(b, "bw", st.bw[0], ["strokeWidth"]); }
       else n._sideBorders = true;
     }
+    if (st.sh) {
+      // inset hairlines become side bars (see make); the rest stay shadows
+      const side = (x) => (x.inset && !x.blur && !x.spread && (!x.x !== !x.y) ? (x.y < 0 ? 2 : x.y > 0 ? 0 : x.x < 0 ? 1 : 3) : -1);
+      n._hairlines = st.sh.filter((x) => side(x) >= 0).map((x) => ({ side: side(x), w: Math.abs(x.x || x.y), col: { c: x.c, a: x.a, tk: x.tk } }));
+      st.sh = st.sh.filter((x) => side(x) < 0);
+      // an inset ring (0 0 0 Npx inset, a checkbox's outline) is an inner stroke of N px, unless the box already has a border
+      const ring = st.sh.find((x) => x.inset && !x.x && !x.y && !x.blur && x.spread > 0);
+      if (ring && !(st.bd && st.bd.some(Boolean))) {
+        b.strokes = [{ strokeColor: ring.c, strokeOpacity: ring.a, strokeWidth: ring.spread, strokeAlignment: "inner", strokeStyle: "solid" }];
+        B.bind(b, { c: ring.c, a: ring.a, tk: ring.tk }, "strokeColor");
+        st.sh = st.sh.filter((x) => x !== ring);
+      }
+      if (!st.sh.length) delete st.sh;
+    }
     if (st.sh) b.shadows = st.sh.map((s) => ({ style: s.inset ? "inner-shadow" : "drop-shadow", offsetX: s.x, offsetY: s.y, blur: s.blur, spread: s.spread, hidden: false, color: { color: s.c, opacity: s.a } }));
     if (st.op) b.opacity = st.op;
   }
@@ -169,14 +205,11 @@
     const hit = B._typos.find((x) => x.fs === fs && Math.abs(x.lh - lh) < 0.01 && x.w === wt);
     return hit ? hit.t : null;
   };
-  function makeText(n) {
-    const f = n.f;
-    const t = penpot.createText(n.breaks && n.breaks.length > 1 ? n.breaks.join(" ") : n.s);
-    if (!t) throw new Error("createText failed");
-    t.name = (n.s.trim().replace(/\//g, "∕").slice(0, 40)) || "text";
+  // font, size, weight, line height, letter spacing (and the matching qui text style) of browser text style `f`
+  function textStyle(t, f) {
     const wt = f.fw === "450" ? 400 : parseInt(f.fw);
-    const font = inter();
-    t.fontId = font.fontId; t.fontFamily = "Inter";
+    const font = fontFor(f.ff);
+    t.fontId = font.fontId; t.fontFamily = font.name;
     t.fontVariantId = (wt === 400 ? "regular" : String(wt)) + (f.fst === "italic" ? "italic" : "");
     t.fontWeight = String(wt); t.fontSize = String(f.fs); t.fontStyle = f.fst === "italic" ? "italic" : "normal";
     let lhPx = f.lh || f.fs * 1.21; if (lhPx - Math.floor(lhPx) > 0 && lhPx - Math.floor(lhPx) <= 0.06) lhPx = Math.floor(lhPx);
@@ -186,29 +219,64 @@
     const ty = f.fst !== "italic" && !f.ls ? B.typoFor(+f.fs, +(lhPx / f.fs).toFixed(4), wt) : null;
     // applyTypography leaves the line height at Penpot's default, so restate the style's own value
     if (ty) { t.applyTypography(ty); t.lineHeight = ty.lineHeight; B.stat.styled = (B.stat.styled || 0) + 1; } else B.stat.unstyled = (B.stat.unstyled || 0) + 1;
+  }
+  B.textStyle = textStyle;
+  /** True when text shape `s` does not carry browser style `f` (a bold Total row in a regular cell slot). */
+  B.styleDiffers = (s, f) => String(s.fontWeight) !== String(f.fw === "450" ? 400 : parseInt(f.fw)) || +s.fontSize !== +f.fs || (s.fontStyle || "normal") !== (f.fst === "italic" ? "italic" : "normal") || (s.fontFamily && fontFor(f.ff).name !== s.fontFamily);
+  function makeText(n) {
+    const f = n.f;
+    const t = penpot.createText(n.breaks && n.breaks.length > 1 ? n.breaks.join(" ") : n.s);
+    if (!t) throw new Error("createText failed");
+    t.name = (n.s.trim().replace(/\//g, "∕").slice(0, 40)) || "text";
+    textStyle(t, f);
     t.fills = fill(f); B.bind(t, f, "fill");
     if (f.td) t.textDecoration = f.td.includes("underline") ? "underline" : "line-through";
     // Penpot measures text asynchronously (and not for free-standing shapes), so seed the size the browser measured and
     // only then hand sizing back to Penpot (auto-width / auto-height). Layout resolves immediately with the right sizes.
-    t.resize(Math.max(n.r.w, 1), Math.max(n.r.h, 1));
+    // single-line text gets a few px of slack: Penpot's text renders a hair wider than the browser's and would wrap
+    t.resize(Math.max(n.r.w + (n.lines > 1 ? 0 : 3), 1), Math.max(n.r.h, 1));
     // screens pin single-line text to the size the browser measured; library components keep Penpot hugging the text
-    t.growType = n.lines > 1 ? "auto-height" : B.pinText ? "fixed" : "auto-width";
+    // Penpot's auto-width ignores trailing spaces ("•••• " shrinks to the dots), so such a run keeps the browser's width
+    t.growType = n.lines > 1 ? "auto-height" : B.pinText || /\s$/.test(n.s) ? "fixed" : "auto-width";
     return t;
   }
 
   // ---------- elements ----------
   // Penpot only re-runs auto-layout on geometry changes, not on property edits. So every board is built bottom-up
   // (children attached and all properties set before the board itself is attached) and the root is nudged once at the end.
+  /** In a column, text-align end / center moves the children across: a right-aligned table cell keeps its content flush right. */
+  const TA = { end: "end", right: "end", center: "center" };
   function layoutOf(n, kids) {
+    const L = layoutBase(n, kids); const st = n.st;
+    if (L.dir === "column" && TA[st.ta] && (L.ai === "stretch" || L.ai === "start")) L.ai = TA[st.ta];
+    // a line of inline content follows text-align along the row
+    if (L.inline && TA[st.ta]) L.jc = TA[st.ta];
+    // table cells centre their content vertically (vertical-align: middle, the browser default for td / th)
+    if (st.va != null) { const v = st.va === "top" ? "start" : st.va === "bottom" ? "end" : "center"; if (L.dir === "column") L.jc = v; else { L.ai = v; L.wrap = false; } }
+    return L;
+  }
+  function layoutBase(n, kids) {
     const st = n.st;
-    if (st.d === "flex") return { dir: DIR[st.dir] || "row", wrap: st.wrap, ai: AI[st.ai] || "stretch", jc: JC[st.jc] || "start", gap: st.gap };
+    // a flex-wrap row the browser laid out on one line stays one line: Penpot's children come out a hair wider and
+    // would otherwise wrap the last one (a horizontal CheckboxGroup / RadioGroup)
+    if (st.d === "flex") {
+      const fl = kids.filter((k) => !(k.t === "el" && k.st.abs));
+      const oneLine = !(st.dir || "row").startsWith("column") && fl.every((a) => fl.every((b) => a.r.y < b.r.y + b.r.h - 0.5));
+      return { dir: DIR[st.dir] || "row", wrap: st.wrap && !oneLine, ai: AI[st.ai] || "stretch", jc: JC[st.jc] || "start", gap: st.gap };
+    }
+    // HTML tables: a row lays its cells out side by side; the table and its row groups stack rows
+    if (st.d === "table-row") return { dir: "row", wrap: false, ai: "stretch", jc: "start", gap: [0, 0] };
     if (st.d === "grid") return { dir: "row", wrap: true, ai: AI[st.ai] || "stretch", jc: JC[st.jc] || "start", gap: st.gap };
-    const inlineOnly = kids.every((k) => k.t === "tx" || (k.t === "el" && k.st.d === "inline"));
-    if (inlineOnly) return { dir: "row", wrap: true, ai: "start", jc: "start", gap: [0, 0] };
+    // absolutely placed children (an sr-only label) take no part in the flow
+    const flow = kids.filter((k) => !(k.t === "el" && k.st.abs));
+    const inlineOnly = flow.length > 0 && flow.every((k) => k.t === "tx" || (k.t === "el" && k.st.d === "inline"));
+    // inline content wraps only when the browser broke it over lines; a one-line run (•••• 6187) never wraps
+    if (inlineOnly) { const ys = flow.map((k) => k.r.y); return { dir: "row", wrap: Math.max(...ys) - Math.min(...ys) > 2, ai: "start", jc: "start", gap: [0, 0], inline: true }; }
     return { dir: "column", wrap: false, ai: "stretch", jc: "start", gap: [0, 0] };
   }
   function nameFor(n, kids) {
     if (n.comp) return n.comp;
+    if (n.prim) return n.prim;
     if (kids.length === 1 && kids[0].t === "tx") return "Label";
     if (kids.length === 1 && kids[0].t === "sv") return "Icon";
     return n.tag === "button" || n.tag === "a" ? n.tag : "Frame";
@@ -233,6 +301,8 @@
       B._vc[name] = sets.flatMap((c) => (c.variants ? c.variants.variantComponents() : [c]));
     }
     if (!variant) return null;
+    // a one-variant set is a plain component (Penpot cannot combine one): it stands for its only variant
+    if (B._vc[name].length === 1) { const vp = B._vc[name][0].variantProps; if (!vp || !Object.keys(vp).length) return B._vc[name][0]; }
     return B._vc[name].find((vc) => Object.entries(variant).every(([k, v]) => vc.variantProps && vc.variantProps[k] === v)) || null;
   };
   /** The overridable pieces of a DOM node, in order: text runs, icons, nested component instances, decor dots. */
@@ -243,54 +313,114 @@
     else if (n.t === "ps") out.push({ k: "ps", node: n });
     else if (n.t === "el") {
       if (!top && n.comp && n.comp !== owner && n.inst !== false && n.variant && B.variantComponent(n.comp, n.variant)) out.push({ k: "comp", node: n });
-      else for (const c of expand(n.ch)) B.domLeaves(c, out, false, owner);
+      else for (const c of expand(n.ch)) {
+        // a value-driven bar (LinearProgress' indicator, a slider fill / thumb): an absolute, childless, painted box whose
+        // size and offset follow the value, so it is a slot too (resized and moved to what the page shows)
+        if (B.isBar(c)) out.push({ k: "bx", node: c, par: n });
+        else B.domLeaves(c, out, false, owner);
+      }
     }
     return out;
   };
+  B.isBar = (c) => c.t === "el" && !c.comp && !(c.ch || []).length && c.st && c.st.abs && !!c.st.bg;
   B.shapeLeaves = function (shape, out = [], top = true) {
     if (shape.type === "text") out.push(shape);
     else if (shape.type === "rectangle" && shape.name === "decor") out.push(shape);
+    else if (!top && shape.type === "board" && !(shape.children || []).length && shape.layoutChild && shape.layoutChild.absolute && shape.fills && shape.fills.length) out.push(shape);
     else if (!top && shape.isComponentHead && shape.isComponentHead()) out.push(shape);
+    // a non-icon svg (a chart's plot, a progress ring) is one leaf: its paths and svg texts are not slots
+    else if (!top && shape.name === "svg" && shape.type === "group") out.push(shape);
     else if (shape.children) for (const c of shape.children) B.shapeLeaves(c, out, false);
     return out;
   };
   /** Applies the text / icon / nested-component differences between a plain variant instance and what the page renders. */
   B.override = function (inst, n, warn) {
-    let dom = B.domLeaves(n), shp = B.shapeLeaves(inst);
-    if (dom.length !== shp.length) { (warn || []).push(`${n.comp}: ${dom.length} dom leaves vs ${shp.length} shapes`); return false; }
-    // pass 1: swaps (these replace shapes)
-    dom.forEach((d, i) => {
-      const s = shp[i];
-      if (d.k === "sv" && d.node.icon) {
-        const want = B.iconComponent(d.node.icon, Math.round(d.node.r.w)); const cur = s.component && s.component();
-        if (want && cur && cur.id !== want.id) s.swapComponent(want);
-      } else if (d.k === "comp") {
-        const want = B.variantComponent(d.node.comp, d.node.variant); const cur = s.component && s.component();
-        if (want && cur && cur.id !== want.id) s.swapComponent(want);
+    const dom = B.ovPlan(inst, n, warn); if (!dom) return false;
+    const shp0 = B.shapeLeaves(inst);
+    dom.forEach((d, i) => B.ovSwap(d, shp0[i])); // pass 1: swaps (these replace shapes)
+    const shp = B.shapeLeaves(inst).slice(0, dom.length);
+    dom.forEach((d, i) => B.ovContent(d, shp[i], n, warn)); // pass 2: content
+    B.fitWrap(inst, n);
+    return true;
+  };
+  /** A wrap row the browser broke over lines (a legend in a narrow card) wraps in the instance too: the set keeps a row the
+   *  spec sheet laid on one line unwrapped, so the screen's copy turns wrapping back on. */
+  B.fitWrap = function (inst, n) {
+    if (!inst.flex || !n.st || !n.st.wrap || n.st.d !== "flex" || !String(n.st.dir || "").startsWith("row")) return;
+    const ys = (n.ch || []).filter((k) => k.r && !(k.st && k.st.abs)).map((k) => k.r.y);
+    if (ys.length > 1 && Math.max(...ys) - Math.min(...ys) > 2 && inst.flex.wrap !== "wrap") inst.flex.wrap = "wrap";
+  };
+  /** The DOM leaves an instance's slots take (null, with a warning, when they do not fit its shape leaves). */
+  B.ovPlan = function (inst, n, warn) {
+    let dom = B.domLeaves(n); const shp = B.shapeLeaves(inst);
+    if (B.CLIP_COMPS.includes(n.comp)) {
+      // what the screen clips away (rows below a scrolled table's edge) has no slot to fill
+      const r = n.r; dom = dom.filter((d) => d.node.r.y < r.y + r.h - 0.5 && d.node.r.x < r.x + r.w - 0.5);
+      if (dom.length > shp.length) { (warn || []).push(`${n.comp}: ${dom.length} visible items vs ${shp.length} slots`); return null; }
+    }
+    else if (dom.length !== shp.length) { (warn || []).push(`${n.comp}: ${dom.length} dom leaves vs ${shp.length} shapes`); return null; }
+    return dom;
+  };
+  /** Override pass 1 for one leaf: swap an icon / nested instance to the component the DOM shows. */
+  B.ovSwap = function (d, s) {
+    if (!s) return;
+    if (d.k === "sv" && d.node.icon) {
+      const want = B.iconComponent(d.node.icon, Math.round(d.node.r.w)); const cur = s.component && s.component();
+      // a slot keeping its default glyph would silently show the wrong icon: the library must have it (B.makeIcons)
+      if (!want) throw new Error("icon component missing: " + d.node.icon + "@" + Math.round(d.node.r.w) + " (B.makeIcons on Foundations first)");
+      if (cur && cur.id !== want.id) s.swapComponent(want);
+    } else if (d.k === "comp") {
+      const want = B.variantComponent(d.node.comp, d.node.variant); const cur = s.component && s.component();
+      if (want && cur && cur.id !== want.id) s.swapComponent(want);
+    }
+  };
+  /** Override pass 2 for one leaf: text, tint, decor, or the nested instance's own overrides. */
+  B.ovContent = function (d, s, n, warn) {
+    {
+      if (!s) return;
+      // plain text in a slot that holds a nested instance (a TableCell's TextCell): the text goes into that instance
+      if (d.k === "tx" && s.type !== "text") {
+        const c = s.component && s.component();
+        if (!c || !B.override(s, { t: "el", comp: c.name, st: {}, ch: [d.node] }, warn)) (warn || []).push(`${n.comp}: text "${d.node.s}" has no text slot`);
+        return;
       }
-    });
-    shp = B.shapeLeaves(inst);
-    // pass 2: content
-    dom.forEach((d, i) => {
-      const s = shp[i]; if (!s) return;
+      if (d.k === "comp") {
+        B.override(s, d.node, warn);
+        // a slot instance takes the size the screen gives it: column width, row height
+        const r = d.node.r;
+        if (Math.abs(s.width - r.w) > 0.5 || Math.abs(s.height - r.h) > 0.5) s.resize(Math.max(r.w, 0.01), Math.max(r.h, 0.01));
+        return;
+      }
+      if (d.k === "bx") {
+        const r = d.node.r, pr = d.par.r, P = s.parent;
+        if (Math.abs(s.width - r.w) > 0.3 || Math.abs(s.height - r.h) > 0.3) s.resize(Math.max(r.w, 0.01), Math.max(r.h, 0.01));
+        if (P) { const x = P.x + (r.x - pr.x), y = P.y + (r.y - pr.y); if (Math.abs(s.x - x) > 0.3) s.x = x; if (Math.abs(s.y - y) > 0.3) s.y = y; }
+        return;
+      }
       if (d.k === "tx") {
         const t = d.node;
         if (s.characters !== t.s) s.characters = t.s;
-        s.resize(Math.max(t.r.w, 1), Math.max(t.r.h, 1)); s.growType = t.lines > 1 ? "auto-height" : "auto-width";
+        // a slot whose text the page styles differently (bold total row, semibold count) takes the page's style
+        if (B.styleDiffers(s, t.f)) { textStyle(s, t.f); B.stat.overrides = (B.stat.overrides || 0) + 1; }
+        s.resize(Math.max(t.r.w, 1), Math.max(t.r.h, 1)); s.growType = t.lines > 1 ? "auto-height" : /\s$/.test(t.s) ? "fixed" : "auto-width";
         const curTok = s.tokens && s.tokens.fill; const wantTok = t.f.tk ? B.token(t.f.tk) : null;
         if (wantTok) { if (curTok !== wantTok.name) { B.bindToken(s, wantTok, "fill"); B.stat.overrides = (B.stat.overrides || 0) + 1; } }
         else { const cur = s.fills && s.fills[0] && s.fills[0].fillColor; if (cur && cur.toLowerCase() !== t.f.c.toLowerCase()) { s.fills = fill(t.f); B.stat.hex++; } }
-      } else if (d.k === "sv") B.tint(s, d.node.color);
+      } else if (d.k === "sv" && d.node.icon) { B.tint(s, d.node.color); B.turn(s, d.node.rot); }
+      // a non-icon svg keeps its component's drawing: a copy cannot re-plot a chart (the set plots the app's sample data)
       else if (d.k === "ps") {
         // re-setting an identical fill on a copy drops its token, so only touch decor whose colour really differs
         const want = d.node.bg.tk ? B.token(d.node.bg.tk) : null; const cur = s.tokens && s.tokens.fill;
         if (want ? cur !== want.name : true) { s.fills = fill(d.node.bg); B.bind(s, d.node.bg, "fill"); }
       }
-      else if (d.k === "comp") B.override(s, d.node, warn);
-    });
-    return true;
+    }
   };
 
+  /** Turns an icon to the rotation the browser shows (extract2 `rot`, degrees clockwise: a closed disclosure chevron is 270). */
+  B.turn = function (s, rot) {
+    const want = ((rot || 0) % 360 + 360) % 360, cur = ((Math.round(s.rotation || 0)) % 360 + 360) % 360;
+    if (want !== cur) s.rotate(want - cur);
+  };
   // creates the shape for node n (detached from any parent) with its whole subtree built
   function make(n, ctx) {
     // a subtree already built by B.screenStep: reuse its board (it sits at its final screen position)
@@ -299,11 +429,14 @@
     if (n.t === "sv") {
       let s;
       if (n.icon) { s = B.icon(n.icon, n.svg, n.r.w, n.r.h); B.tint(s, n.color); }
+      // an invisible icon still holds its room (the hidden sort arrow of an unsorted column)
       else {
-        s = penpot.createShapeFromSvg(n.svg.replace(/currentColor/g, n.color.c)); s.name = "svg"; s.resize(n.r.w, n.r.h);
+        s = penpot.createShapeFromSvg(B.scaleStroke(n.svg, n.r.w).replace(/currentColor/g, n.color.c)); s.name = "svg"; s.resize(n.r.w, n.r.h);
         if (n.parts) B.bindParts(s, n.parts, n.color);
         else B.tint(s, n.color);
       }
+      if (n.op === 0) s.opacity = 0;
+      B.turn(s, n.rot);
       ctx.map.push({ n, id: s.id }); return s;
     }
     if (n.t === "ps") {
@@ -313,43 +446,70 @@
       ctx.map.push({ n, id: r.id }); return r;
     }
     const st = n.st;
-    if (ctx.depth > 0 && n.comp && n.inst !== false && n.variant) {
-      const vc = B.variantComponent(n.comp, n.variant);
-      if (vc) {
+    if (ctx.depth > 0 && n.comp && n.comp !== ctx.owner && n.inst !== false && !B.TEXT_STYLE_COMPS.includes(n.comp)) {
+      // hard rule: a qui component is only ever an instance of its Penpot component, never redrawn as plain layers
+      const vc = n.variant && B.variantComponent(n.comp, n.variant);
+      if (!vc) throw new Error("no Penpot component for " + n.comp + " " + JSON.stringify(n.variant || {}) + ": build its set first");
+      {
         const inst = vc.instance();
         const flexSz = inst.flex ? [inst.flex.horizontalSizing, inst.flex.verticalSizing] : null;
-        B.override(inst, n, ctx.warn);
-        inst.resize(Math.max(n.r.w, 0.01), Math.max(n.r.h, 0.01));
-        if (flexSz) { inst.flex.horizontalSizing = flexSz[0]; inst.flex.verticalSizing = flexSz[1]; }
-        ctx.map.push({ n, id: inst.id }); ctx.instances = (ctx.instances || 0) + 1;
-        return inst;
+        if (!B.override(inst, n, ctx.warn)) { inst.remove(); throw new Error(n.comp + " " + JSON.stringify(n.variant) + " holds content its component has no slot for: give the component a slot (or a local cell component) first"); }
+        else {
+          inst.resize(Math.max(n.r.w, 0.01), Math.max(n.r.h, 0.01));
+          // a clipping component keeps the size the screen gives it in both directions; the rest hug as their main does
+          if (flexSz) { const clip = B.CLIP_COMPS.includes(n.comp); inst.flex.horizontalSizing = clip ? "fix" : flexSz[0]; inst.flex.verticalSizing = clip ? "fix" : flexSz[1]; }
+          ctx.map.push({ n, id: inst.id }); ctx.instances = (ctx.instances || 0) + 1;
+          return inst;
+        }
       }
     }
     const kids = expand(n.ch);
     const b = penpot.createBoard();
-    b.name = nameFor(n, kids); b.clipContent = !!st.clip;
+    b.name = nameFor(n, kids); b.clipContent = !!st.clip || (ctx.depth === 0 && B.CLIP_COMPS.includes(n.comp));
     b.resize(Math.max(n.r.w, 0.01), Math.max(n.r.h, 0.01));
     applyPaint(b, n);
     ctx.map.push({ n, id: b.id });
-    let flex = null;
+    let flex = null, inl = false;
     if (kids.length) {
-      const L = layoutOf(n, kids);
+      const L = layoutOf(n, kids); inl = !!L.inline;
       flex = b.addFlexLayout();
       flex.dir = L.dir; flex.wrap = L.wrap ? "wrap" : "nowrap"; flex.alignItems = L.ai; flex.justifyContent = L.jc;
       flex.rowGap = L.gap[0]; flex.columnGap = L.gap[1];
-      // padding is the CSS padding (a space token); Penpot strokes never take layout room, so the border is not added in
-      // and a hugging bordered box comes out 2 x border narrower than the browser's
-      flex.topPadding = st.pad[0]; flex.rightPadding = st.pad[1]; flex.bottomPadding = st.pad[2]; flex.leftPadding = st.pad[3];
-      ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"].forEach((p, i) => B.bindDim(b, "space", st.pad[i], [p]));
+      // Penpot strokes never take layout room, so a side with a border pads by CSS padding + border (as the browser lays
+      // it out); only a borderless side keeps its space token
+      const pad = st.pad.map((p, i) => p + (st.bw[i] || 0));
+      flex.topPadding = pad[0]; flex.rightPadding = pad[1]; flex.bottomPadding = pad[2]; flex.leftPadding = pad[3];
+      ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"].forEach((p, i) => { if (!st.bw[i]) B.bindDim(b, "space", st.pad[i], [p]); });
       B.bindDim(b, "space", L.gap[0], ["rowGap"]); B.bindDim(b, "space", L.gap[1], ["columnGap"]);
       if (n.comp && n.sz.h === "fix") B.bindDim(b, "height", n.r.h, ["height"]);
       flex.horizontalSizing = n.sz.w === "hug" ? "auto" : "fix"; flex.verticalSizing = n.sz.h === "hug" ? "auto" : "fix";
     }
+    let prev = null;
     for (const k of kids) {
       ctx.depth++; const c = make(k, ctx); ctx.depth--;
       b.appendChild(c);
-      if (flex) childProps(c, k, ctx);
+      // inline run ("ACME-45" + " " + title): a single-line text carries 3 px of slack (makeText), so the space after it
+      // gives that slack back, keeping the gap the browser shows (a lone space cannot wrap)
+      if (inl && k.t === "tx" && !k.s.trim() && prev && prev.t === "tx" && prev.s.trim() && !(prev.lines > 1)) c.resize(Math.max(k.r.w - 3, 0.3), c.height);
+      prev = k;
+      if (flex) childProps(c, k, ctx, n);
+      // Penpot has no baseline alignment: a baseline row stays top-aligned and each child drops by the offset the browser gave it
+      if (flex && st.ai === "baseline" && !flex.dir.startsWith("column") && c.layoutChild && !(k.st && k.st.abs)) {
+        const dy = k.r.y - (n.r.y + st.pad[0] + st.bw[0]);
+        if (dy > 0.3) c.layoutChild.topMargin = +dy.toFixed(2);
+      }
       if (k.t === "ps" || (k.t === "el" && k.st.abs)) ctx.abs.push({ shape: c, rel: k.r });
+    }
+    // an inset hairline (0 blur, 0 spread, offset on one side) is a rule on that side: drawn as a bar, since a board's inner
+    // shadow in Penpot paints over its children (a header row's bottom rule hid the header text)
+    for (const h of n._hairlines || []) {
+      const W = n.r.w, H = n.r.h, w = h.w;
+      const bar = penpot.createRectangle(); bar.name = "rule"; bar.fills = fill(h.col); B.bind(bar, h.col, "fill");
+      bar.resize(h.side === 0 || h.side === 2 ? W : w, h.side === 0 || h.side === 2 ? w : H);
+      b.appendChild(bar); if (flex) bar.layoutChild.absolute = true;
+      if (h.side === 0 || h.side === 2) bar.constraintsHorizontal = "leftright"; else bar.constraintsVertical = "topbottom";
+      if (h.side === 2) bar.constraintsVertical = "bottom"; if (h.side === 1) bar.constraintsHorizontal = "right";
+      ctx.abs.push({ shape: bar, rel: { x: n.r.x + (h.side === 1 ? W - w : 0), y: n.r.y + (h.side === 2 ? H - w : 0) } });
     }
     if (n._sideBorders) {
       st.bd.forEach((col, i) => {
@@ -367,23 +527,40 @@
   }
 
   // per-child layout properties, set after the child is attached to its flex parent
-  function childProps(c, k, ctx) {
+  function childProps(c, k, ctx, n) {
     const lc = c.layoutChild; if (!lc) return;
     if (k.t === "tx") { lc.horizontalSizing = k.lines > 1 ? "fill" : "auto"; lc.verticalSizing = "auto"; return; }
     if (k.t === "sv") { lc.horizontalSizing = "fix"; lc.verticalSizing = "fix"; return; }
     if (k.t === "ps") { lc.absolute = true; return; }
     const st = k.st;
     if (st.abs) { lc.absolute = true; return; }
-    if (k.sz.w === "fill") lc.horizontalSizing = "fill";
-    if (k.sz.h === "fill") lc.verticalSizing = "fill";
+    // growing along the main axis of a parent that hugs it is circular in Penpot (the child collapses to its content,
+    // a Slider's control row to its 4px track): keep the browser's size instead
+    const pfl = c.parent && c.parent.flex; const pcol = pfl && pfl.dir.startsWith("column");
+    const hugMain = (axis) => pfl && (axis === "h" ? pcol && pfl.verticalSizing === "auto" : !pcol && pfl.horizontalSizing === "auto");
+    if (k.sz.w === "fill" && !hugMain("w")) lc.horizontalSizing = "fill";
+    if (k.sz.h === "fill" && !hugMain("h")) lc.verticalSizing = "fill";
+    // Penpot stretches even fixed-size children across a "stretch" parent; the browser keeps their own size
+    const pf = c.parent && c.parent.flex;
+    if (pf && pf.alignItems === "stretch") {
+      const col = pf.dir === "column" || pf.dir === "column-reverse";
+      if ((col && k.sz.w !== "fill") || (!col && k.sz.h !== "fill")) lc.alignSelf = "start";
+    }
     const m = st.mar; if (m.some((x) => x)) { lc.topMargin = m[0]; lc.rightMargin = m[1]; lc.bottomMargin = m[2]; lc.leftMargin = m[3]; ["marginTop", "marginRight", "marginBottom", "marginLeft"].forEach((p, i) => B.bindDim(c, "space", m[i], [p])); }
     if (st.minW) lc.minWidth = st.minW;
     if (st.maxW) lc.maxWidth = st.maxW;
+    // a relatively positioned, start-aligned child in a stack keeps the offset the browser gave it (a range Slider's
+    // fill starts at its low thumb, `left: 20%`): Penpot has no relative offsets, so it becomes a left margin
+    if (n && st.pos === "relative" && pf && pf.dir.startsWith("column") && (lc.alignSelf === "start" || pf.alignItems === "start")) {
+      const dx = k.r.x - (n.r.x + n.st.pad[3] + (n.st.bw[3] || 0)) - (m[3] || 0);
+      if (dx > 0.5) lc.leftMargin = (m[3] || 0) + dx;
+    }
   }
 
   /** Builds a tree into a free-standing board at (x, y); returns { shape, map }. */
   B.buildRoot = function (tree, x, y) {
-    const ctx = { map: [], abs: [], depth: 0, warn: [] };
+    // owner: the set being built; a node tagged with its own component (Input's inner <input>) is drawn as part of it
+    const ctx = { map: [], abs: [], depth: 0, warn: [], owner: tree.comp };
     const root = make(tree, ctx);
     root.x = x; root.y = y;
     for (const a of ctx.abs) { a.shape.x = x + a.rel.x; a.shape.y = y + a.rel.y; }
@@ -397,7 +574,9 @@
 
   // ---------- screens: too big for one call, so subtrees are built first (one call each) and the skeleton last ----------
   /** Plans screen `key`: post-order list of the largest subtrees of at most `max` nodes (whole screen = last part). */
-  B.screenPlan = function (key, tree, X, Y, max = 120) {
+  // parts of a few dozen nodes keep each save batch small; a component instance is never split (rule 1): a big instance
+  // part is placed whole and only its overrides are spread over several yields / calls (B.screenStep)
+  B.screenPlan = function (key, tree, X, Y, max = 60) {
     const count = (n) => (n._n = 1 + (n.ch || []).reduce((a, c) => a + count(c), 0));
     count(tree);
     const parts = [];
@@ -412,28 +591,66 @@
     return { parts: parts.length, sizes: parts.map((p) => p._n) };
   };
   const SCR = (globalThis.__scr = globalThis.__scr || {});
-  /** Builds the next parts of screen `key` for up to `ms`; the final step builds the root board from them. */
-  B.screenStep = function (key, ms = 40000) {
-    const S = SCR[key]; const t0 = Date.now(); B.pinText = true;
-    while (S.idx < S.parts.length && Date.now() - t0 < ms) {
-      const n = S.parts[S.idx++];
-      const ctx = { map: [], abs: [], depth: 1, warn: [] };
-      const s = make(n, ctx);
-      penpot.currentPage.root.appendChild(s);
-      s.x = S.X + n.r.x; s.y = S.Y + n.r.y;
-      for (const a of ctx.abs) { a.shape.x = S.X + a.rel.x; a.shape.y = S.Y + a.rel.y; }
-      n._pre = s.id; n._preMap = ctx.map; (S.warn = S.warn || []).push(...ctx.warn);
-      B.flushTokens();
+  const isInst = (n) => n.t === "el" && n.comp && n.inst !== false && n.variant && !B.TEXT_STYLE_COMPS.includes(n.comp);
+  /** Builds the next parts of screen `key` for up to `ms`, pausing `pause` ms after each part / few overrides so the tab
+   *  repaints and saves; the final step builds the root board from them. Call (await) until it returns done:true / a root.
+   *  An instance part over `big` nodes is staged: placed first, then its slot overrides `per` leaves at a time, resumable across calls. */
+  B.screenStep = async function (key, ms = 20000, pause = 300, big = 60, per = 2) {
+    const S = SCR[key]; const t0 = Date.now(); B.pinText = true; S.warn = S.warn || []; S.calls = (S.calls || 0) + 1;
+    const page = penpot.currentPage; const left = () => ms - (Date.now() - t0); let last = 0;
+    while (S.idx < S.parts.length && left() > last * 1.2) {
+      const n = S.parts[S.idx]; const tb = Date.now();
+      if (isInst(n) && n._n > big) {
+        // staged instance: phases place -> swap -> content -> size, `per` slot leaves per batch
+        const C = (S.cur = S.cur || { phase: "place", i: 0 });
+        if (C.phase === "place") {
+          const vc = B.variantComponent(n.comp, n.variant);
+          if (!vc) throw new Error("no Penpot component for " + n.comp + " " + JSON.stringify(n.variant) + ": build its set first");
+          const inst = vc.instance(); page.root.appendChild(inst); inst.x = S.X + n.r.x; inst.y = S.Y + n.r.y;
+          C.id = inst.id; C.flexSz = inst.flex ? [inst.flex.horizontalSizing, inst.flex.verticalSizing] : null;
+          C.dom = B.ovPlan(inst, n, S.warn);
+          if (!C.dom) { inst.remove(); throw new Error(n.comp + " " + JSON.stringify(n.variant) + " holds content its component has no slot for: give the component a slot first"); }
+          C.phase = "swap";
+        } else {
+          const inst = page.getShapeById(C.id); if (!inst) throw new Error("staged instance " + n.comp + " vanished");
+          const shp = B.shapeLeaves(inst); const end = Math.min(C.dom.length, C.i + per);
+          if (C.phase === "swap") { for (; C.i < end; C.i++) B.ovSwap(C.dom[C.i], shp[C.i]); if (C.i >= C.dom.length) { C.phase = "content"; C.i = 0; } }
+          else if (C.phase === "content") { for (; C.i < end; C.i++) B.ovContent(C.dom[C.i], shp[C.i], n, S.warn); if (C.i >= C.dom.length) C.phase = "size"; }
+          else if (C.phase === "size") {
+            inst.resize(Math.max(n.r.w, 0.01), Math.max(n.r.h, 0.01));
+            if (C.flexSz) { const clip = B.CLIP_COMPS.includes(n.comp); inst.flex.horizontalSizing = clip ? "fix" : C.flexSz[0]; inst.flex.verticalSizing = clip ? "fix" : C.flexSz[1]; }
+            n._pre = inst.id; n._preMap = [{ n, id: inst.id }]; S.cur = null; S.idx++;
+          }
+        }
+      } else {
+        const ctx = { map: [], abs: [], depth: 1, warn: [] };
+        const s = make(n, ctx);
+        page.root.appendChild(s);
+        s.x = S.X + n.r.x; s.y = S.Y + n.r.y;
+        for (const a of ctx.abs) { a.shape.x = S.X + a.rel.x; a.shape.y = S.Y + a.rel.y; }
+        n._pre = s.id; n._preMap = ctx.map; S.warn.push(...ctx.warn); S.idx++;
+      }
+      B.flushTokens(); last = Date.now() - tb;
+      await B.nap(pause);
     }
-    let root = null;
-    if (S.idx >= S.parts.length && !S.root) {
-      const r = B.buildRoot(S.tree, S.X, S.Y); S.root = r.shape.id; S.map = r.map; S.warn.push(...r.warn); B.flushTokens(); root = r.shape.id;
+    if (S.idx >= S.parts.length && !S.root && left() > 0) {
+      const r = B.buildRoot(S.tree, S.X, S.Y); S.root = r.shape.id; S.map = r.map; S.warn.push(...r.warn); B.flushTokens();
     }
-    return { built: S.idx, of: S.parts.length, root: S.root || null, ms: Date.now() - t0, warn: (S.warn || []).slice(0, 5) };
+    const cur = S.cur ? S.cur.phase + " " + S.cur.i + "/" + (S.cur.dom ? S.cur.dom.length : "?") : null;
+    return { done: !!S.root, built: S.idx, of: S.parts.length, staged: cur, root: S.root || null, call: S.calls, ms: Date.now() - t0, warn: S.warn.slice(0, 5) };
   };
 
   // ---------- settling ----------
   B.sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  /** A short yield (≥ `ms`, ≤ 500 ms) that also works in a background tab: there setTimeout is throttled (a 300 ms sleep
+   *  measured 16 s) and the plugin sandbox has no MessageChannel, so the timer races a tiny same-origin fetch, whose
+   *  network callback is not throttled. Use this, not B.sleep, for every pause inside a build. */
+  B.nap = async function (ms = 300) {
+    const end = Date.now() + Math.min(ms, 500);
+    while (Date.now() < end) {
+      await Promise.race([B.sleep(end - Date.now()), fetch("/qui-tmp/nap?" + Date.now(), { method: "HEAD", cache: "no-store" }).catch(() => 0)]);
+    }
+  };
   B.poke = function (item) {
     const s = penpot.currentPage.getShapeById(item.shape); if (!s) return;
     const w = item.tree.r.w, h = item.tree.r.h;
@@ -479,6 +696,31 @@
     }
     return { built: L.idx, of: L.cells.length };
   };
+  /** Re-places absolutely positioned shapes once the layout has settled (a parent that moved afterwards leaves them behind). */
+  B.fixAbs = function (name) {
+    let n = 0;
+    for (const it of LIB[name].items) {
+      const root = penpot.currentPage.getShapeById(it.shape); if (!root) continue;
+      for (const { n: node, id } of it.map) {
+        if (!(node.t === "ps" || (node.t === "el" && node.st && node.st.abs)) || !node.r) continue;
+        const s = penpot.currentPage.getShapeById(id); if (!s) continue;
+        s.x = root.x + node.r.x; s.y = root.y + node.r.y; n++;
+      }
+    }
+    return n;
+  };
+  /** Fixes a variant root whose hug size Penpot resolved wrong (it can ignore a fixed child): pin it at the browser's size. */
+  B.fixRoots = function (name) {
+    let n = 0;
+    for (const it of LIB[name].items) {
+      const s = penpot.currentPage.getShapeById(it.shape); if (!s || !s.flex) continue;
+      const w = it.tree.r.w, h = it.tree.r.h; const bw = Math.abs(s.width - w) > 1, bh = Math.abs(s.height - h) > 1;
+      if (!bw && !bh) continue;
+      if (bw) s.flex.horizontalSizing = "fix"; if (bh) s.flex.verticalSizing = "fix";
+      s.resize(w, h); n++;
+    }
+    return n;
+  };
   B.libPoke = (name) => { LIB[name].items.forEach(B.poke); return LIB[name].items.length; };
   B.libCheck = function (name, tol = 0.75) {
     const bad = [];
@@ -493,13 +735,14 @@
     const L = LIB[name]; const page = penpot.currentPage;
     const comps = L.items.map((it) => { const c = penpot.library.local.createComponent([page.getShapeById(it.shape)]); c.name = name; return c; });
     const first = comps[0].mainInstance();
+    if (comps.length === 1) { first.name = name; L.container = first.id; if (B.COMP_PATHS) B.applyPath(name); return { container: first.id, variants: 1, axes: [] }; }
     const cont = first.combineAsVariants(comps.slice(1).map((c) => c.mainInstance().id));
     const axes = Object.keys(L.items[0].v);
     for (let i = 1; i < axes.length; i++) comps[0].variants.addProperty();
     axes.forEach((a, i) => comps[0].variants.renameProperty(i, a));
     comps.forEach((c, idx) => axes.forEach((a, i) => c.setVariantProperty(i, String(L.items[idx].v[a]))));
     cont.name = name;
-    L.container = cont.id;
+    L.container = cont.id; if (B.COMP_PATHS) B.applyPath(name);
     return { container: cont.id, variants: comps.length, axes };
   };
 
@@ -512,6 +755,9 @@
     if (F.phase === "comp") {
       while (F.i < L.items.length && ops < budget) { const c = penpot.library.local.createComponent([page.getShapeById(L.items[F.i].shape)]); c.name = name; F.comps.push(c); F.i++; ops++; }
       if (F.i >= L.items.length) F.phase = "combine";
+    } else if (F.phase === "combine" && F.comps.length === 1) {
+      // Penpot cannot combine a single component: a one-variant set stays a plain component
+      const m = F.comps[0].mainInstance(); m.name = name; L.container = m.id; F.phase = "done"; if (B.COMP_PATHS) B.applyPath(name);
     } else if (F.phase === "combine") {
       const cont = F.comps[0].mainInstance().combineAsVariants(F.comps.slice(1).map((c) => c.mainInstance().id));
       L.container = cont.id; F.phase = "props";
@@ -521,7 +767,7 @@
       F.phase = "values";
     } else if (F.phase === "values") {
       while (F.vi < F.comps.length && ops < budget) { const idx = F.vi++; axes.forEach((a, i) => F.comps[idx].setVariantProperty(i, String(L.items[idx].v[a]))); ops += axes.length; }
-      if (F.vi >= F.comps.length) { page.getShapeById(L.container).name = name; F.phase = "done"; }
+      if (F.vi >= F.comps.length) { page.getShapeById(L.container).name = name; F.phase = "done"; if (B.COMP_PATHS) B.applyPath(name); }
     }
     return { phase: F.phase, comps: F.comps.length, values: F.vi, container: L.container };
   };
@@ -537,63 +783,140 @@
     return r.text();
   };
   /** Opens (creating when needed) the page `name` and waits until Penpot really switched. */
+  /** The page's top-level shapes: children of the page root (zero id). page.root.children comes back empty, so filter all shapes. */
+  B.topShapes = () => penpot.currentPage.findShapes().filter((s) => s.id && s.id !== "00000000-0000-0000-0000-000000000000" && (!s.parent || !s.parent.id || s.parent.id === "00000000-0000-0000-0000-000000000000"));
   B.page = async function (name, fresh) {
     let p = penpot.currentFile.pages.find((x) => x.name === name);
     if (!p) { p = penpot.createPage(); p.name = name; }
     await penpot.openPage(p);
-    for (let i = 0; i < 40 && penpot.currentPage.id !== p.id; i++) await B.sleep(250);
+    for (let i = 0; i < 40 && penpot.currentPage.id !== p.id; i++) await B.nap(250);
     if (penpot.currentPage.id !== p.id) throw new Error("page switch failed: " + name);
-    if (fresh) penpot.currentPage.findShapes().filter((s) => s.parent && s.parent.type === "root").forEach((s) => s.remove());
+    if (fresh) B.topShapes().forEach((s) => s.remove()); // parent.type is never "root" for page children
     return penpot.currentPage.name;
   };
   /** Removes every existing component set called `name` (removing its container on whichever page holds it removes the components). */
   B.dropOld = async function (name, ms = 90000) {
     const t0 = Date.now(); let n = 0;
     for (const c of penpot.library.local.components.filter((x) => x.name === name)) {
-      const id = c.mainInstance().parent.id;
+      const main = c.mainInstance(); if (!main) continue;
+      // a variant's parent is its set container; a plain component sits on the page itself, whose root ("Root Frame",
+      // the zero uuid) must never be removed: that deletes the whole page. Remove only the set container or the main.
+      const par = main.parent;
+      const isRoot = !par || par.type === "root" || par.id === "00000000-0000-0000-0000-000000000000" || par.name === "Root Frame";
+      const id = isRoot || !c.variants ? main.id : par.id;
       const p = penpot.currentFile.pages.find((x) => x.getShapeById(id)); if (!p) continue;
-      await B.page(p.name); const sh = penpot.currentPage.getShapeById(id); if (sh) { sh.remove(); n++; }
+      await B.page(p.name); const sh = penpot.currentPage.getShapeById(id);
+      if (!sh || sh.id === "00000000-0000-0000-0000-000000000000" || sh.name === "Root Frame") throw new Error("dropOld refused to remove a page root for " + name);
+      sh.remove(); n++;
     }
-    while (penpot.library.local.components.some((x) => x.name === name) && Date.now() - t0 < ms) await B.sleep(500);
+    while (penpot.library.local.components.some((x) => x.name === name) && Date.now() - t0 < ms) await B.nap(500);
     return { removed: n, left: penpot.library.local.components.filter((x) => x.name === name).length, ms: Date.now() - t0 };
   };
   /** Library level of every set: sets live on the Atoms / Molecules / Organisms page, never on a page of their own. */
   B.LEVEL = { Button: "Atoms", IconButton: "Atoms", Pill: "Atoms", Badge: "Atoms", Avatar: "Atoms", AvatarGroup: "Atoms", Swatch: "Atoms", Shortcut: "Atoms", Heading: "Atoms", WorkspaceAvatar: "Atoms", Input: "Atoms",
     Tab: "Molecules", ListItem: "Molecules", ListSection: "Molecules", StateGroupHeader: "Molecules", WorkItemRow: "Molecules", Property: "Molecules", ViewToolbar: "Molecules", RailItem: "Molecules",
     NavSidebar: "Organisms", ProjectHeader: "Organisms", WorkItemCard: "Organisms" };
-  // sets added after the first 22 take their level from the spec sheet (cell.level), see B.start
-  B.levelOf = (name, cells) => B.LEVEL[name] || ({ atoms: "Atoms", molecules: "Molecules", organisms: "Organisms" })[cells && cells[0] && cells[0].level];
-  /** Starts a set: drops any old copy, opens its level page and builds below whatever is already there. Data from /qui-tmp/spec-<name>.js. */
-  B.start = async function (name) {
+  /** comp-paths.json (pushed as comp-paths.js, made by comp-paths.mjs): component -> { level, file } from packages/ui/src. */
+  B.loadPaths = async function () { B.COMP_PATHS = JSON.parse(await B.readFile("comp-paths.js")); return B.COMP_PATHS; }; // refetched every build: B outlives reloads
+  // the code folder wins; B.LEVEL and the spec sheet's cell.level are fallbacks for names comp-paths does not know
+  B.levelOf = (name, cells) => (B.COMP_PATHS && B.COMP_PATHS[name] && B.COMP_PATHS[name].level) || B.LEVEL[name] || ({ atoms: "Atoms", molecules: "Molecules", organisms: "Organisms" })[cells && cells[0] && cells[0].level];
+  /** Assets-panel folder of a set, mirroring packages/ui/src: "<Level>" when its file holds only it, else "<Level> / <File>"
+   *  (Penpot shows "<folder> / <name>": Atoms / Button, Organisms / Table / Table, Organisms / TableCells / MoneyCell). */
+  B.folderOf = function (name) {
+    const P = B.COMP_PATHS, e = P && P[name]; if (!e) throw new Error("comp-paths has no " + name + " (run comp-paths.mjs, push comp-paths.js)");
+    const several = Object.values(P).filter((x) => x.level === e.level && x.file === e.file).length > 1;
+    return several ? e.level + " / " + e.file : e.level;
+  };
+  /** Page cap (rule 8): a level page stays under PAGE_CAP shapes. A file whose sets would push its level page past it gets a
+   *  page of its own, "<Level> · <File>"; every other file stays on the level page. Component paths do not change. */
+  B.PAGE_CAP = 3000;
+  B.SPLIT_FILES = []; // e.g. "Organisms/Table" once the Organisms page would pass the cap
+  B.pageOf = function (name, cells) {
+    const lvl = B.levelOf(name, cells), e = B.COMP_PATHS && B.COMP_PATHS[name];
+    return e && B.SPLIT_FILES.includes(e.level + "/" + e.file) ? e.level + " · " + e.file : lvl;
+  };
+  /** Sets the folder on every component of set `name` (variant components; Penpot then renames the set container "<folder> / <name>").
+   *  The page holding the main must be current. */
+  B.applyPath = function (name) {
+    const folder = B.folderOf(name); let n = 0;
+    for (const c of penpot.library.local.components.filter((x) => x.name === name)) {
+      for (const v of c.variants ? c.variants.variantComponents() : [c]) { if (v.path !== folder) v.path = folder; n++; }
+    }
+    return { name, folder, comps: n };
+  };
+  /** applyPath for a set already built, on whichever page holds it. */
+  B.setPath = async function (name) {
+    await B.loadPaths();
+    const c = penpot.library.local.components.find((x) => x.name === name); if (!c) throw new Error("no component " + name);
+    const id = c.mainInstance().id; const p = penpot.currentFile.pages.find((x) => x.getShapeById(id)); if (!p) throw new Error("no page holds " + name);
+    await B.page(p.name);
+    return Object.assign(B.applyPath(name), { page: p.name });
+  };
+  /** Starts a set: drops any old copy, opens its page (B.pageOf) and builds below whatever is already there. Data from /qui-tmp/spec-<name>.js. */
+  B.start = async function (name, dropMs = 15000) {
     B.stat = { bound: 0, hex: 0, hexSamples: {} }; B.queue = {};
     const d = JSON.parse(await B.readFile("spec-" + name + ".js"));
+    await B.loadPaths();
     const lvl = B.levelOf(name, d.cells); if (!lvl) throw new Error("no level for " + name);
-    await B.dropOld(name);
-    await B.page(lvl, false);
-    const roots = (penpot.currentPage.root.children || []).flatMap((s) => (s.type === "board" && s.name === "Root Frame" ? s.children || [] : [s]));
+    const dr = await B.dropOld(name, dropMs);
+    if (dr.left) throw new Error("old " + name + " still has " + dr.left + " components after " + dr.ms + " ms: pause, then call B.run again");
+    await B.page(B.pageOf(name, d.cells), false);
+    const roots = B.topShapes();
     const bottom = roots.reduce((m, s) => Math.max(m, s.y + s.height), 0);
     const r = B.libBegin(name, d.cells);
     LIB[name].ox = 0; LIB[name].oy = roots.length ? bottom + 160 : 0;
     return r;
   };
-  /** Builds variants for up to `ms` milliseconds, binding tokens after every small batch. */
-  B.pump = function (name, ms = 80000, batch = 6) {
-    const L = LIB[name]; const t0 = Date.now();
-    while (L.idx < L.cells.length && Date.now() - t0 < ms) { B.libStep(name, batch, 0, 0); B.flushTokens(); }
+  /** Builds variants for up to `ms` milliseconds, `batch` at a time, binding tokens and pausing `pause` ms after each batch. */
+  B.pump = async function (name, ms = 20000, batch = 3, pause = 300) {
+    const L = LIB[name]; const t0 = Date.now(); let last = 0;
+    while (L.idx < L.cells.length && ms - (Date.now() - t0) > last * 1.2) {
+      const tb = Date.now(); B.libStep(name, batch, 0, 0); B.flushTokens(); last = Date.now() - tb; await B.nap(pause);
+    }
     return { built: L.idx, of: L.cells.length, ms: Date.now() - t0, stat: B.stat };
   };
-  /** One whole set in one MCP call (start, build, finish) within `budget` ms; call again if it reports an unfinished phase. */
-  B.run = async function (name, budget = 50000) {
-    const t0 = Date.now(); B._vc = {}; B._typos = null; B._dims = null;
-    const s = await B.start(name); const p = B.pump(name, budget * 0.6, 6); let f = null;
-    if (p.built >= p.of) { await B.sleep(1500); do { f = B.libFinishStep(name, 40); } while (f.phase !== "done" && Date.now() - t0 < budget); }
+  /** Builds set `name` (drop old, build variants, settle, fix, components, combine, properties, values) in resumable
+   *  steps: each call works for at most ~`budget` ms (default 20 s), pausing `pause` ms (≤ 500: setTimeout stalls in a
+   *  background tab) after every batch of `batch` variants / finish step so the tab repaints and saves. Call B.run(name)
+   *  again until it returns done:true; it continues where it stopped. A call after done:true (or {restart:true}) rebuilds. */
+  B.run = async function (name, opt = {}) {
+    if (typeof opt === "number") opt = { budget: opt };
+    const budget = opt.budget || 20000, pause = Math.min(opt.pause == null ? 300 : opt.pause, 500), batch = opt.batch || 3;
+    const t0 = Date.now(); const left = () => budget - (Date.now() - t0);
+    B._vc = {}; B._typos = null; B._dims = null;
+    let L = LIB[name], R = L && L.run, f = null;
+    if (!R || R.phase === "done" || opt.restart) {
+      await B.start(name); L = LIB[name];
+      R = L.run = { phase: "build", page: penpot.currentPage.name, stat: B.stat, calls: 1 };
+      await B.nap(pause);
+    } else {
+      R.calls++; B.stat = R.stat; B.queue = {};
+      if (penpot.currentPage.name !== R.page) await B.page(R.page);
+    }
+    let last = 0;
+    while (R.phase !== "done" && left() > last * 1.2) {
+      const tb = Date.now();
+      if (R.phase === "build") {
+        if (L.idx >= L.cells.length) { R.phase = "settle"; R.builtAt = Date.now(); continue; }
+        B.libStep(name, batch, 0, 0); B.flushTokens();
+      } else if (R.phase === "settle") {
+        // text and icon sizes arrive asynchronously: wait ~1.5 s after the last variant (short sleeps) before fixing
+        const wait = 1500 - (Date.now() - R.builtAt);
+        if (wait > 0) { await B.nap(Math.min(500, wait)); continue; }
+        R.phase = "fix";
+      } else if (R.phase === "fix") { B.fixAbs(name); B.fixRoots(name); R.phase = "finish"; }
+      else if (R.phase === "finish") { f = B.libFinishStep(name, 40); if (f.phase === "done") { R.phase = "done"; break; } }
+      last = Date.now() - tb;
+      await B.nap(pause);
+    }
     const d = B.stat.dim || { bound: 0, literal: 0, samples: {} };
-    return { name, variants: s.variants, built: p.built, finish: f && f.phase, colours: B.stat.bound, hex: B.stat.hex, dims: d.bound, literal: d.literal, samples: d.samples, ms: Date.now() - t0 };
+    return { name, done: R.phase === "done", phase: R.phase, call: R.calls, built: L.idx, of: L.cells.length, finish: (L.fin && L.fin.phase) || null,
+      colours: B.stat.bound, hex: B.stat.hex, dims: d.bound, literal: d.literal, samples: d.samples, ms: Date.now() - t0 };
   };
-  /** Runs the finishing phases (components, combine, properties, values) within a time budget. */
-  B.finish = function (name, ms = 80000) {
+  /** Runs the finishing phases (components, combine, properties, values) within a time budget, pausing between steps. */
+  B.finish = async function (name, ms = 20000, pause = 300) {
     const t0 = Date.now(); let r;
-    do { r = B.libFinishStep(name, 40); } while (r.phase !== "done" && Date.now() - t0 < ms);
+    do { r = B.libFinishStep(name, 40); if (r.phase !== "done") await B.nap(pause); } while (r.phase !== "done" && Date.now() - t0 < ms);
     return r;
   };
   /** Token audit of a finished set: how many paints exist and how many are bound to a token. */

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import { AVATAR_VARIANTS, getAvatarVariant, getAvatarVariantSeed } from "../../../../packages/ui/src/lib/avatar-shared";
 
 /** One Penpot variant: property name -> value. */
@@ -26,10 +26,6 @@ export interface Spec {
   canInstance?: (props: Record<string, any>, el: HTMLElement) => boolean;
 }
 
-/** Rows in a section body (a `List` of `ListItem`s). */
-const rowCount = (body: React.ReactNode) => React.Children.count((React.Children.toArray(body)[0] as React.ReactElement<{ children?: React.ReactNode }> | undefined)?.props.children);
-const sectionsOf = (children: React.ReactNode) =>
-  React.Children.toArray(children).filter((c): c is React.ReactElement<{ defaultOpen?: boolean; open?: boolean; children?: React.ReactNode }> => React.isValidElement(c) && c.type === QUI.ListSection);
 const has = (node: unknown) => node != null && node !== false;
 /**
  * The design-library rule: the default variant, then one property changed at a time — never the full product of the axes.
@@ -56,6 +52,33 @@ const AVATAR_SEEDS = Object.fromEntries(AVATAR_VARIANTS.map((c) => [c, seedFor(c
 /** Person avatars the app renders at xs / sm in groups, rows and cards, one per colour it uses. */
 const AVATAR_IN_APP: Variant[] = ["purple", "indigo", "emerald", "crimson", "pink"].flatMap((Color) => [{ Size: "xs", Color }, { Size: "sm", Color }]).concat([{ Size: "lg", Color: "pink" }]);
 /** Swatch colours are data; the spec draws them from qui's label palette so the design file binds them to tokens. */
+/** Cell slots in every TableRow; a row with fewer columns clips the rest. */
+const ROW_SLOTS = 12;
+/** Body rows in every Table; a shorter table clips the rest. */
+const TABLE_ROWS = 14;
+/** Tab slots in every TabsList; a list with fewer tabs clips the rest. */
+const TAB_SLOTS = 4;
+/** Row slots in every open ListSection; a section with fewer rows clips the rest (9: every Acme section but Accounts' 12). */
+const SECTION_ROWS = 9;
+/** ListSection slots in every NavSidebar; a sidebar with fewer sections clips the rest (the Acme shell has 10). */
+const NAV_SECTIONS = 10;
+/** Rows in a NavSidebar's main list (exact: the sections follow it, so a shorter list cannot clip its slots). */
+const NAV_MAIN_ROWS = 4;
+/** Sample rows for section slots and the sidebar's main list. */
+const SECTION_SAMPLE: [Icons.Glyph, string][] = [
+  [Icons.BriefcaseBusiness, "Projects"], [Icons.Lightbulb, "Initiatives"], [Icons.ChartNoAxesCombined, "Analytics"],
+  [Icons.LayoutGrid, "Dashboards"], [Icons.PenLine, "Drafts"], [Icons.Layers, "Views"], [Icons.Folder, "Archive"],
+  [Icons.Star, "Favorites"], [Icons.Ellipsis, "More"],
+];
+const NAV_MAIN: [Icons.Glyph, string][] = [[Icons.House, "Home"], [Icons.UserRound, "Your work"], [Icons.Bot, "AI chat"], [Icons.CodeXml, "Developer portal"]];
+const NAV_SECTION_LABELS = ["Workspace", "Projects", "Spend", "Accounts", "Approvals", "Card programs", "Companies", "Compliance", "Payments", "Reporting"];
+const navRows = (rows: [Icons.Glyph, string][]) =>
+  rows.map(([icon, label]) => <QUI.ListItem key={label}><QUI.ListItemButton startIcon={<QUI.Icon icon={icon} />} label={label} /></QUI.ListItem>);
+/** A ListSection's state read from the DOM: its trigger's aria-expanded, and the rows its open panel renders. */
+const sectionOf = (el: Element) => {
+  const open = el.firstElementChild?.getAttribute("aria-expanded") === "true";
+  return { open, rows: open ? el.querySelectorAll("a, button").length - 1 : 0 };
+};
 const SWATCH_FILL: Record<string, string> = { emerald: "var(--label-emerald-icon)", crimson: "var(--label-crimson-icon)", indigo: "var(--label-indigo-icon)" };
 
 export const specs: Spec[] = [
@@ -69,6 +92,8 @@ export const specs: Spec[] = [
       { Variant: "ghost", Icon: "start" },
       { Variant: "ghost", Size: "lg", Icon: "both" },
       { Variant: "ghost", Size: "lg", Icon: "start" },
+      // the dashboard's date-range button: calendar icon + dropdown chevron
+      { Variant: "secondary", Icon: "both" },
     ]),
     render: (v) => (
       <QUI.Button
@@ -124,7 +149,13 @@ export const specs: Spec[] = [
     name: "Badge",
     level: "atoms",
     axes: { Variant: ["neutral", "brand", "info", "success", "warning", "danger"], Size: ["xs", "sm", "md"], Icon: ["none", "start"] },
-    valid: oneAtATime({ Variant: "neutral", Size: "md", Icon: "none" }, [{ Variant: "brand", Size: "sm" }]),
+    // the dashboard's status chips: xs / sm in every tone, and the xs trend badge with an icon
+    valid: oneAtATime({ Variant: "neutral", Size: "md", Icon: "none" }, [
+      { Variant: "brand", Size: "sm" },
+      ...["brand", "success", "warning", "danger"].map((Variant) => ({ Variant, Size: "xs" })),
+      ...["info", "success", "warning", "danger"].map((Variant) => ({ Variant, Size: "sm" })),
+      { Variant: "success", Size: "xs", Icon: "start" },
+    ]),
     render: (v) => (
       <QUI.Badge
         variant={v.Variant as "neutral"}
@@ -220,6 +251,26 @@ export const specs: Spec[] = [
     },
   },
   {
+    name: "TabsList",
+    level: "molecules",
+    // TAB_SLOTS Tab slots, clipped (like TableRow): a screen sets the list's width, the slots past it are cut off and each
+    // visible slot is switched to the Tab variant it shows
+    axes: { Variant: ["contained", "underline"] },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <QUI.Tabs variant={v.Variant as "contained"} defaultValue="t0">
+        <QUI.TabsList data-spec-root="">
+          {Array.from({ length: TAB_SLOTS }, (_, i) => <QUI.Tab key={i} value={`t${i}`} label="Label" />)}
+        </QUI.TabsList>
+      </QUI.Tabs>
+    ),
+    canInstance: (_p, el) => el.children.length <= TAB_SLOTS,
+    toVariant: (_p, _el, fiber) => {
+      for (let f = fiber; f; f = f.return) { const n = f.type && (f.type.displayName || f.type.name); if (n === "Tabs") return { Variant: String(f.memoizedProps?.variant ?? "contained") }; }
+      return { Variant: "contained" };
+    },
+  },
+  {
     name: "Input",
     level: "atoms",
     axes: { Size: ["md", "lg"], Slots: ["none", "start", "both"], Value: ["placeholder", "filled"], State: ["default", "disabled", "invalid"] },
@@ -247,8 +298,9 @@ export const specs: Spec[] = [
   {
     name: "ListItem",
     level: "molecules",
-    axes: { Level: ["1", "2", "3"], Density: ["comfortable", "compact"], Icon: ["none", "start"], Count: ["none", "count"], State: ["default", "selected"] },
-    valid: oneAtATime({ Level: "1", Density: "comfortable", Icon: "none", Count: "none", State: "default" }, [{ Icon: "start", State: "selected" }]),
+    // End "value" is a trailing value and chevron in the row's endIcon slot (the dashboard's count rows)
+    axes: { Level: ["1", "2", "3"], Density: ["comfortable", "compact"], Icon: ["none", "start"], Count: ["none", "count"], End: ["none", "value"], State: ["default", "selected"] },
+    valid: oneAtATime({ Level: "1", Density: "comfortable", Icon: "none", Count: "none", End: "none", State: "default" }, [{ Icon: "start", State: "selected" }, { Icon: "start", End: "value" }]),
     cell: { width: 240 },
     rootSelector: "[data-spec-root]",
     render: (v) => (
@@ -259,6 +311,14 @@ export const specs: Spec[] = [
             startIcon={v.Icon === "start" ? <QUI.Icon icon={Icons.House} /> : undefined}
             label="Label"
             count={v.Count === "count" ? 3 : undefined}
+            endIcon={
+              v.End === "value" ? (
+                <QUI.Inline gap="2" wrap={false}>
+                  <QUI.Text size="sm" weight="semibold" tabularNums>3</QUI.Text>
+                  <QUI.Icon icon={Icons.ChevronRight} tint="tertiary" />
+                </QUI.Inline>
+              ) : undefined
+            }
           />
         </QUI.ListItem>
       </QUI.List>
@@ -272,6 +332,7 @@ export const specs: Spec[] = [
         Density: String(p.density ?? "comfortable"),
         Icon: has(cp.startIcon) ? "start" : "none",
         Count: cp.count ? "count" : "none",
+        End: has(cp.endIcon) ? "value" : "none",
         State: cp["aria-current"] === "page" ? "selected" : "default",
       };
     },
@@ -369,57 +430,49 @@ export const specs: Spec[] = [
     axes: { Open: ["true", "false"] },
     cell: { width: 232 },
     rootSelector: "[data-spec-root]",
+    // SECTION_ROWS row slots, clipped (like TableRow): a screen sets the section's height, the slots past its last row are cut
+    // off and each visible row is switched to the ListItem it shows. A closed section renders no rows.
     render: (v) => (
       <QUI.ListSection data-spec-root="" label="Workspace" defaultOpen={v.Open === "true"}>
-        <QUI.List aria-label="Spec">
-          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.BriefcaseBusiness} />} label="Projects" /></QUI.ListItem>
-          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Lightbulb} />} label="Initiatives" /></QUI.ListItem>
-          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Layers} />} label="Views" /></QUI.ListItem>
-        </QUI.List>
+        <QUI.List aria-label="Spec">{navRows(SECTION_SAMPLE.slice(0, SECTION_ROWS))}</QUI.List>
       </QUI.ListSection>
     ),
-    canInstance: (p) => rowCount(p.children) === 3,
-    toVariant: (p) => ({ Open: p.defaultOpen || p.open ? "true" : "false" }),
+    // read from the DOM (an app may wrap its rows in components of its own): closed, or open with rows <= the slots
+    canInstance: (_p, el) => sectionOf(el).rows <= SECTION_ROWS,
+    toVariant: (_p, el) => ({ Open: sectionOf(el).open ? "true" : "false" }),
   },
   {
     name: "NavSidebar",
     level: "organisms",
-    axes: { Workspace: ["open", "closed"], Projects: ["open", "closed"] },
-    valid: oneAtATime({ Workspace: "open", Projects: "open" }),
+    // header, the optional action (Action axis), a NAV_MAIN_ROWS-row main list, then NAV_SECTIONS ListSection slots, clipped
+    // (like TableRow): a screen sets the sidebar's height, the slots past its last section are cut off, and each visible
+    // section slot is switched to the ListSection variant (open / closed) it shows, its row slots to the rows it shows.
+    axes: { Action: ["true", "false"] },
     cell: { width: 255 },
     rootSelector: "[data-spec-root]",
     render: (v) => (
       <QUI.NavSidebar
         data-spec-root=""
         title="Work"
-        action={<QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" />}
+        action={v.Action === "true" ? <QUI.Button variant="secondary" stretch="full" icon={<QUI.Icon icon={Icons.SquarePen} />} label="New work item" /> : undefined}
       >
-        <QUI.List aria-label="Main">
-          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.House} />} label="Home" /></QUI.ListItem>
-          <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.UserRound} />} label="Your work" /></QUI.ListItem>
-        </QUI.List>
-        <QUI.ListSection label="Workspace" defaultOpen={v.Workspace === "open"}>
-          <QUI.List aria-label="Workspace">
-            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.BriefcaseBusiness} />} label="Projects" /></QUI.ListItem>
-            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Lightbulb} />} label="Initiatives" /></QUI.ListItem>
-            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Layers} />} label="Views" /></QUI.ListItem>
-          </QUI.List>
-        </QUI.ListSection>
-        <QUI.ListSection label="Projects" defaultOpen={v.Projects === "open"}>
-          <QUI.List aria-label="Projects">
-            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Tractor} />} label="Core product" /></QUI.ListItem>
-            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Rocket} />} label="Plane Pro" /></QUI.ListItem>
-            <QUI.ListItem><QUI.ListItemButton startIcon={<QUI.Icon icon={Icons.Compass} />} label="Discover" /></QUI.ListItem>
-          </QUI.List>
-        </QUI.ListSection>
+        <QUI.List aria-label="Main">{navRows(NAV_MAIN)}</QUI.List>
+        {NAV_SECTION_LABELS.slice(0, NAV_SECTIONS).map((label, i) => (
+          <QUI.ListSection key={label} label={label} defaultOpen={i === 0}>
+            <QUI.List aria-label={label}>{navRows(SECTION_SAMPLE.slice(0, 3))}</QUI.List>
+          </QUI.ListSection>
+        ))}
       </QUI.NavSidebar>
     ),
-    canInstance: (p) => sectionsOf(p.children).every((c) => rowCount(c.props.children) === 3),
-    toVariant: (p) => {
-      const sections = sectionsOf(p.children);
-      const state = (i: number) => (sections[i]?.props.defaultOpen || sections[i]?.props.open ? "open" : "closed");
-      return { Workspace: state(0), Projects: state(1) };
+    // read from the DOM: an app wraps its lists in components of its own (the Acme shell's AcmeNavigation), so the props
+    // do not show them. An instance is: optional action, the main list with exactly NAV_MAIN_ROWS rows, then at most
+    // NAV_SECTIONS sections, each closed or open with at most SECTION_ROWS rows; anything else is not an instance of it.
+    canInstance: (_p, el) => {
+      const k = navShape(el).split(" ").filter(Boolean);
+      const s = k.slice((k[0] === "B" ? 1 : 0) + 1);
+      return k[k[0] === "B" ? 1 : 0] === `L${NAV_MAIN_ROWS}` && s.length <= NAV_SECTIONS && s.every((x) => x === "S-" || (/^S\d+$/.test(x) && +x.slice(1) <= SECTION_ROWS));
     },
+    toVariant: (_p, el) => ({ Action: navShape(el).split(" ")[0] === "B" ? "true" : "false" }),
   },
   {
     name: "ProjectHeader",
@@ -517,10 +570,14 @@ export const specs: Spec[] = [
   {
     name: "Checkbox",
     level: "atoms",
-    axes: { Checked: ["false", "true", "indeterminate"], State: STATES },
-    valid: oneAtATime({ Checked: "false", State: "default" }, [{ Checked: "true", State: "disabled" }]),
-    render: (v) => <QUI.Checkbox label="Label" defaultChecked={v.Checked === "true"} indeterminate={v.Checked === "indeterminate"} disabled={v.State === "disabled"} />,
+    // Label "false" is a bare box with an aria-label, like a table's select column
+    axes: { Checked: ["false", "true", "indeterminate"], State: STATES, Label: ["true", "false"] },
+    valid: oneAtATime({ Checked: "false", State: "default", Label: "true" }, [{ Checked: "true", State: "disabled" }, { Checked: "true", Label: "false" }, { Checked: "indeterminate", Label: "false" }]),
+    render: (v) => (
+      <QUI.Checkbox label={v.Label === "true" ? "Label" : undefined} aria-label={v.Label === "true" ? undefined : "Select"} defaultChecked={v.Checked === "true"} indeterminate={v.Checked === "indeterminate"} disabled={v.State === "disabled"} />
+    ),
     toVariant: (p, el) => ({
+      Label: p.label != null ? "true" : "false",
       Checked: p.indeterminate ? "indeterminate" : el.querySelector("[data-checked]") || el.hasAttribute("data-checked") ? "true" : "false",
       State: p.disabled ? "disabled" : "default",
     }),
@@ -637,11 +694,19 @@ export const specs: Spec[] = [
   {
     name: "LinearProgress",
     level: "atoms",
-    axes: { Size: ["sm", "md"], Variant: ["brand", "success", "warning", "danger"], Label: ["false", "true"], Indeterminate: ["false", "true"] },
-    valid: oneAtATime({ Size: "md", Variant: "brand", Label: "false", Indeterminate: "false" }),
+    // Value: the trailing "N%" (showValue, shown by default unless indeterminate)
+    axes: { Size: ["sm", "md"], Variant: ["brand", "success", "warning", "danger"], Label: ["false", "true"], Indeterminate: ["false", "true"], Value: ["true", "false"] },
+    // ProgressCell renders the small bar in every colour; the dashboard's engagement bar is md success without a value
+    valid: (v) =>
+      !(v.Indeterminate === "true" && v.Value === "true") &&
+      oneAtATime({ Size: "md", Variant: "brand", Label: "false", Indeterminate: "false", Value: "true" }, [
+        ...["success", "warning", "danger"].map((Variant) => ({ Size: "sm", Variant })),
+        { Indeterminate: "true", Value: "false" },
+        { Variant: "success", Value: "false" },
+      ])(v),
     cell: { width: 320 },
-    render: (v) => <QUI.LinearProgress size={v.Size as "md"} variant={v.Variant as "brand"} label={v.Label === "true" ? "Uploading" : undefined} value={62} indeterminate={v.Indeterminate === "true"} />,
-    toVariant: (p) => ({ Size: String(p.size ?? "md"), Variant: String(p.variant ?? "brand"), Label: p.label != null ? "true" : "false", Indeterminate: p.indeterminate ? "true" : "false" }),
+    render: (v) => <QUI.LinearProgress size={v.Size as "md"} variant={v.Variant as "brand"} label={v.Label === "true" ? "Uploading" : undefined} value={62} indeterminate={v.Indeterminate === "true"} showValue={v.Value === "true"} />,
+    toVariant: (p) => ({ Size: String(p.size ?? "md"), Variant: String(p.variant ?? "brand"), Label: p.label != null ? "true" : "false", Indeterminate: p.indeterminate ? "true" : "false", Value: (p.showValue ?? !p.indeterminate) ? "true" : "false" }),
   },
   {
     name: "CircularProgress",
@@ -718,9 +783,271 @@ export const specs: Spec[] = [
         <QUI.Button variant="secondary" label="Trigger" />
       </QUI.Tooltip>
     ),
+    // recharts' own `Tooltip` shares the name: its hover box inside a chart is not this component
+    canInstance: (_p, el) => !el.classList.contains("recharts-tooltip-wrapper"),
     toVariant: () => ({ Content: "label" }),
   },
+
+  // ---------- tables ----------
+  // Built in nesting order: the typed cells, then TableCell (whose slot holds a TextCell), TableHead, then TableRow.
+  // Align follows the column: text in an end-aligned cell sits flush right
+  { ...typedCell("TextCell", { Lines: ["1", "2"], Tone: ["default", "link"], Align: ["start", "end"] }, (v) => <QUI.TextCell primary="Text" secondary={v.Lines === "2" ? "Secondary" : undefined} tone={v.Tone as "link"} />, (v) => v.Align as "end"),
+    valid: oneAtATime({ Lines: "1", Tone: "default", Align: "start" }, [{ Lines: "2", Tone: "link" }]),
+    toVariant: (p, el) => ({ Lines: p.secondary != null ? "2" : "1", Tone: String(p.tone ?? "default"), Align: alignOf(el) }) },
+  { ...typedCell("UserCell", { Secondary: ["false", "true"] }, (v) => <QUI.UserCell name={AVATAR_SEEDS.pink!} secondary={v.Secondary === "true" ? "name@acme.com" : undefined} />),
+    toVariant: (p) => ({ Secondary: p.secondary != null ? "true" : "false" }) },
+  { ...typedCell("TagCell", { Color: ["grey", "indigo", "purple", "pink", "crimson", "orange", "yellow", "emerald"] }, (v) => <QUI.TagCell label="Tag" color={v.Color as "grey"} />),
+    toVariant: (p) => ({ Color: String(p.color ?? "grey") }) },
+  { ...typedCell("DateCell", { Tone: ["default", "warning", "danger"] }, (v) => <QUI.DateCell value="2026-05-10" tone={v.Tone as "warning"} locale="en-GB" />),
+    toVariant: (p) => ({ Tone: String(p.tone ?? "default") }) },
+  { ...typedCell("MoneyCell", { Tone: ["default", "positive", "negative"], Minor: ["inline", "subdued"] }, (v) => (
+      <QUI.MoneyCell amount={v.Tone === "negative" ? -1250 : 1250} currency="AED" display="code" signed={v.Tone !== "default"} minor={v.Minor as "inline"} locale="en-US" />
+    ), "end"),
+    valid: oneAtATime({ Tone: "default", Minor: "inline" }),
+    toVariant: (p) => {
+      const neg = p.amount < 0 && (p.signed || p.negative === "parentheses");
+      return { Tone: neg ? "negative" : p.signed && p.amount > 0 ? "positive" : "default", Minor: p.minor === "subdued" && p.notation !== "compact" ? "subdued" : "inline" };
+    } },
+  { ...typedCell("NumberCell", { Tone: ["default"] }, () => <QUI.NumberCell value={1250} locale="en-US" />, "end"), toVariant: () => ({ Tone: "default" }) },
+  { ...typedCell("ChangeCell", { Direction: ["up", "down", "none"], Good: ["up", "down"] }, (v) => (
+      <QUI.ChangeCell value={v.Direction === "up" ? 12.5 : v.Direction === "down" ? -12.5 : 0} good={v.Good as "up"} locale="en-US" />
+    ), "end"),
+    valid: (v) => v.Direction !== "none" || v.Good === "up",
+    toVariant: (p) => ({ Direction: p.value > 0 ? "up" : p.value < 0 ? "down" : "none", Good: p.value === 0 ? "up" : String(p.good ?? "up") }) },
+  { ...typedCell("ProgressCell", { Variant: ["brand", "success", "warning", "danger"] }, (v) => <QUI.ProgressCell value={v.Variant === "success" ? 100 : 62} variant={v.Variant as "brand"} aria-label="Progress" />),
+    toVariant: (p) => ({ Variant: !p.variant || p.variant === "auto" ? (p.value >= 100 ? "success" : "brand") : String(p.variant) }) },
+  { ...typedCell("MaskedCell", { Groups: ["3"] }, () => <QUI.MaskedCell last="1435" />), toVariant: () => ({ Groups: "3" }) },
+  { ...typedCell("EmptyCell", { Tone: ["default"] }, () => <QUI.EmptyCell />), toVariant: () => ({ Tone: "default" }) },
+  {
+    name: "TableCell",
+    level: "organisms",
+    // the content slot is one TextCell instance: swap it for any typed cell, Badge or other component
+    axes: { Align: ["start", "end"], Density: ["comfortable", "compact"], Rule: ["true", "false"] },
+    valid: oneAtATime({ Align: "start", Density: "comfortable", Rule: "true" }, [{ Align: "end", Rule: "false" }, { Density: "compact", Rule: "false" }]),
+    cell: { width: 320 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <QUI.Table density={v.Density as "compact"} verticalLines={v.Rule === "true"} striped={false} stickyHeader={false}>
+        <QUI.TableBody>
+          <QUI.TableRow>
+            <QUI.TableCell data-spec-root="" align={v.Align as "start"}><QUI.TextCell primary="Text" /></QUI.TableCell>
+            <QUI.TableCell><QUI.TextCell primary="Text" /></QUI.TableCell>
+          </QUI.TableRow>
+        </QUI.TableBody>
+      </QUI.Table>
+    ),
+    toVariant: (p, el) => ({ Align: String(p.align ?? "start"), ...densityRule(el, 40) }),
+  },
+  {
+    name: "TableHead",
+    level: "organisms",
+    // "unsorted" is a sortable column: its arrow stays hidden until hover but keeps its room
+    // Content "checkbox" is a select-all column
+    axes: { Align: ["start", "end"], Sort: ["none", "unsorted", "ascending", "descending"], Density: ["comfortable", "compact"], Rule: ["true", "false"], Content: ["label", "checkbox"] },
+    valid: oneAtATime({ Align: "start", Sort: "none", Density: "comfortable", Rule: "true", Content: "label" }, [{ Align: "end", Rule: "false" }, { Density: "compact", Rule: "false" }]),
+    cell: { width: 320 },
+    rootSelector: "[data-spec-root]",
+    render: (v) => (
+      <QUI.Table density={v.Density as "compact"} verticalLines={v.Rule === "true"} stickyHeader={false}>
+        <QUI.TableHeader>
+          <QUI.TableRow>
+            <QUI.TableHead data-spec-root="" minWidth={160} align={v.Align as "start"} sortDirection={v.Sort === "ascending" || v.Sort === "descending" ? v.Sort : "none"} onSort={v.Sort === "none" ? undefined : () => {}}>
+              {v.Content === "checkbox" ? <QUI.Checkbox aria-label="Select all" /> : "Header"}
+            </QUI.TableHead>
+            <QUI.TableHead minWidth={160}>Header</QUI.TableHead>
+          </QUI.TableRow>
+        </QUI.TableHeader>
+      </QUI.Table>
+    ),
+    toVariant: (p, el) => ({
+      Align: String(p.align ?? "start"),
+      Sort: p.onSort == null ? "none" : p.sortDirection === "ascending" || p.sortDirection === "descending" ? p.sortDirection : "unsorted",
+      ...densityRule(el, 32),
+      Content: el.querySelector('[role="checkbox"]') ? "checkbox" : "label",
+    }),
+  },
+  {
+    name: "TableRow",
+    level: "organisms",
+    // a row is always ROW_SLOTS cell slots and clips them (overflow hidden): a screen sets the row's width, the slots past it are
+    // cut off, and each visible slot is switched to the TableHead / TableCell / typed cell it needs
+    axes: { Part: ["body", "header"], Stripe: ["odd", "even", "ruled"], State: ["default", "hover", "selected"] },
+    // hover and selection hide the stripe, so they only exist on odd rows
+    valid: (v) => (v.Part === "header" ? v.Stripe === "odd" && v.State === "default" : v.State === "default" || v.Stripe === "odd"),
+    cell: { width: 120 * ROW_SLOTS },
+    rootSelector: "[data-spec-root]",
+    render: (v) => {
+      const n = ROW_SLOTS;
+      const cells = () => Array.from({ length: n }, (_, i) => <QUI.TableCell key={i}><QUI.TextCell primary="Text" /></QUI.TableCell>);
+      return (
+        <QUI.Table striped={v.Stripe !== "ruled"} stickyHeader={false}>
+          {v.Part === "header" ? (
+            <QUI.TableHeader>
+              <QUI.TableRow data-spec-root="">{Array.from({ length: n }, (_, i) => <QUI.TableHead key={i}>Header</QUI.TableHead>)}</QUI.TableRow>
+            </QUI.TableHeader>
+          ) : (
+            <QUI.TableBody>
+              {v.Stripe === "even" ? <QUI.TableRow>{cells()}</QUI.TableRow> : null}
+              <QUI.TableRow data-spec-root="" selected={v.State === "selected"}>{cells()}</QUI.TableRow>
+              {/* the last row drops its rule, so a ruled row needs one after it */}
+              {v.Stripe === "ruled" ? <QUI.TableRow>{cells()}</QUI.TableRow> : null}
+            </QUI.TableBody>
+          )}
+        </QUI.Table>
+      );
+    },
+    canInstance: (_p, el) => el.children.length <= ROW_SLOTS,
+    toVariant: (p, el) => {
+      const cs = getComputedStyle(el);
+      const header = el.parentElement?.tagName === "THEAD";
+      const shaded = !p.selected && cs.backgroundColor !== "rgba(0, 0, 0, 0)" && cs.backgroundColor !== "transparent";
+      return {
+        Part: header ? "header" : "body",
+        Stripe: header ? "odd" : parseFloat(cs.borderBottomWidth) > 0 ? "ruled" : shaded ? "even" : "odd",
+        State: p.selected ? "selected" : "default",
+      };
+    },
+  },
+  {
+    name: "Table",
+    level: "organisms",
+    // a header row plus TABLE_ROWS body rows, all TableRow instances, clipped like the rows' slots: a screen sets the table's
+    // size, the rows past it are cut off, and each visible row (and its slots) is switched to what the screen shows
+    // one variant (striped): a header + 14 rows x 12 slots is ~1,000 shapes, so more variants would pass the page cap.
+    // Density is the cells': a compact table is this set with its rows' slots switched to compact TableHead / TableCell variants
+    axes: { Striped: ["true"] },
+    cell: { width: 120 * ROW_SLOTS },
+    render: (v) => (
+      <QUI.Table striped={v.Striped === "true"} stickyHeader={false}>
+        <QUI.TableHeader>
+          <QUI.TableRow>{Array.from({ length: ROW_SLOTS }, (_, i) => <QUI.TableHead key={i}>Header</QUI.TableHead>)}</QUI.TableRow>
+        </QUI.TableHeader>
+        <QUI.TableBody>
+          {Array.from({ length: TABLE_ROWS }, (_, r) => (
+            <QUI.TableRow key={r}>{Array.from({ length: ROW_SLOTS }, (_, i) => <QUI.TableCell key={i}><QUI.TextCell primary="Text" /></QUI.TableCell>)}</QUI.TableRow>
+          ))}
+        </QUI.TableBody>
+      </QUI.Table>
+    ),
+    toVariant: (p) => ({ Striped: p.striped === false ? "false" : "true" }),
+  },
+
+  // ---------- charts ----------
+  // A plot is one svg that a Penpot instance cannot re-plot, so each chart's sample data is what the app plots (the
+  // dashboard's relationship donut and spend line); its texts outside the svg (legend, centre) are overridable.
+  {
+    name: "ChartLegend",
+    level: "organisms",
+    // Colors "status" is the success / warning / danger tones the dashboard's donuts use; "palette" the chart palette
+    axes: { Colors: ["palette", "status"] },
+    cell: { width: 329 },
+    render: (v) => <QUI.ChartLegend items={DONUT_DATA.map((row, i) => ({ label: row.level, color: v.Colors === "status" ? STATUS_TONES[i]! : QUI.chartColor(i) }))} />,
+    canInstance: (p) => p.items.length === DONUT_DATA.length,
+    toVariant: (p) => ({ Colors: p.items.some((i: { color: string }) => STATUS_TONES.includes(i.color)) ? "status" : "palette" }),
+  },
+  {
+    name: "DonutChart",
+    level: "organisms",
+    axes: { Colors: ["palette", "status"], Center: ["false", "true"] },
+    valid: oneAtATime({ Colors: "palette", Center: "false" }, [{ Colors: "status", Center: "true" }]),
+    cell: { width: 329 },
+    render: (v) => (
+      <QUI.DonutChart
+        aria-label="Customers by relationship strength"
+        height={220}
+        animate={false}
+        nameKey="level"
+        valueKey="customers"
+        data={DONUT_DATA}
+        colors={v.Colors === "status" ? Object.fromEntries(DONUT_DATA.map((row, i) => [row.level, STATUS_TONES[i]!])) : undefined}
+        centerContent={
+          v.Center === "true" ? (
+            <>
+              <QUI.Text size="md" weight="semibold">186</QUI.Text>
+              <QUI.Text variant="caption" size="md" color="tertiary">Customers</QUI.Text>
+            </>
+          ) : undefined
+        }
+      />
+    ),
+    canInstance: (p) => p.data.length === DONUT_DATA.length,
+    toVariant: (p) => ({ Colors: Object.values(p.colors ?? {}).some((c) => STATUS_TONES.includes(c as string)) ? "status" : "palette", Center: has(p.centerContent) ? "true" : "false" }),
+  },
+  {
+    name: "LineChart",
+    level: "organisms",
+    // "2" series shows the legend (its default for 2+ series)
+    axes: { Series: ["1", "2"] },
+    cell: { width: 518 },
+    render: (v) => (
+      <QUI.LineChart
+        aria-label="Spend, month to date, cumulative"
+        height={220}
+        animate={false}
+        categoryKey="day"
+        series={v.Series === "2" ? [{ key: "domestic", label: "Domestic" }, { key: "fx", label: "FX" }] : [{ key: "total", label: "Total spend" }]}
+        data={SPEND_DATA}
+        valueFormatter={(value) => `${value}M`}
+      />
+    ),
+    canInstance: () => true,
+    toVariant: (p) => ({ Series: String(Math.min(p.series.length, 2)) }),
+  },
 ];
+
+/** Chart sample data: the dashboard's relationship donut and month-to-date spend. */
+const DONUT_DATA = [{ level: "High", customers: 97 }, { level: "Medium", customers: 58 }, { level: "Low", customers: 31 }];
+const STATUS_TONES = ["var(--bg-success-primary)", "var(--bg-warning-primary)", "var(--bg-danger-primary)"];
+const SPEND_DATA = [1, 3, 5, 8, 10, 12, 15, 17, 19, 22, 24, 26, 29].map((day, i) => {
+  const total = Math.round((1.2 + i * 3.75) * 10) / 10;
+  return { day: `${day} Sep`, total, domestic: Math.round(total * 0.797 * 10) / 10, fx: Math.round(total * 0.203 * 10) / 10 };
+});
+
+/**
+ * A NavSidebar's content below its header, read from the DOM: "B" the action button, "L<rows>" a list,
+ * "S<rows>" an open section, "S-" a closed one (its rows are not rendered).
+ */
+function navShape(el: HTMLElement) {
+  const rows = (e: Element) => e.querySelectorAll("a, button").length;
+  return [...el.children].slice(1).map((k) => {
+    const trigger = k.firstElementChild;
+    if (trigger?.matches("button[aria-expanded]")) return trigger.getAttribute("aria-expanded") === "true" ? `S${rows(k) - 1}` : "S-";
+    return k.tagName === "BUTTON" ? "B" : `L${rows(k)}`;
+  }).join(" ");
+}
+
+/** A typed table cell, rendered inside a real body cell so it inherits the table's text style; the cell's content is the component. */
+function typedCell(name: string, axes: Record<string, readonly string[]>, content: (v: Variant) => React.ReactNode, align: "start" | "end" | ((v: Variant) => "start" | "end") = "start"): Spec {
+  return {
+    name,
+    level: "organisms",
+    axes,
+    cell: { width: 200 },
+    rootSelector: "[data-spec-root] > *",
+    render: (v) => (
+      <QUI.Table striped={false} stickyHeader={false} verticalLines={false}>
+        <QUI.TableBody>
+          <QUI.TableRow>
+            <QUI.TableCell data-spec-root="" align={typeof align === "function" ? align(v) : align}>{content(v)}</QUI.TableCell>
+          </QUI.TableRow>
+        </QUI.TableBody>
+      </QUI.Table>
+    ),
+  };
+}
+
+/** Whether an element's text sits flush right (an end-aligned column). */
+function alignOf(el: HTMLElement) {
+  return ["end", "right"].includes(getComputedStyle(el).textAlign) ? "end" : "start";
+}
+
+/** A head's or cell's density (from its height) and whether it draws the column rule. */
+function densityRule(el: HTMLElement, compactBelow: number) {
+  return {
+    Density: el.getBoundingClientRect().height < compactBelow ? "compact" : "comfortable",
+    Rule: parseFloat(getComputedStyle(el).borderInlineEndWidth) > 0 ? "true" : "false",
+  };
+}
 
 /** Every valid combination of a spec's axes, in axis order. */
 export function combinations(spec: Spec): Variant[] {

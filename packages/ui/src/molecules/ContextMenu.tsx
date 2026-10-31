@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ContextMenu as BaseContextMenu } from "@base-ui/react/context-menu";
 import type { VariantProps } from "class-variance-authority";
-import { Check } from "lucide-react";
+import { Check } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass, NoStyle } from "../lib/no-class";
 import { menuPopupSurfaceClass, menuRowVariants } from "./Menu";

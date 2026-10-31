@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button as BaseButton } from "@base-ui/react/button";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, X } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PanelLeft, SlidersHorizontal } from "lucide-react";
+import { PanelLeft, SlidersHorizontal } from "../icons";
 import type { NoClass } from "../lib/no-class";
 import { Heading } from "../atoms/Heading";
 import { Icon } from "../atoms/Icon";

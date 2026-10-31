@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva } from "class-variance-authority";
-import { X } from "lucide-react";
+import { X } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 import { Icon } from "../atoms/Icon";

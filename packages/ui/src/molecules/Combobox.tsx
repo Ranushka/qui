@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
-import { ChevronDown, X, Check } from "lucide-react";
+import { ChevronDown, X, Check } from "../icons";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";

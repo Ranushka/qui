@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
-import { Plus } from "lucide-react";
+import { Plus } from "../icons";
 import { Combobox, ComboboxChips, ComboboxContent, ComboboxInputGroup, ComboboxItem, defaultItemLabel } from "./Combobox";
 import { Field } from "./Field";
 import { Popover, PopoverContent, PopoverTitle } from "./Popover";

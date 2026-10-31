@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import { AcmeShell } from "../examples/acme/shell";
 import { cards as allCards, departments, merchants, people, today, transactions, type SpendCard } from "../examples/acme/spend-data";
 import { FilterMenu } from "./ApprovalRequestsPage";

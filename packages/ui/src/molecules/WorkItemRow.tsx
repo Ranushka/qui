@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays } from "../icons";
 import type { NoClass } from "../lib/no-class";
 import { Avatar } from "../atoms/Avatar";
 import { AvatarGroup } from "../atoms/AvatarGroup";

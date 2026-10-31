@@ -7,7 +7,8 @@
 (() => {
   const F = (globalThis.__F = globalThis.__F || {});
   const cat = () => penpot.library.local.tokens;
-  const inter = () => penpot.fonts.all.find((f) => f.name === "Inter");
+  // qui's body and heading font (packages/tokens: --font-body / --font-heading)
+  const inter = () => penpot.fonts.findByName("IBM Plex Sans");
   F.SETS = ["core", "primitives-light", "semantic", "primitives-dark", "semantic-dark"];
 
   F.load = async function () {
@@ -108,14 +109,20 @@
     b.appendChild(F.text(title, "h3", "semibold", "txt.primary"));
     return b;
   };
-  F.bottom = () => (penpot.currentPage.root.children || []).reduce((m, s) => Math.max(m, s.y + s.height), -160);
+  // page.root.children comes back empty here, so top-level shapes are the children of the page root (zero id)
+  F.bottom = () => penpot.currentPage.findShapes().filter((s) => s.id && s.id !== "00000000-0000-0000-0000-000000000000" && (!s.parent || !s.parent.id || s.parent.id === "00000000-0000-0000-0000-000000000000")).reduce((m, s) => Math.max(m, s.y + s.height), -160);
 
   /** One board per colour set: a block per token group (bg.layer, txt ..., or neutral, brand ...), rows of 12 swatches,
    *  each swatch bound to its token. Built bottom-up (Penpot relayouts the whole tree on every append to an attached board). */
-  F.colorBoard = function (setName, x = 0, y, from = 0, to = 1e9, assemble = true) {
+  // `only`: token names (CSS spelling, bg-layer-1) to show; the board then holds just the colours components use
+  F.colorBoard = function (setName, x = 0, y, from = 0, to = 1e9, assemble = true, only) {
     const set = cat().sets.find((s) => s.name === setName);
     const groups = {};
-    for (const t of set.tokens) { const g = setName.startsWith("primitives") ? t.name.split(".")[0] : t.name.split(".")[0] + "." + t.name.split(".")[1].split("-")[0]; (groups[g] = groups[g] || []).push(t); }
+    const keep = only ? new Set(only) : null;
+    for (const t of set.tokens) {
+      if (keep && !keep.has(t.name.replace(/\./g, "-"))) continue;
+      // a filtered board is small: one block per family (bg, txt, border, label)
+      const g = keep || setName.startsWith("primitives") ? t.name.split(".")[0] : t.name.split(".")[0] + "." + t.name.split(".")[1].split("-")[0]; (groups[g] = groups[g] || []).push(t); }
     const blocks = [];
     for (const [g, list] of Object.entries(groups).slice(from, to)) {
       const block = F.flex(g, "column", 8);

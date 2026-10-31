@@ -32,7 +32,7 @@
       const inset = /\binset\b/.test(p); p = p.replace(/\binset\b/, "").trim();
       const m = p.match(/(rgba?\([^)]*\)|oklch\([^)]*\)|oklab\([^)]*\)|color\([^)]*\)|#[0-9a-fA-F]{3,8}|[a-z]+)/);
       const tok = m ? m[0] : "#000"; const n = p.replace(tok, "").trim().split(/\s+/).map(parseFloat).filter((x) => !Number.isNaN(x));
-      return { inset, x: n[0] || 0, y: n[1] || 0, blur: n[2] || 0, spread: n[3] || 0, ...hex(rgba(tok), k) };
+      return { inset, x: n[0] || 0, y: n[1] || 0, blur: n[2] || 0, spread: n[3] || 0, ...hex(rgba(tok), k), src: tok };
     });
   };
 
@@ -50,8 +50,17 @@
   const matchSel = (el, sel, which) => { try { if (which && sel.includes(which)) return el.matches(sel.split(which).join("")); if (/::/.test(sel)) return false; return el.matches(sel); } catch (e) { return false; } };
   const famNames = {};
   const allVars = [...new Set([...document.styleSheets].flatMap((ss) => { try { return [...ss.cssRules]; } catch (e) { return []; } }).flatMap((r) => (r.cssText.match(/--(?:txt|bg|border|label)-[a-z0-9-]+(?=\s*:)/g) || [])))];
-  const tokFor = (el, props, value, which) => {
+  // theme aliases (--border-color-subtle: var(--border-subtle)) resolve to the token they name, the one Penpot knows
+  const alias = new Map();
+  const collectAlias = (rules) => { for (const r of rules) { if (r.cssRules && !r.selectorText) { collectAlias(r.cssRules); continue; } if (!r.style) continue; for (let i = 0; i < r.style.length; i++) { const p = r.style[i]; if (!p.startsWith("--")) continue; const m = r.style.getPropertyValue(p).trim().match(/^var\((--[a-z0-9-]+)\)$/); if (m && !alias.has(p)) alias.set(p, m[1]); } } };
+  for (const ss of document.styleSheets) { try { collectAlias(ss.cssRules); } catch (e) {} }
+  // stop at a semantic token (its own value names a primitive, which screens must not bind to)
+  const semantic = (n) => /^--(bg|txt|border|label|illustration|scrollbar)-/.test(n) && !/^--(border|bg|text)-color-/.test(n);
+  const unalias = (name) => { for (let i = 0; i < 8 && alias.has(name) && !semantic(name); i++) name = alias.get(name); return name; };
+  const tokFor = (el, props, value, which) => { const t = tokFor0(el, props, value, which); return t ? unalias("--" + t).slice(2) : t; };
+  const tokFor0 = (el, props, value, which) => {
     const want = rgba(value); if (want[3] === 0) return null;
+    const own = inlineVar(el, props, want); if (own) return own;
     for (let e = el, depth = 0; e && depth < (props[0] === "color" ? 40 : 1); e = e.parentElement, depth++) {
       let found = null;
       for (const r of tokRules) {
@@ -64,13 +73,27 @@
     }
     // fallback: the semantic token of the right family whose resolved colour equals this exact colour
     const fam = props[0] === "background-color" ? "--bg-" : props[0].startsWith("border") ? "--border-" : "--txt-";
-    if (!famNames[fam]) famNames[fam] = [...new Set(tokRules.flatMap((r) => r.hits.map((h) => h[1])).concat(allVars).filter((n) => n.startsWith(fam)))];
+    if (!famNames[fam]) famNames[fam] = [...new Set(tokRules.flatMap((r) => r.hits.map((h) => h[1])).concat(allVars).filter((n) => n.startsWith(fam) && !/^--border-(width|radius|style)\b/.test(n)))];
     // data colours (a label's swatch) come from the label palette: any token whose colour is exactly this one
     const hit = famNames[fam].find((n) => same(varRgba(n), want)) || allVars.filter((n) => n.startsWith("--label-") && same(varRgba(n), want)).sort((a, b) => b.endsWith("-icon") - a.endsWith("-icon"))[0];
     return hit ? hit.slice(2) : null;
   };
-  /** Token of an svg part's paint: a var named in its classes when it resolves to the colour, else the family it hints at. */
-  const svgTok = (el, value) => {
+  /** A var(--x) the element sets itself (inline style or a presentation attribute) for one of `props`, when it resolves to
+   *  `want`; data colours (chart palette, status tones) arrive this way. Returned without the leading "--". */
+  const inlineVar = (el, props, want) => {
+    for (const p of props) {
+      const short = p === "background-color" ? "background" : null;
+      for (const v of [el.style && el.style.getPropertyValue(p), short && el.style && el.style.getPropertyValue(short), el.getAttribute && el.getAttribute(p)]) {
+        const m = v && v.trim().match(/^var\((--[a-z0-9-]+)\)$/); if (m && same(varRgba(m[1]), want)) return m[1].slice(2);
+      }
+    }
+    return null;
+  };
+  /** Token of an svg part's paint: a var the part sets itself, else a var named in its classes when it resolves to the
+   *  colour, else the family it hints at (aliases resolved to the token they name). */
+  const svgTok = (el, value, prop) => { const t = svgTok0(el, value, prop); return t ? unalias("--" + t).slice(2) : t; };
+  const svgTok0 = (el, value, prop) => {
+    const own = prop && inlineVar(el, [prop], rgba(value)); if (own) return own;
     const want = rgba(value); const cls = el.getAttribute("class") || "";
     const named = (cls.match(/--[a-z0-9-]+/g) || []).map((n) => n.replace(/^--(bg|border|text)-color-/, "--$1-").replace(/^--text-/, "--txt-"));
     const pool = allVars.filter((n) => same(varRgba(n), want));
@@ -91,10 +114,15 @@
   const hugH = (el, h) => Math.abs(withStyle(el, { height: "max-content", flex: "none" }, () => el.getBoundingClientRect().height) - h) < 0.6;
 
   const isFlex = (cs) => cs.display === "flex" || cs.display === "inline-flex";
-  const dispKind = (cs) => (isFlex(cs) ? "flex" : cs.display === "grid" || cs.display === "inline-grid" ? "grid" : cs.display === "contents" ? "contents" : /inline/.test(cs.display) ? "inline" : "block");
+  const dispKind = (cs) => (isFlex(cs) ? "flex" : cs.display === "grid" || cs.display === "inline-grid" ? "grid" : cs.display === "contents" ? "contents" : cs.display === "table-row" ? "table-row" : /inline/.test(cs.display) ? "inline" : "block");
 
   function sizing(el, cs, rect, parent, pcs, prect) {
     const out = { w: "fix", h: "fix" };
+    // the table algorithm sizes rows and cells, not their content: groups and rows span the table, a row keeps its
+    // height and a cell keeps its column width and fills the row's height
+    if (/^table-(row-group|header-group|footer-group)$/.test(cs.display)) return { w: "fill", h: "hug" };
+    if (cs.display === "table-row") return { w: "fill", h: "fix" };
+    if (cs.display === "table-cell") return { w: "fix", h: "fill" };
     const pk = parent ? dispKind(pcs) : "none";
     const prow = pk === "flex" && (pcs.flexDirection === "row" || pcs.flexDirection === "row-reverse");
     const pcol = pk === "flex" && !prow;
@@ -103,17 +131,20 @@
     const grow = px(cs.flexGrow) > 0;
     const stretch = (cs.alignSelf === "auto" || cs.alignSelf === "normal" ? pcs && (pcs.alignItems === "normal" || pcs.alignItems === "stretch") : cs.alignSelf === "stretch");
     const minW = cs.minWidth === "auto" ? 0 : px(cs.minWidth), minH = cs.minHeight === "auto" ? 0 : px(cs.minHeight);
-    const hw = hugW(el, rect.width) && !(minW > 0 && Math.abs(rect.width - minW) < 0.6);
-    const hh = hugH(el, rect.height) && !(minH > 0 && Math.abs(rect.height - minH) < 0.6);
+    // form controls are replaced elements with their own size: never "hug" the placeholder text drawn inside them
+    const replaced = /^(TEXTAREA|INPUT|SELECT)$/.test(el.tagName);
+    const hw = !replaced && hugW(el, rect.width) && !(minW > 0 && Math.abs(rect.width - minW) < 0.6);
+    const hh = !replaced && hugH(el, rect.height) && !(minH > 0 && Math.abs(rect.height - minH) < 0.6);
     // width
     if (prow && grow) out.w = "fill";
-    else if (pcol && stretch && !hw) out.w = "fill";
+    // stretched only when it really spans the parent (an explicit width, e.g. a skeleton bar, wins over stretch)
+    else if (pcol && stretch && !hw && Math.abs(rect.width - innerW) < 0.6) out.w = "fill";
     else if (hw) out.w = "hug";
     else if (pk !== "flex" && pk !== "none" && Math.abs(rect.width - innerW) < 0.6) out.w = "fill";
     else if (prow && Math.abs(rect.width - innerW) < 0.6 && !(parent && hugW(parent, prect.width))) out.w = "fill";
     // height
     if (pcol && grow) out.h = "fill";
-    else if (prow && stretch && !hh) out.h = "fill";
+    else if (prow && stretch && !hh && !replaced) out.h = "fill";
     else if (hh) out.h = "hug";
     else if (pcol && Math.abs(rect.height - innerH) < 0.6) out.h = "fill";
     return out;
@@ -127,8 +158,18 @@
     for (let f = el[k]; f; f = f.return) { const n = nm(f.type); if (n && COMPS.has(n) && hostOf(f) === el) found = { name: n, fiber: f }; }
     return found;
   }
+  // layout primitives / look-less containers: never instanced, but the builder names their frame after them
+  const PRIMS = new Set(["Box", "Stack", "Inline", "Grid", "List", "Tabs", "TableHeader", "TableBody"]);
+  function primOf(el) {
+    const k = Object.keys(el).find((x) => x.startsWith("__reactFiber$"));
+    if (!k) return null;
+    let found = null;
+    for (let f = el[k]; f; f = f.return) { const n = nm(f.type); if (n && PRIMS.has(n) && hostOf(f) === el) found = n; }
+    return found;
+  }
 
-  const lucideName = (svg) => { const m = (svg.getAttribute("class") || "").match(/lucide-([a-z0-9-]+)/g); return m ? m[m.length - 1].replace("lucide-", "") : null; };
+  // qui's icon set is drawn by Tabler, whose svgs carry `tabler-icon tabler-icon-<name>`
+  const lucideName = (svg) => { const m = (svg.getAttribute("class") || "").match(/tabler-icon-([a-z0-9-]+)/g); return m ? m[m.length - 1].replace("tabler-icon-", "") : null; };
 
   function walk(el, origin, parent, pcs, prect) {
     const cs = getComputedStyle(el);
@@ -145,11 +186,13 @@
       let parts;
       if (!lucideName(el)) {
         const SHAPES = "path,circle,ellipse,rect,line,polyline,polygon";
-        const src = [...el.querySelectorAll(SHAPES)], dst = [...clone.querySelectorAll(SHAPES)];
+        // shapes inside <defs> / <clipPath> / <mask> (a chart's clip rect) are not drawn, and the svg import drops them
+        const drawn = (root) => [...root.querySelectorAll(SHAPES)].filter((x) => !x.closest("defs, clipPath, mask"));
+        const src = drawn(el), dst = drawn(clone);
         const vb = el.viewBox && el.viewBox.baseVal; const cx = vb ? vb.x + vb.width / 2 : 0, cy = vb ? vb.y + vb.height / 2 : 0;
         parts = src.map((p, i) => {
           const pcs = getComputedStyle(p); const d = dst[i]; d.removeAttribute("class");
-          const paint = (prop) => { const v = pcs[prop]; if (!v || v === "none" || /url\(/.test(v)) return null; const o = hex(rgba(v)); if (!o.a) return null; const t = svgTok(p, v); if (t) o.tk = t; d.setAttribute(prop, o.c); if (o.a < 1) d.setAttribute(prop + "-opacity", o.a); return o; };
+          const paint = (prop) => { const v = pcs[prop]; if (!v || v === "none" || /url\(/.test(v)) return null; const o = hex(rgba(v)); if (!o.a) return null; const t = svgTok(p, v, prop); if (t) o.tk = t; d.setAttribute(prop, o.c); if (o.a < 1) d.setAttribute(prop + "-opacity", o.a); return o; };
           const out = { stroke: paint("stroke"), fill: paint("fill") };
           const m = pcs.transform && pcs.transform.match(/^matrix\(([^)]+)\)$/);
           let ang = 0;
@@ -158,8 +201,17 @@
           if (ang) d.setAttribute("transform", `rotate(${ang} ${cx} ${cy})`);
           return out;
         });
+        const tsrc = [...el.querySelectorAll("text, tspan")], tdst = [...clone.querySelectorAll("text, tspan")];
+        tsrc.forEach((t, i) => { const tcs = getComputedStyle(t); if (t.tagName === "text") { tdst[i].setAttribute("font-family", tcs.fontFamily); tdst[i].setAttribute("font-weight", tcs.fontWeight); } const c = tcs.fill; if (c && c !== "none" && !/url\(/.test(c)) { const o = hex(rgba(c)); tdst[i].setAttribute("fill", o.c); if (o.a < 1) tdst[i].setAttribute("fill-opacity", o.a); } });
       }
-      return { t: "sv", icon: lucideName(el), svg: new XMLSerializer().serializeToString(clone), r: rel, color: H(el, ["color"], cs.color), parts, sw: cs.strokeWidth, op: +cs.opacity };
+      // a rotated glyph (DisclosureIndicator's chevron-down turned -90° while closed): the rotation of the svg and of a
+      // wrapper that holds only it (rotate property or a transform matrix), so the builder can turn the icon instance
+      const angOf = (e) => { const c = getComputedStyle(e); let a = 0; const mm = c.transform && c.transform.match(/^matrix\(([^)]+)\)$/); if (mm) { const [p, q] = mm[1].split(",").map(Number); a = Math.round((Math.atan2(q, p) * 180) / Math.PI); } if (c.rotate && c.rotate !== "none") a += parseFloat(c.rotate) || 0; return a; };
+      let rot = angOf(el); if (el.parentElement && el.parentElement.children.length === 1) rot += angOf(el.parentElement);
+      rot = ((Math.round(rot) % 360) + 360) % 360;
+      const sv = { t: "sv", icon: lucideName(el), svg: new XMLSerializer().serializeToString(clone), r: rel, color: H(el, ["color"], cs.color), parts, sw: cs.strokeWidth, op: +cs.opacity };
+      if (rot) sv.rot = rot;
+      return sv;
     }
 
     const comp = compOf(el);
@@ -173,7 +225,7 @@
       if (sp && sp.canInstance) { try { node.inst = !!sp.canInstance(comp.fiber.memoizedProps || {}, el); } catch (e) { node.inst = false; } } else node.inst = true;
       const pr = {}; for (const [k, v] of Object.entries(comp.fiber.memoizedProps || {})) if (["string", "number", "boolean"].includes(typeof v) && k !== "className") pr[k] = v;
       node.props = pr;
-    }
+    } else { const pm = primOf(el); if (pm) node.prim = pm; }
     const st = (node.st = {});
     st.d = kind;
     if (kind === "flex") {
@@ -183,8 +235,11 @@
     if (kind === "grid") { st.cols = cs.gridTemplateColumns; st.gap = [px(cs.rowGap), px(cs.columnGap)]; st.ai = cs.alignItems; st.jc = cs.justifyContent; }
     st.pad = quad(cs, "padding"); st.bw = ["Top", "Right", "Bottom", "Left"].map((s) => (cs["border" + s + "Style"] === "none" ? 0 : px(cs["border" + s + "Width"])));
     st.mar = quad(cs, "margin");
+    st.ta = cs.textAlign; if (cs.display === "table-cell") st.va = cs.verticalAlign;
     st.pos = cs.position;
     if (cs.position === "absolute" || cs.position === "fixed") st.abs = true;
+    // a translate (a switch thumb, a slider handle) moves the box off its layout slot: place it where it is drawn
+    else if ((/^matrix\(1, 0, 0, 1, /.test(cs.transform) && cs.transform !== "matrix(1, 0, 0, 1, 0, 0)") || (cs.translate && cs.translate !== "none" && !/^0px( 0px)?$/.test(cs.translate))) st.abs = true;
     st.clip = cs.overflowX !== "visible" || cs.overflowY !== "visible";
     st.grow = px(cs.flexGrow); st.shrink = px(cs.flexShrink); st.as = cs.alignSelf;
     st.minW = cs.minWidth === "auto" || cs.minWidth === "0px" ? null : px(cs.minWidth);
@@ -195,7 +250,12 @@
     if (rad.some((x) => x > 0)) st.rad = rad;
     // rounded-full computes to an effectively infinite radius: keep that intent (radius.full) rather than half the height
     if (["TopLeft", "TopRight", "BottomRight", "BottomLeft"].every((c) => { const v = cs["border" + c + "Radius"]; return v.endsWith("%") ? parseFloat(v) >= 50 : px(v) >= 999; })) st.radFull = true;
-    const sh = shadows(cs.boxShadow, op); if (sh.length) st.sh = sh;
+    // transparent layers (Tailwind's empty ring / shadow slots) draw nothing; a hairline's colour gets its border token
+    // a shadow with no offset, blur or spread draws nothing either
+    const sh = shadows(cs.boxShadow, op).filter((x) => x.a > 0 && (x.inset || x.x || x.y || x.blur || x.spread));
+    // no border token: a currentColor ring (Radio) takes the text colour's token, a var(--txt-…) ring (disabled Checkbox) its own
+    sh.forEach((x) => { const t = tokFor(el, ["border-color"], x.src) || tokFor(el, ["color"], x.src); if (t) x.tk = t; delete x.src; });
+    if (sh.length) st.sh = sh;
     if (op < 1) st.op = op;
     if (cs.backgroundImage && cs.backgroundImage !== "none") st.bgImg = cs.backgroundImage.slice(0, 120);
     if (parent) node.sz = sizing(el, cs, rect, parent, pcs, prect); else { const mw = cs.minWidth === "auto" ? 0 : px(cs.minWidth), mh = cs.minHeight === "auto" ? 0 : px(cs.minHeight); node.sz = { w: hugW(el, rect.width) && !(mw > 0 && Math.abs(rect.width - mw) < 0.6) ? "hug" : "fix", h: hugH(el, rect.height) && !(mh > 0 && Math.abs(rect.height - mh) < 0.6) ? "hug" : "fix" }; }
@@ -226,9 +286,17 @@
     kids.forEach((c, i) => {
       if (c.nodeType === 3) {
         let txt = c.textContent.replace(/\s+/g, " ");
-        const first = i === 0, last = i === kids.length - 1;
-        if (trimAll || first) txt = txt.replace(/^ /, "");
-        if (trimAll || last) txt = txt.replace(/ $/, "");
+        // keep a leading / trailing space only when the browser renders it (width > 0): "•••• " before the digits
+        // is real, a space collapsed at a line or block edge (or after another space) is not
+        const edgeWs = (atEnd) => {
+          const all = c.textContent; const m = (atEnd ? all.match(/\s+$/) : all.match(/^\s+/)); if (!m) return 0;
+          const from = atEnd ? all.length - m[0].length : 0, to = atEnd ? all.length : m[0].length;
+          const at = (k) => { let n = 0; for (const nd of c.nodes) { if (k <= n + nd.length) return [nd, k - n]; n += nd.length; } const z = c.nodes[c.nodes.length - 1]; return [z, z.length]; };
+          const wr = document.createRange(); wr.setStart(...at(from)); wr.setEnd(...at(to));
+          return [...wr.getClientRects()].reduce((s2, q) => s2 + q.width, 0);
+        };
+        if (trimAll || edgeWs(false) < 0.5) txt = txt.replace(/^ /, "");
+        if (trimAll || edgeWs(true) < 0.5) txt = txt.replace(/ $/, "");
         if (!txt.trim()) {
           // a space between two inline siblings occupies real width
           if (!trimAll && i > 0 && i < kids.length - 1 && txt.length) {
@@ -267,17 +335,30 @@
           tn.breaks = runs.map((x) => x.s.replace(/\s+/g, " ").trim()).filter(Boolean);
         }
         if (cs.whiteSpace === "nowrap") tn.nowrap = true;
+        // a truncated run ("Categories & segme…"): Penpot has no text-overflow, so record the string the browser shows
+        if (cs.textOverflow === "ellipsis" && lines === 1 && el.scrollWidth > el.clientWidth + 0.5) {
+          cx.font = cs.fontStyle + " " + cs.fontWeight + " " + fs + "px " + cs.fontFamily;
+          const avail = el.clientWidth - px(cs.paddingLeft) - px(cs.paddingRight);
+          let k = s.length; while (k > 0 && cx.measureText(s.slice(0, k).trimEnd() + "\u2026").width > avail) k--;
+          tn.full = s; tn.s = s.slice(0, k).trimEnd() + "\u2026"; tn.r.w = R(Math.min(avail, cx.measureText(tn.s).width));
+        }
         ch.push(tn);
       } else if (c.nodeType === 1) {
         const sub = walk(c, origin, el, cs, rect); if (sub) ch.push(sub);
       }
     });
     // input placeholder
-    if ((tag === "input" || tag === "textarea") && !el.value && el.placeholder) {
-      const ps = getComputedStyle(el, "::placeholder"); const fs = px(cs.fontSize); const lh = px(cs.lineHeight) || fs * 1.2;
+    // input placeholder, or the typed value of a text control (a filled Input / NumberField's number)
+    const textual = tag === "textarea" || (tag === "input" && /^(text|search|email|number|tel|url|password)$/.test(el.type));
+    if (textual && (el.value || el.placeholder)) {
+      const isPh = !el.value; const s = isPh ? el.placeholder : el.type === "password" ? "•".repeat(el.value.length) : el.value;
+      const ps = isPh ? getComputedStyle(el, "::placeholder") : cs; const fs = px(cs.fontSize); const lh = px(cs.lineHeight) || fs * 1.2;
       cx.font = cs.fontWeight + " " + fs + "px " + cs.fontFamily;
-      const w = cx.measureText(el.placeholder).width; const padL = px(cs.paddingLeft) + px(cs.borderLeftWidth);
-      ch.push({ t: "tx", s: el.placeholder, placeholder: true, lines: 1, r: { x: R(rect.x - origin.x + padL), y: R(rect.y - origin.y + (rect.height - lh) / 2), w: R(w), h: R(lh) }, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs, fw: cs.fontWeight, fst: "normal", lh, ls: px(cs.letterSpacing), al: "left", ...H(el, ["color"], ps.color, op, "::placeholder") } });
+      const w = cx.measureText(s).width; const padL = px(cs.paddingLeft) + px(cs.borderLeftWidth);
+      // a right- or centre-aligned value (a number field) sits where the browser draws it
+      const inner = rect.width - padL - px(cs.paddingRight) - px(cs.borderRightWidth);
+      const dx = !isPh && /right|end/.test(cs.textAlign) ? inner - w : !isPh && cs.textAlign === "center" ? (inner - w) / 2 : 0;
+      ch.push({ t: "tx", s, placeholder: isPh || undefined, lines: 1, r: { x: R(rect.x - origin.x + padL + dx), y: R(rect.y - origin.y + (tag === "textarea" ? px(cs.paddingTop) + px(cs.borderTopWidth) : (rect.height - lh) / 2)), w: R(w), h: R(lh) }, f: { ff: cs.fontFamily.split(",")[0].replace(/["']/g, "").trim(), fs, fw: cs.fontWeight, fst: "normal", lh, ls: px(cs.letterSpacing), al: "left", ...H(el, ["color"], ps.color, op, isPh ? "::placeholder" : undefined) } });
     }
     return node;
   }

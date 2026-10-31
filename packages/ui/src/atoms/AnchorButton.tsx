@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 import { textLinkBaseClass, textLinkPalette } from "../lib/text-link-chrome";

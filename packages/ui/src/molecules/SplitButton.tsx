@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 import { splitButtonFrameVariants, type SplitButtonSize, type SplitButtonVariant } from "../lib/split-button-frame";

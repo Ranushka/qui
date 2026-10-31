@@ -1,5 +1,5 @@
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import { priorityIcon, typeIcon, type IconComponent, type WorkItem, type WorkItemDetails, type WorkItemEntry } from "./data";
 
 /**

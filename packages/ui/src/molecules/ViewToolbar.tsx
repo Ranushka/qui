@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChartColumn, Kanban, List, ListFilter, Plus, SlidersHorizontal, SquareStack } from "lucide-react";
+import { ChartColumn, Kanban, List, ListFilter, Plus, SlidersHorizontal, SquareStack } from "../icons";
 import type { NoClass } from "../lib/no-class";
 import { Badge } from "../atoms/Badge";
 import { Box } from "../atoms/Box";

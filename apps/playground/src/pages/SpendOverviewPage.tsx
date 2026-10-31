@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import type { IconComponent } from "../examples/acme/data";
 import { AcmeShell } from "../examples/acme/shell";
 import { budgets, merchants, sum, transactions } from "../examples/acme/spend-data";

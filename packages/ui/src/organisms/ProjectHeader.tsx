@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Ellipsis, Link } from "lucide-react";
+import { Ellipsis, Link } from "../icons";
 import type { NoClass } from "../lib/no-class";
 import { Box } from "../atoms/Box";
 import { Heading } from "../atoms/Heading";

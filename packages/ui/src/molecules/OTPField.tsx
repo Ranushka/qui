@@ -1,6 +1,6 @@
 import * as React from "react";
 import { OTPField as BaseOTPField } from "@base-ui/react/otp-field";
-import { Minus } from "lucide-react";
+import { Minus } from "../icons";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";

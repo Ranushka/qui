@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
-import { Check, Minus } from "lucide-react";
+import { Check, Minus } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 import { nodeSlotClass } from "../lib/node-slot";

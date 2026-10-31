@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Accordion as BaseAccordion } from "@base-ui/react/accordion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "../icons";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 import { Icon } from "../atoms/Icon";

@@ -1,5 +1,5 @@
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import { groups, totalCount, priorityIcon, typeIcon, type StateGroup, type WorkItem } from "../examples/acme/data";
 import { AcmeShell, ViewToolbar } from "../examples/acme/shell";
 

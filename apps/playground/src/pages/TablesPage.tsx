@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import { adminItems } from "../examples/acme/admin-nav";
 import { PlaceholderPage } from "../examples/acme/placeholder";
 import { ActivityLogPage } from "./ActivityLogPage";

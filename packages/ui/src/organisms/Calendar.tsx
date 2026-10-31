@@ -1,7 +1,7 @@
 import type { NoClass } from "../lib/no-class";
 import * as React from "react";
 import { DayPicker, useDayPicker, type ChevronProps, type ClassNames, type DayPickerProps, type NavProps } from "react-day-picker";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "../icons";
 import { IconButton } from "../atoms/IconButton";
 import { Icon } from "../atoms/Icon";
 

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Star } from "lucide-react";
+import { Star } from "../src/icons";
 import { Icon, IconToggle, Toggle } from "../src";
 
 describe("Toggle", () => {

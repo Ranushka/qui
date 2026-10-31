@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "../icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "./cn";
 import { nodeSlotClass } from "./node-slot";

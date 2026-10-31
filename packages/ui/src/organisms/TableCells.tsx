@@ -4,7 +4,7 @@ import { Avatar } from "../atoms/Avatar";
 import { AvatarGroup } from "../atoms/AvatarGroup";
 import { LinearProgress } from "../atoms/LinearProgress";
 import { Tooltip } from "../atoms/Tooltip";
-import { ArrowDownRight, ArrowUpRight, Check, CircleDashed, CircleDot, CircleX, Minus, Triangle } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Check, CircleDashed, CircleDot, CircleX, Minus, Triangle } from "../icons";
 
 /**
  * Typed cell content for `TableCell`: people, dates, money, numbers, changes, metric tiles, trends, statuses,

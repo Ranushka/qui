@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Select as BaseSelect } from "@base-ui/react/select";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check } from "../icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Avatar as BaseAvatar } from "@base-ui/react/avatar";
-import { Building2 } from "lucide-react";
+import { Building2 } from "../icons";
 import { cva } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";

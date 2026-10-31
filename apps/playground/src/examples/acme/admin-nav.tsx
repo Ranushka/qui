@@ -1,4 +1,4 @@
-import * as Icons from "lucide-react";
+import { Icons } from "@qui/ui";
 import type { IconComponent } from "./data";
 
 export type AdminItem = { label: string; icon: IconComponent; slug: string };

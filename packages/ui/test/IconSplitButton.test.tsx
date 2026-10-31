@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Plus } from "lucide-react";
+import { Plus } from "../src/icons";
 import { Icon, IconSplitButton, Menu, MenuContent, MenuItem } from "../src";
 
 describe("IconSplitButton", () => {

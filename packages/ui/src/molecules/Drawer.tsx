@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
-import { X } from "lucide-react";
+import { X } from "../icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass, NoStyle } from "../lib/no-class";
