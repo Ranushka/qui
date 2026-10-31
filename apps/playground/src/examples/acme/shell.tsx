@@ -18,7 +18,7 @@ function MobileNav() {
         <QUI.DrawerContent side="start" hideClose aria-label="Navigation">
           <QUI.Box grow overflow="auto">
             <SidebarContent
-              endAction={<QUI.DrawerClose render={<QUI.IconButton variant="ghost" size="sm" aria-label="Close navigation" icon={<QUI.Icon icon={Icons.X} />} />} />}
+              endAction={<QUI.DrawerClose render={<QUI.IconButton variant="ghost" aria-label="Close navigation" icon={<QUI.Icon icon={Icons.X} />} />} />}
             />
           </QUI.Box>
         </QUI.DrawerContent>
