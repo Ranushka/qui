@@ -55,15 +55,15 @@ function LegLine({ leg }: { leg: Leg }) {
           {time.format(new Date(leg.depart))} – {time.format(new Date(leg.arrive))}
           {nextDay > 0 ? ` +${nextDay}` : ""}
         </QUI.Text>
-        <QUI.Text size="xs" color="secondary">
+        <QUI.Text size="sm" color="secondary">
           {leg.airline} · {leg.flight} · {shortDay.format(new Date(leg.depart))}
         </QUI.Text>
       </QUI.Stack>
       <QUI.Stack gap="0.5">
-        <QUI.Text size="xs" color="primary" tabularNums>
+        <QUI.Text size="sm" color="primary" tabularNums>
           {duration(leg.minutes)}
         </QUI.Text>
-        <QUI.Text size="xs" color={leg.stops ? "warning" : "secondary"}>
+        <QUI.Text size="sm" color={leg.stops ? "warning" : "secondary"}>
           {leg.from}–{leg.to} · {leg.stops ? `1 stop, ${leg.via}` : "Non-stop"}
         </QUI.Text>
       </QUI.Stack>
@@ -94,12 +94,12 @@ function FlightResult({ offer, exception, selected, onSelect, oneWay }: { offer:
           <QUI.Heading level={3} size={4} weight="semibold">
             {aed.format(offer.fare)}
           </QUI.Heading>
-          <QUI.Text size="xs" color="tertiary">
+          <QUI.Text size="sm" color="tertiary">
             {oneWay ? "One way" : "Return"}, per traveller
           </QUI.Text>
           <PolicyBadge exception={exception} />
           {exception ? (
-            <QUI.Text size="2xs" color="warning">
+            <QUI.Text size="xs" color="warning">
               {exception}
             </QUI.Text>
           ) : null}
@@ -121,7 +121,7 @@ function HotelResult({ hotel, count, exception, selected, onSelect }: { hotel: H
             </QUI.Text>
             {hotel.preferred ? <QUI.Badge size="xs" variant="brand" label="Company rate" /> : null}
           </QUI.Inline>
-          <QUI.Text size="xs" color="secondary">
+          <QUI.Text size="sm" color="secondary">
             {hotel.stars}-star · {hotel.area} · {hotel.km} km from the meeting
           </QUI.Text>
           <QUI.Inline gap="1">
@@ -134,12 +134,12 @@ function HotelResult({ hotel, count, exception, selected, onSelect }: { hotel: H
           <QUI.Heading level={3} size={4} weight="semibold">
             {aed.format(hotel.nightly)}
           </QUI.Heading>
-          <QUI.Text size="xs" color="tertiary">
+          <QUI.Text size="sm" color="tertiary">
             per night · {aed.format(hotel.nightly * count)} for {count} {count === 1 ? "night" : "nights"}
           </QUI.Text>
           <PolicyBadge exception={exception} />
           {exception ? (
-            <QUI.Text size="2xs" color="warning">
+            <QUI.Text size="xs" color="warning">
               {exception}
             </QUI.Text>
           ) : null}
@@ -161,7 +161,7 @@ function TripBasket({ flight, hotel, hotelNights, onRemoveFlight, onRemoveHotel,
           Your trip
         </QUI.Text>
         {!flight && !hotel ? (
-          <QUI.Text size="xs" color="tertiary">
+          <QUI.Text size="sm" color="tertiary">
             Pick a flight, a hotel, or both. They're booked together as one trip.
           </QUI.Text>
         ) : null}
@@ -170,11 +170,11 @@ function TripBasket({ flight, hotel, hotelNights, onRemoveFlight, onRemoveHotel,
             <QUI.Inline gap="2" align="start" wrap={false}>
               <QUI.Icon icon={Icons.Plane} tint="secondary" size="md" />
               <QUI.Stack gap="0.5">
-                <QUI.Text size="xs" weight="medium" color="primary">
+                <QUI.Text size="sm" weight="medium" color="primary">
                   {flight.offer.outbound.from} → {flight.offer.outbound.to}
                   {flight.offer.inbound ? " → " + flight.offer.inbound.to : ""}
                 </QUI.Text>
-                <QUI.Text size="2xs" color="secondary">
+                <QUI.Text size="xs" color="secondary">
                   {flight.offer.outbound.airline} · {flight.offer.cabin} · {aed.format(flight.offer.fare)}
                 </QUI.Text>
               </QUI.Stack>
@@ -187,10 +187,10 @@ function TripBasket({ flight, hotel, hotelNights, onRemoveFlight, onRemoveHotel,
             <QUI.Inline gap="2" align="start" wrap={false}>
               <QUI.Icon icon={Icons.BedDouble} tint="secondary" size="md" />
               <QUI.Stack gap="0.5">
-                <QUI.Text size="xs" weight="medium" color="primary">
+                <QUI.Text size="sm" weight="medium" color="primary">
                   {hotel.offer.name}
                 </QUI.Text>
-                <QUI.Text size="2xs" color="secondary">
+                <QUI.Text size="xs" color="secondary">
                   {hotelNights} nights · {aed.format(hotel.offer.nightly * hotelNights)}
                 </QUI.Text>
               </QUI.Stack>
@@ -202,7 +202,7 @@ function TripBasket({ flight, hotel, hotelNights, onRemoveFlight, onRemoveHotel,
           <>
             <QUI.Separator />
             <QUI.Inline justify="between" gap="2">
-              <QUI.Text size="xs" color="secondary">
+              <QUI.Text size="sm" color="secondary">
                 Total
               </QUI.Text>
               <QUI.Text size="sm" weight="semibold" color="primary" tabularNums>
@@ -351,7 +351,7 @@ function CheckoutDialog({
                     <QUI.Box border="subtle" radius="lg" padding="4">
                       <QUI.Stack gap="3">
                         <QUI.Inline justify="between" gap="2">
-                          <QUI.Text size="xs" weight="semibold" color="secondary">
+                          <QUI.Text size="sm" weight="semibold" color="secondary">
                             Flight
                           </QUI.Text>
                           <QUI.Text size="sm" weight="semibold" color="primary" tabularNums>
@@ -360,7 +360,7 @@ function CheckoutDialog({
                         </QUI.Inline>
                         <LegLine leg={flight.offer.outbound} />
                         {flight.offer.inbound ? <LegLine leg={flight.offer.inbound} /> : null}
-                        <QUI.Text size="xs" color="tertiary">
+                        <QUI.Text size="sm" color="tertiary">
                           {flight.offer.cabin} · {flight.offer.bags} · {flight.offer.refundable ? "Refundable" : "Non-refundable"} · traveller {me.name}
                         </QUI.Text>
                       </QUI.Stack>
@@ -370,7 +370,7 @@ function CheckoutDialog({
                     <QUI.Box border="subtle" radius="lg" padding="4">
                       <QUI.Stack gap="1">
                         <QUI.Inline justify="between" gap="2">
-                          <QUI.Text size="xs" weight="semibold" color="secondary">
+                          <QUI.Text size="sm" weight="semibold" color="secondary">
                             Hotel
                           </QUI.Text>
                           <QUI.Text size="sm" weight="semibold" color="primary" tabularNums>
@@ -380,7 +380,7 @@ function CheckoutDialog({
                         <QUI.Text size="sm" weight="medium" color="primary">
                           {hotel.offer.name}
                         </QUI.Text>
-                        <QUI.Text size="xs" color="secondary">
+                        <QUI.Text size="sm" color="secondary">
                           {formatDay(hotel.checkIn)} – {formatDay(hotel.checkOut)} · {hotelNights} nights × {aed.format(hotel.offer.nightly)} · {hotel.offer.freeCancel ? "Free cancellation" : "Non-refundable"}
                         </QUI.Text>
                       </QUI.Stack>
@@ -392,7 +392,7 @@ function CheckoutDialog({
                       <QUI.Text size="sm" weight="medium" color="primary">
                         Paid with the Team travel card
                       </QUI.Text>
-                      <QUI.Text size="xs" color="secondary">
+                      <QUI.Text size="sm" color="secondary">
                         The receipt and invoice attach to the transaction automatically. Charged to {details.department}, purpose {details.purpose.toLowerCase()}.
                       </QUI.Text>
                     </QUI.Stack>
@@ -542,7 +542,7 @@ function BookView({ onBooked }: { onBooked: (trip: Trip) => void }) {
                   <QUI.SwitchField size="md" label="In policy only" checked={inPolicyOnly} onCheckedChange={setInPolicyOnly} />
                 </QUI.Inline>
               </QUI.Stack>
-              <QUI.Text size="xs" color="secondary" aria-live="polite">
+              <QUI.Text size="sm" color="secondary" aria-live="polite">
                 {mode === "flights"
                   ? `${ratedFlights.length} flights, ${cityOf(fs.from).city} to ${cityOf(fs.to).city}`
                   : `${ratedHotels.length} hotels in ${cityOf(hs.city).city}, ${hotelCount} ${hotelCount === 1 ? "night" : "nights"}`}
@@ -562,7 +562,7 @@ function BookView({ onBooked }: { onBooked: (trip: Trip) => void }) {
                   <QUI.Text weight="medium" color="primary">
                     Nothing matches
                   </QUI.Text>
-                  <QUI.Text size="xs" color="tertiary">
+                  <QUI.Text size="sm" color="tertiary">
                     Turn off a filter to see more.
                   </QUI.Text>
                 </QUI.Stack>
@@ -690,7 +690,7 @@ function TripsView({ trips, setTrips, notice, setNotice }: { trips: Trip[]; setT
                   <QUI.Stack gap="1">
                     <QUI.Inline gap="2" wrap={false}>
                       <QUI.TagCell label={trip.status} color={statusColor[trip.status]} />
-                      <QUI.Text size="2xs" color="tertiary">
+                      <QUI.Text size="xs" color="tertiary">
                         Trip #{trip.id}
                       </QUI.Text>
                     </QUI.Inline>
@@ -704,7 +704,7 @@ function TripsView({ trips, setTrips, notice, setNotice }: { trips: Trip[]; setT
                   </QUI.Stack>
                   {trip.exception ? <QUI.Banner variant="warning">Out of policy: {trip.exception}</QUI.Banner> : null}
                   <QUI.Stack gap="2">
-                    <QUI.Text size="xs" weight="semibold" color="secondary">
+                    <QUI.Text size="sm" weight="semibold" color="secondary">
                       Itinerary
                     </QUI.Text>
                     <QUI.Timeline items={itinerary(trip)} />
@@ -717,10 +717,10 @@ function TripsView({ trips, setTrips, notice, setNotice }: { trips: Trip[]; setT
                       <QUI.UserCell name={trip.approver.name} />
                     </QUI.Property>
                     <QUI.Property icon={Icons.Briefcase} label="Purpose">
-                      <QUI.Text size="xs">{trip.purpose}</QUI.Text>
+                      <QUI.Text size="sm">{trip.purpose}</QUI.Text>
                     </QUI.Property>
                     <QUI.Property icon={Icons.Building2} label="Department">
-                      <QUI.Text size="xs">{trip.department}</QUI.Text>
+                      <QUI.Text size="sm">{trip.department}</QUI.Text>
                     </QUI.Property>
                   </QUI.Grid>
                 </QUI.Stack>

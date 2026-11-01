@@ -60,7 +60,7 @@ export function ClaimDrawer({
                 <QUI.Stack gap="1">
                   <QUI.Inline gap="2" wrap={false}>
                     <QUI.TagCell label={claim.status} color={claimStatusColor[claim.status]} />
-                    <QUI.Text size="2xs" color="tertiary">
+                    <QUI.Text size="xs" color="tertiary">
                       Claim #{claim.id}
                     </QUI.Text>
                   </QUI.Inline>
@@ -73,14 +73,14 @@ export function ClaimDrawer({
                   </QUI.DrawerDescription>
                 </QUI.Stack>
                 <QUI.Stack gap="2">
-                  <QUI.Text size="xs" weight="semibold" color="secondary">
+                  <QUI.Text size="sm" weight="semibold" color="secondary">
                     Status
                   </QUI.Text>
                   <QUI.Timeline items={timelineFor(claim)} />
                 </QUI.Stack>
                 {claim.kind === "Expense" ? (
                   <QUI.Stack gap="2">
-                    <QUI.Text size="xs" weight="semibold" color="secondary">
+                    <QUI.Text size="sm" weight="semibold" color="secondary">
                       Receipt
                     </QUI.Text>
                     <QUI.ReceiptPreview file={claim.receipt ? { name: claim.receipt, kind: claim.receipt.endsWith(".jpg") ? "image" : "pdf", detail: "Uploaded with the claim" } : null} onView={() => {}} />
@@ -238,7 +238,7 @@ export function NewClaimDialog({
                       onRemove={() => setReceipt(null)}
                     />
                     {show("receipt") ? (
-                      <QUI.Text size="2xs" color="danger">
+                      <QUI.Text size="xs" color="danger">
                         {show("receipt")}
                       </QUI.Text>
                     ) : null}

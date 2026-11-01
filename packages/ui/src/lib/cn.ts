@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
 /**
- * qui's composite typography tokens (`text-body-xs-medium`, `text-caption-md-regular`,
+ * qui's composite typography tokens (`text-body-sm-medium`, `text-caption-md-regular`,
  * `text-h3-semibold`, …) and its numeric scale (`text-13`). Stock tailwind-merge can't tell these
  * apart from `text-<color>` utilities, so a token and a color in one class list evict each other.
  */

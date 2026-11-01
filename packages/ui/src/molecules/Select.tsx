@@ -34,7 +34,7 @@ const selectTriggerVariants = cva(
 /** Shared 32px option-row chrome: full-width flex row, highlight fill, disabled treatment. */
 const selectItemVariants = cva(
   cn(
-    "group/item flex h-8 w-full cursor-default items-center gap-(--control-gap-md) rounded-md px-2 text-body-xs-regular text-primary outline-none select-none [--node-size:var(--control-glyph-md)]",
+    "group/item flex h-8 w-full cursor-default items-center gap-(--control-gap-md) rounded-md px-2 text-body-sm-regular text-primary outline-none select-none [--node-size:var(--control-glyph-md)]",
     "data-disabled:pointer-events-none data-disabled:text-disabled data-highlighted:bg-layer-transparent-hover"
   )
 );

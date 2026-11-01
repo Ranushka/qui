@@ -225,7 +225,7 @@ export function ChartFrame({ height, width, legend, ariaLabel, overlay, children
 }
 
 /** Recessive axis/grid styling shared by cartesian charts. */
-export const axisTick = { fill: "var(--txt-tertiary)", fontSize: 11 } as const;
+export const axisTick = { fill: "var(--txt-tertiary)", fontSize: 12 } as const;
 export const gridStroke = "var(--border-subtle)";
 
 export { defaultFormatter };

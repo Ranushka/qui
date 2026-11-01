@@ -28,7 +28,7 @@ describe("ButtonGroup", () => {
     );
     const inherit = screen.getByRole("button", { name: "Inherit" });
     expect(inherit.className).toContain("h-(--control-height-md)");
-    expect(inherit.className).toContain("text-body-xs-medium");
+    expect(inherit.className).toContain("text-body-sm-medium");
     expect(inherit.className).toContain("text-secondary");
     expect(screen.getByRole("button", { name: "Override" }).className).toContain("h-(--control-height-sm)");
   });

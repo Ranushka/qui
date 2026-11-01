@@ -7,7 +7,7 @@ const badgeVariants = cva("inline-flex w-fit shrink-0 items-center justify-cente
   variants: {
     size: {
       xs: "h-(--control-height-xs) gap-(--control-gap-xs) px-(--control-padding-x-xs) rounded-(--control-radius-xs) text-caption-md-medium [--node-size:var(--control-glyph-xs)]",
-      sm: "h-(--control-height-sm) gap-(--control-gap-sm) px-1.5 rounded-(--control-radius-sm) text-body-xs-medium [--node-size:var(--control-glyph-sm)]",
+      sm: "h-(--control-height-sm) gap-(--control-gap-sm) px-1.5 rounded-(--control-radius-sm) text-body-sm-medium [--node-size:var(--control-glyph-sm)]",
       md: "h-(--control-height-md) gap-(--control-gap-md) px-2 rounded-(--control-radius-md) text-body-sm-medium [--node-size:var(--control-glyph-md)]",
     },
     variant: {

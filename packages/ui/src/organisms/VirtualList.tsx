@@ -309,7 +309,7 @@ VirtualList.displayName = "VirtualList";
     isItemSelected={(_, i) => i === 2}
     renderItem={(item) => (
       <div className="flex w-full items-center gap-3">
-        <span className="w-20 shrink-0 text-body-xs-medium text-tertiary">{item.id}</span>
+        <span className="w-20 shrink-0 text-body-sm-medium text-tertiary">{item.id}</span>
         <span className="min-w-0 flex-1 truncate text-primary">{item.title}</span>
         <QUI.Badge label={item.points + " pts"} />
       </div>

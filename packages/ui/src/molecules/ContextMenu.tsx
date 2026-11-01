@@ -127,7 +127,7 @@ ContextMenuGroupLabel.displayName = "ContextMenuGroupLabel";
 /* __DOC_BLOCK
 <QUI.ContextMenu>
   <QUI.ContextMenuTrigger>
-    <div className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-xs-regular text-tertiary">
+    <div className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-sm-regular text-tertiary">
     Right-click this area
   </div>
   </QUI.ContextMenuTrigger>

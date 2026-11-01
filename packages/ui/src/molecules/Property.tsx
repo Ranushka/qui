@@ -20,7 +20,7 @@ export function Property({ icon, label, children, ...props }: PropertyProps) {
     <Stack gap="1.5" {...props}>
       <Inline gap="1.5" wrap={false}>
         <Icon icon={icon} size="xs" tint="tertiary" />
-        <Text size="2xs" color="tertiary">{label}</Text>
+        <Text size="xs" color="tertiary">{label}</Text>
       </Inline>
       <Inline gap="1.5">{children}</Inline>
     </Stack>

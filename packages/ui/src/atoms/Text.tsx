@@ -12,7 +12,7 @@ const clampClass = { 1: "truncate", 2: "line-clamp-2", 3: "line-clamp-3", 4: "li
 export type TextProps = Omit<React.HTMLAttributes<HTMLElement>, "className" | "style" | "color"> & {
   /** Element to render. Pick for meaning (paragraph, label, list item); looks come from the other props. @default "span" */
   as?: TextTag;
-  /** 16 / 14 / 13 px for reading and UI text; 12 / 11 px (`2xs`, `3xs`, tight line height) for labels and metadata. @default "sm" */
+  /** 16 px (`md`) for long reading text, 14 px (`sm`) for UI text, 12 px (`xs`, tight line height) for labels and metadata. @default "sm" */
   size?: TextSize;
   /** @default "regular" */
   weight?: FontWeight;
@@ -56,9 +56,7 @@ Text.displayName = "Text";
   <div className="flex flex-col gap-1">
     <QUI.Text size="md">md · 16 — The quick brown fox jumps over the lazy dog.</QUI.Text>
     <QUI.Text size="sm">sm · 14 — The quick brown fox jumps over the lazy dog.</QUI.Text>
-    <QUI.Text size="xs">xs · 13 — The quick brown fox jumps over the lazy dog.</QUI.Text>
-    <QUI.Text size="2xs">2xs · 12 — Updated 3 minutes ago</QUI.Text>
-    <QUI.Text size="3xs">3xs · 11 — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text size="xs">xs · 12 — Updated 3 minutes ago</QUI.Text>
   </div>
   <div className="flex flex-wrap gap-4">
     <QUI.Text weight="regular">Regular</QUI.Text>
@@ -88,7 +86,7 @@ DOC__ */
 
 /* __PROPS
 {
-  "size": ["md", "sm", "xs", "2xs", "3xs"],
+  "size": ["md", "sm", "xs"],
   "weight": ["regular", "medium", "semibold"],
   "color": ["primary", "secondary", "tertiary", "placeholder", "disabled", "accent", "danger", "success", "warning", "info", "link", "on-color", "inverse", "inherit"],
   "align": ["start", "center", "end"],

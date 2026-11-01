@@ -25,7 +25,7 @@ const listItemVariants = cva(
   {
     variants: {
       level: { 1: "pl-2", 2: "pl-4", 3: "pl-6", 4: "pl-8", 5: "pl-10" },
-      density: { comfortable: "text-body-sm-regular active:text-primary", compact: "text-body-xs-regular" },
+      density: { comfortable: "text-body-sm-regular active:text-primary", compact: "text-body-sm-regular" },
     },
     defaultVariants: { level: 1, density: "comfortable" },
   }
@@ -47,7 +47,7 @@ const listItemDisclosureTriggerClass = cn(
 
 const listSectionTriggerClass = cn(
   "group flex w-full items-center justify-between gap-1 rounded-md px-2 py-1 [--node-size:var(--control-glyph-md)]",
-  "text-body-xs-semibold text-tertiary transition-colors cursor-pointer outline-none hover:text-secondary",
+  "text-body-sm-semibold text-tertiary transition-colors cursor-pointer outline-none hover:text-secondary",
   "focus-visible:ring-2 focus-visible:ring-accent-strong disabled:cursor-not-allowed data-disabled:cursor-not-allowed"
 );
 
@@ -237,7 +237,7 @@ ListItemDisclosureTrigger.displayName = "ListItemDisclosureTrigger";
 
 /** A static, non-interactive heading naming a group of rows (settings-style sidebars). */
 export const ListSectionHeading = React.forwardRef<HTMLDivElement, NoClass<React.HTMLAttributes<HTMLDivElement>>>(({ ...props }, ref) => (
-  <div ref={ref} className={cn("flex h-7 w-full items-center px-2 py-1 text-body-xs-semibold text-tertiary")} {...props} />
+  <div ref={ref} className={cn("flex h-7 w-full items-center px-2 py-1 text-body-sm-semibold text-tertiary")} {...props} />
 ));
 ListSectionHeading.displayName = "ListSectionHeading";
 

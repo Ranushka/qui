@@ -67,7 +67,7 @@ export function PopoverBody({ ...props }: NoClass<React.HTMLAttributes<HTMLDivEl
   <QUI.PopoverContent>
     <QUI.PopoverTitle>Notification settings</QUI.PopoverTitle>
     <QUI.PopoverBody>
-      <p className="text-body-xs-regular text-secondary">Choose how you want to be notified about activity.</p>
+      <p className="text-body-sm-regular text-secondary">Choose how you want to be notified about activity.</p>
     </QUI.PopoverBody>
   </QUI.PopoverContent>
 </QUI.Popover>

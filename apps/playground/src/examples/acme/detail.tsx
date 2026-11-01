@@ -30,7 +30,7 @@ function Properties({ entry }: { entry: WorkItemEntry }) {
             <QUI.Avatar key={name} alt={name} />
           ))}
         </QUI.AvatarGroup>
-        <QUI.Text size="xs" color="secondary" maxLines={1}>{item.assignees.join(", ")}</QUI.Text>
+        <QUI.Text size="sm" color="secondary" maxLines={1}>{item.assignees.join(", ")}</QUI.Text>
       </QUI.Property>
       <QUI.Property icon={Icons.Tag} label="Labels">
         <QUI.Pill size="sm" startIcon={<QUI.Swatch fill={item.label.color} />} label={item.label.name} />
@@ -85,7 +85,7 @@ function Activity({ details }: { details: WorkItemDetails }) {
           {details.activity.map((entry, i) => (
             <QUI.Inline as="li" key={i} gap="2" wrap={false} align="start">
               <QUI.Avatar size="xs" alt={entry.who} />
-              <QUI.Text as="p" size="xs" color="secondary">
+              <QUI.Text as="p" size="sm" color="secondary">
                 <QUI.Text weight="medium" color="primary">{entry.who}</QUI.Text> {entry.what} · {entry.when}
               </QUI.Text>
             </QUI.Inline>
@@ -100,8 +100,8 @@ function Activity({ details }: { details: WorkItemDetails }) {
               <QUI.Box grow background="layer-1" radius="lg" paddingX="3" paddingY="2">
                 <QUI.Stack gap="1">
                   <QUI.Inline gap="2">
-                    <QUI.Text size="xs" weight="medium" color="primary">{comment.who}</QUI.Text>
-                    <QUI.Text size="2xs" color="tertiary">{comment.when}</QUI.Text>
+                    <QUI.Text size="sm" weight="medium" color="primary">{comment.who}</QUI.Text>
+                    <QUI.Text size="xs" color="tertiary">{comment.when}</QUI.Text>
                   </QUI.Inline>
                   <QUI.Text as="p" size="sm" color="secondary">{comment.text}</QUI.Text>
                 </QUI.Stack>
@@ -128,7 +128,7 @@ export function WorkItemDetail({ entry, details, onOpenItem }: { entry: WorkItem
       <QUI.Stack gap="3">
         <QUI.Inline gap="1.5" wrap={false}>
           <QUI.Icon icon={typeIcon[item.type]} size="sm" tint="secondary" />
-          <QUI.Text size="2xs" color="tertiary" tabularNums>{item.id}</QUI.Text>
+          <QUI.Text size="xs" color="tertiary" tabularNums>{item.id}</QUI.Text>
         </QUI.Inline>
         <QUI.Heading level={2} size={3}>{item.title}</QUI.Heading>
         {details.description.map((paragraph, i) => (
@@ -177,7 +177,7 @@ export function WorkItemPeek({
           </QUI.Breadcrumb>
           <QUI.Inline gap="1" wrap={false} shrink={false}>
             <QUI.Box hideBelow="sm">
-              <QUI.Text size="2xs" color="tertiary" tabularNums>
+              <QUI.Text size="xs" color="tertiary" tabularNums>
                 {position.index + 1} / {position.total}
               </QUI.Text>
             </QUI.Box>

@@ -66,7 +66,7 @@ export function ReceiptPreview({ file, onView, onReplace, onUpload, onRequest, e
             {file.name}
           </Text>
           {file.detail ? (
-            <Text size="2xs" color="tertiary">
+            <Text size="xs" color="tertiary">
               {file.detail}
             </Text>
           ) : null}

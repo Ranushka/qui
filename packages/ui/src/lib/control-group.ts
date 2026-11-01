@@ -25,7 +25,7 @@ export const controlGroupClass = cn(
  * (input, select trigger, ...): height, text size, and glyph `--node-size`.
  */
 export const controlSize = {
-  md: "min-h-(--control-height-md) text-body-xs-regular [--node-size:var(--control-glyph-md)]",
+  md: "min-h-(--control-height-md) text-body-sm-regular [--node-size:var(--control-glyph-md)]",
   lg: "min-h-(--control-height-lg) text-body-sm-regular [--node-size:var(--control-glyph-lg)]",
   xl: "min-h-(--control-height-xl) text-body-sm-regular [--node-size:var(--control-glyph-xl)]",
   "2xl": "min-h-(--control-height-2xl) text-body-md-regular [--node-size:var(--control-glyph-2xl)]",

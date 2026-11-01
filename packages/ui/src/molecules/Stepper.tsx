@@ -44,7 +44,7 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(({ steps
         );
         const text = (
           <span className="flex min-w-0 flex-col text-start">
-            <span className={cn("text-body-xs-medium", state === "upcoming" ? "text-tertiary" : "text-primary")}>{step.label}</span>
+            <span className={cn("text-body-sm-medium", state === "upcoming" ? "text-tertiary" : "text-primary")}>{step.label}</span>
             {step.description != null ? <span className="truncate text-caption-md-regular text-tertiary">{step.description}</span> : null}
           </span>
         );

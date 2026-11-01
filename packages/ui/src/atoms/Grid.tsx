@@ -59,7 +59,7 @@ Grid.displayName = "Grid";
   {["Open", "In progress", "Done"].map((title, i) => (
     <QUI.Box key={title} background="layer-1" border="subtle" radius="lg" padding="4">
       <QUI.Stack gap="1">
-        <QUI.Text size="2xs" color="tertiary">{title}</QUI.Text>
+        <QUI.Text size="xs" color="tertiary">{title}</QUI.Text>
         <QUI.Heading level={4}>{[24, 8, 112][i]}</QUI.Heading>
       </QUI.Stack>
     </QUI.Box>

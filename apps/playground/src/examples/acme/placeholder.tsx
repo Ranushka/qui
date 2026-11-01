@@ -50,7 +50,7 @@ export function PlaceholderPage({ icon, label, navigation }: { icon: IconCompone
                   <QUI.Text weight="medium" color="primary">
                     No {label.toLowerCase()} yet
                   </QUI.Text>
-                  <QUI.Text size="xs" color="tertiary">
+                  <QUI.Text size="sm" color="tertiary">
                     Records you create show up here.
                   </QUI.Text>
                 </QUI.Stack>

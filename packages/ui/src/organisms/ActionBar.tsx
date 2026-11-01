@@ -102,7 +102,7 @@ ActionBarButton.displayName = "ActionBarButton";
 
 /* __DOC_BLOCK
 <QUI.Box position="relative" width="full" background="layer-1" border="subtle" radius="lg" paddingX="4" paddingTop="4" paddingBottom="16">
-  <QUI.Text size="xs" color="tertiary">Table rows…</QUI.Text>
+  <QUI.Text size="sm" color="tertiary">Table rows…</QUI.Text>
   <QUI.ActionBar open summary="2 selected · Sum of purchases: 838.32 AED" onClear={() => {}}>
     <QUI.ActionBarButton label="Edit" disabled />
     <QUI.ActionBarButton label="Approve" />

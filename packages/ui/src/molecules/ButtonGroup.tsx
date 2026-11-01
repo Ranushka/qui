@@ -26,8 +26,8 @@ const buttonGroupButtonVariants = cva(
   {
     variants: {
       size: {
-        sm: "h-(--control-height-sm) px-1.5 text-body-xs-medium [--node-size:var(--control-glyph-sm)]",
-        md: "h-(--control-height-md) px-2 text-body-xs-medium [--node-size:var(--control-glyph-md)]",
+        sm: "h-(--control-height-sm) px-1.5 text-body-sm-medium [--node-size:var(--control-glyph-sm)]",
+        md: "h-(--control-height-md) px-2 text-body-sm-medium [--node-size:var(--control-glyph-md)]",
       },
     },
     defaultVariants: { size: "sm" },

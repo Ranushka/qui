@@ -69,7 +69,7 @@ const toolbarMenuTriggerGeometryVariants = cva("justify-between whitespace-nowra
 const toolbarInputVariants = cva(
   cn(
     fieldControlSurfaceVariants({ focus: "self" }),
-    "min-w-0 text-body-xs-regular text-primary outline-none placeholder:text-placeholder",
+    "min-w-0 text-body-sm-regular text-primary outline-none placeholder:text-placeholder",
     "disabled:cursor-not-allowed disabled:text-disabled disabled:opacity-60 data-disabled:cursor-not-allowed data-disabled:text-disabled data-disabled:opacity-60"
   ),
   {
@@ -92,7 +92,7 @@ function itemContent(icon: React.ReactNode, label: string | undefined) {
   return (
     <>
       {icon}
-      {label ? <span className="truncate text-body-xs-medium">{label}</span> : null}
+      {label ? <span className="truncate text-body-sm-medium">{label}</span> : null}
     </>
   );
 }
@@ -308,7 +308,7 @@ export const ToolbarMenuTrigger = React.forwardRef<HTMLButtonElement, ToolbarMen
         render={<BaseMenu.Trigger />}
         {...props}
       >
-        <span className="truncate text-body-xs-medium">{label}</span>
+        <span className="truncate text-body-sm-medium">{label}</span>
         <span className="flex transition-transform duration-200 group-data-popup-open:rotate-180">
           <Icon icon={ChevronDown} tint="secondary" />
         </span>

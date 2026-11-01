@@ -103,7 +103,7 @@ function ToastCard({ toast }: { toast: React.ComponentProps<typeof BaseToast.Roo
       </span>
       <BaseToast.Content className="flex min-w-0 flex-1 flex-col gap-1 pe-4">
         <BaseToast.Title className="text-body-sm-medium text-primary" />
-        <BaseToast.Description className="text-body-xs-regular text-tertiary" />
+        <BaseToast.Description className="text-body-sm-regular text-tertiary" />
       </BaseToast.Content>
       <BaseToast.Close render={<IconButton variant="ghost" size="xs" aria-label="Dismiss" icon={<Icon icon={X} />} showTooltip={false} />} className="absolute inset-e-1 top-1" />
     </BaseToast.Root>

@@ -156,7 +156,7 @@ export function ComponentsPage() {
     <QUI.Text>Raised: surface-1 with raised-200 shadow</QUI.Text>
   </QUI.Box>
   <QUI.Box border="subtle" dashed radius="lg" padding="6">
-    <QUI.Text size="2xs" color="tertiary" align="center" as="p">Empty state drop zone</QUI.Text>
+    <QUI.Text size="xs" color="tertiary" align="center" as="p">Empty state drop zone</QUI.Text>
   </QUI.Box>
   <QUI.Box background="layer-1" border="subtle" radius="lg" overflow="hidden">
     <QUI.Box padding="4">
@@ -237,7 +237,7 @@ export function ComponentsPage() {
   {["Open", "In progress", "Done"].map((title, i) => (
     <QUI.Box key={title} background="layer-1" border="subtle" radius="lg" padding="4">
       <QUI.Stack gap="1">
-        <QUI.Text size="2xs" color="tertiary">{title}</QUI.Text>
+        <QUI.Text size="xs" color="tertiary">{title}</QUI.Text>
         <QUI.Heading level={4}>{[24, 8, 112][i]}</QUI.Heading>
       </QUI.Stack>
     </QUI.Box>
@@ -306,7 +306,7 @@ export function ComponentsPage() {
     <QUI.Box grow>
       <QUI.Text maxLines={1}>A long issue title that truncates instead of pushing the actions off the row</QUI.Text>
     </QUI.Box>
-    <QUI.Text size="2xs" color="tertiary">WEB-142</QUI.Text>
+    <QUI.Text size="xs" color="tertiary">WEB-142</QUI.Text>
   </QUI.Inline>
 </QUI.Stack>
           </Section>
@@ -467,14 +467,12 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
-          <Section title="Text" align="block" props={{"size":["md","sm","xs","2xs","3xs"],"weight":["regular","medium","semibold"],"color":["primary","secondary","tertiary","placeholder","disabled","accent","danger","success","warning","info","link","on-color","inverse","inherit"],"align":["start","center","end"],"maxLines":[1,2,3,4],"tabularNums":"boolean","as":["span","p","div","label","strong","em","small","li","dt","dd","figcaption","legend"]}}>
+          <Section title="Text" align="block" props={{"size":["md","sm","xs"],"weight":["regular","medium","semibold"],"color":["primary","secondary","tertiary","placeholder","disabled","accent","danger","success","warning","info","link","on-color","inverse","inherit"],"align":["start","center","end"],"maxLines":[1,2,3,4],"tabularNums":"boolean","as":["span","p","div","label","strong","em","small","li","dt","dd","figcaption","legend"]}}>
 <div className="flex w-full flex-col gap-6 p-4">
   <div className="flex flex-col gap-1">
     <QUI.Text size="md">md · 16 — The quick brown fox jumps over the lazy dog.</QUI.Text>
     <QUI.Text size="sm">sm · 14 — The quick brown fox jumps over the lazy dog.</QUI.Text>
-    <QUI.Text size="xs">xs · 13 — The quick brown fox jumps over the lazy dog.</QUI.Text>
-    <QUI.Text size="2xs">2xs · 12 — Updated 3 minutes ago</QUI.Text>
-    <QUI.Text size="3xs">3xs · 11 — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text size="xs">xs · 12 — Updated 3 minutes ago</QUI.Text>
   </div>
   <div className="flex flex-wrap gap-4">
     <QUI.Text weight="regular">Regular</QUI.Text>
@@ -718,7 +716,7 @@ export function ComponentsPage() {
   </QUI.Collapsible>
   <div className="w-60">
     <QUI.Collapsible defaultOpen placement="sidebar" trigger="Favorites">
-      <div className="px-2 py-1 text-body-xs-regular text-secondary">Pinned projects go here.</div>
+      <div className="px-2 py-1 text-body-sm-regular text-secondary">Pinned projects go here.</div>
     </QUI.Collapsible>
   </div>
 </div>
@@ -749,7 +747,7 @@ export function ComponentsPage() {
           <Section title="ContextMenu" align="block" props={{"ContextMenuItem.variant":["neutral","accent","danger"],"ContextMenuItem.selected":"boolean"}}>
 <QUI.ContextMenu>
   <QUI.ContextMenuTrigger>
-    <div className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-xs-regular text-tertiary">
+    <div className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-subtle text-body-sm-regular text-tertiary">
     Right-click this area
   </div>
   </QUI.ContextMenuTrigger>
@@ -1017,7 +1015,7 @@ export function ComponentsPage() {
   <QUI.PopoverContent>
     <QUI.PopoverTitle>Notification settings</QUI.PopoverTitle>
     <QUI.PopoverBody>
-      <p className="text-body-xs-regular text-secondary">Choose how you want to be notified about activity.</p>
+      <p className="text-body-sm-regular text-secondary">Choose how you want to be notified about activity.</p>
     </QUI.PopoverBody>
   </QUI.PopoverContent>
 </QUI.Popover>
@@ -1096,7 +1094,7 @@ export function ComponentsPage() {
       { id: "a", field: "amount", operator: "gt", value: "5000" },
       { id: "b", field: "category", operator: "eq", value: "Travel" },
     ]}
-    then={<QUI.Text size="xs">Require approval from Finance</QUI.Text>}
+    then={<QUI.Text size="sm">Require approval from Finance</QUI.Text>}
   />
 </div>
           </Section>
@@ -1359,7 +1357,7 @@ export function ComponentsPage() {
         <div className="flex flex-col gap-6">
           <Section title="ActionBar" align="block" props={{"open":"boolean","placement":["overlay","inline"]}}>
 <QUI.Box position="relative" width="full" background="layer-1" border="subtle" radius="lg" paddingX="4" paddingTop="4" paddingBottom="16">
-  <QUI.Text size="xs" color="tertiary">Table rows…</QUI.Text>
+  <QUI.Text size="sm" color="tertiary">Table rows…</QUI.Text>
   <QUI.ActionBar open summary="2 selected · Sum of purchases: 838.32 AED" onClear={() => {}}>
     <QUI.ActionBarButton label="Edit" disabled />
     <QUI.ActionBarButton label="Approve" />
@@ -1523,7 +1521,7 @@ export function ComponentsPage() {
     title="Work items"
     icon={<QUI.Icon icon={Icons.ListTodo} size="lg" tint="secondary" />}
     onExit={() => {}}
-    footer={<QUI.Text size="xs" color="tertiary">3 items</QUI.Text>}
+    footer={<QUI.Text size="sm" color="tertiary">3 items</QUI.Text>}
   >
     <QUI.DataTable
       aria-label="Work items"
@@ -1804,7 +1802,7 @@ export function ComponentsPage() {
     isItemSelected={(_, i) => i === 2}
     renderItem={(item) => (
       <div className="flex w-full items-center gap-3">
-        <span className="w-20 shrink-0 text-body-xs-medium text-tertiary">{item.id}</span>
+        <span className="w-20 shrink-0 text-body-sm-medium text-tertiary">{item.id}</span>
         <span className="min-w-0 flex-1 truncate text-primary">{item.title}</span>
         <QUI.Badge label={item.points + " pts"} />
       </div>

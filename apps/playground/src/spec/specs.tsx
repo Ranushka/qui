@@ -394,7 +394,7 @@ export const specs: Spec[] = [
             <QUI.Avatar alt="Ranu P" />
             <QUI.Avatar alt="Mia C" />
           </QUI.AvatarGroup>
-          <QUI.Text size="xs" color="secondary" maxLines={1}>Ranu P, Mia C</QUI.Text>
+          <QUI.Text size="sm" color="secondary" maxLines={1}>Ranu P, Mia C</QUI.Text>
         </QUI.Property>
       ),
     canInstance: () => true,
@@ -964,7 +964,7 @@ export const specs: Spec[] = [
           v.Center === "true" ? (
             <>
               <QUI.Text size="md" weight="semibold">186</QUI.Text>
-              <QUI.Text size="2xs" color="tertiary">Customers</QUI.Text>
+              <QUI.Text size="xs" color="tertiary">Customers</QUI.Text>
             </>
           ) : undefined
         }

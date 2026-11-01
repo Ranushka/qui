@@ -383,7 +383,7 @@ function Footer({ table, paged }: { table: QUI.DataTableInstance<Log>; paged: bo
   const count = total === 0 ? "No records match these filters" : paged ? `${pageIndex * size + 1}–${pageIndex * size + shown} of ${total}` : `${total.toLocaleString("en-US")} records`;
   return (
     <QUI.Inline justify="between" gap="4">
-      <QUI.Text size="xs" color="tertiary" tabularNums>
+      <QUI.Text size="sm" color="tertiary" tabularNums>
         {count}
       </QUI.Text>
       <QUI.ActionBar

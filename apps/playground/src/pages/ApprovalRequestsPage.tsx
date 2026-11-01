@@ -384,7 +384,7 @@ export function ApprovalRequestsPage() {
         <RequestsTable rows={rows} selected={selected} onSelect={select} onDecide={(id, status) => decide([id], status)} onFilters={updateFilters} />
       </QUI.Box>
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
-        <QUI.Text size="xs" color="tertiary" tabularNums>
+        <QUI.Text size="sm" color="tertiary" tabularNums>
           {filtered.length === 0 ? "No requests" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + rows.length} of ${count.format(filtered.length)}`}
         </QUI.Text>
         <QUI.ActionBar

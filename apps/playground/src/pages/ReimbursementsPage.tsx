@@ -185,7 +185,7 @@ export function ReimbursementsPage() {
         </QUI.Table>
       </QUI.Box>
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
-        <QUI.Text size="xs" color="tertiary" tabularNums>
+        <QUI.Text size="sm" color="tertiary" tabularNums>
           {rows.length === 0 ? "No claims" : `${rows.length} ${rows.length === 1 ? "claim" : "claims"}`}
         </QUI.Text>
         <QUI.ActionBar

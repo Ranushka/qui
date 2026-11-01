@@ -20,8 +20,8 @@ export type FieldSize = "md" | "lg" | "xl" | "2xl";
 export const fieldLabelVariants = cva("inline-flex items-center gap-0.5 text-primary", {
   variants: {
     size: {
-      md: "text-body-xs-medium",
-      lg: "text-body-xs-medium",
+      md: "text-body-sm-medium",
+      lg: "text-body-sm-medium",
       xl: "text-body-sm-medium",
       "2xl": "text-body-sm-medium",
     },
@@ -41,8 +41,8 @@ export const fieldDescriptionVariants = cva("text-tertiary", {
     size: {
       md: "text-caption-md-regular",
       lg: "text-caption-md-regular",
-      xl: "text-body-xs-regular",
-      "2xl": "text-body-xs-regular",
+      xl: "text-body-sm-regular",
+      "2xl": "text-body-sm-regular",
     },
   },
 });
@@ -53,8 +53,8 @@ export const fieldErrorVariants = cva("text-danger-primary", {
     size: {
       md: "text-caption-md-regular",
       lg: "text-caption-md-regular",
-      xl: "text-body-xs-regular",
-      "2xl": "text-body-xs-regular",
+      xl: "text-body-sm-regular",
+      "2xl": "text-body-sm-regular",
     },
   },
 });
@@ -63,8 +63,8 @@ export const fieldErrorVariants = cva("text-danger-primary", {
 export const fieldsetLegendVariants = cva("text-primary", {
   variants: {
     size: {
-      md: "text-body-xs-medium",
-      lg: "text-body-xs-medium",
+      md: "text-body-sm-medium",
+      lg: "text-body-sm-medium",
       xl: "text-body-sm-medium",
       "2xl": "text-body-sm-medium",
     },

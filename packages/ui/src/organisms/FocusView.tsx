@@ -95,7 +95,7 @@ export function FocusView({ title, icon, actions, toolbar, footer, onExit, exitL
     title="Work items"
     icon={<QUI.Icon icon={Icons.ListTodo} size="lg" tint="secondary" />}
     onExit={() => {}}
-    footer={<QUI.Text size="xs" color="tertiary">3 items</QUI.Text>}
+    footer={<QUI.Text size="sm" color="tertiary">3 items</QUI.Text>}
   >
     <QUI.DataTable
       aria-label="Work items"

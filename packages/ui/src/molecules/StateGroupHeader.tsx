@@ -42,7 +42,7 @@ export function StateGroupHeader({ icon, state, count, layout = "list", ...props
       <Inline gap="2" wrap={false}>
         <Icon icon={icon} size="md" tint="secondary" />
         <Text size="md" weight="medium">{state}</Text>
-        <Text size="2xs" color="tertiary">{count}</Text>
+        <Text size="xs" color="tertiary">{count}</Text>
       </Inline>
     </Box>
   );

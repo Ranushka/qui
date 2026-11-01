@@ -218,7 +218,7 @@ export function filtersFromParams<Row>(fields: readonly FilterField<Row>[], para
 /* ── Editors ───────────────────────────────────────────────────────────────────────────────────── */
 
 const editorRowClass =
-  "flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-2 text-body-xs-regular text-primary transition-colors hover:bg-layer-transparent-hover [--node-size:var(--control-glyph-md)]";
+  "flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-2 text-body-sm-regular text-primary transition-colors hover:bg-layer-transparent-hover [--node-size:var(--control-glyph-md)]";
 
 function SelectEditor({
   field,
@@ -253,7 +253,7 @@ function SelectEditor({
             {counts ? <span className="text-caption-md-regular tabular-nums text-tertiary">{grouping.format(counts.get(option.value) ?? 0)}</span> : null}
           </label>
         ))}
-        {options.length === 0 ? <p className="px-2 py-1.5 text-body-xs-regular text-tertiary">No matches</p> : null}
+        {options.length === 0 ? <p className="px-2 py-1.5 text-body-sm-regular text-tertiary">No matches</p> : null}
       </div>
     </>
   );

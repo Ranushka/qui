@@ -7,7 +7,7 @@ import { Icon } from "../atoms/Icon";
 import { IconButton } from "../atoms/IconButton";
 
 /** Shared geometry for a page-number slot: 24px tall, auto-width, min 24px square. */
-const pageSlotClass = "inline-flex h-6 w-auto min-w-6 shrink-0 items-center justify-center rounded-sm px-1 text-body-xs-regular text-primary outline-none transition-colors";
+const pageSlotClass = "inline-flex h-6 w-auto min-w-6 shrink-0 items-center justify-center rounded-sm px-1 text-body-sm-regular text-primary outline-none transition-colors";
 
 export interface PaginationPageButtonProps extends NoClass<React.ComponentPropsWithoutRef<"button">> {
   /** Marks this as the active page (`aria-current="page"`), filling its background. */

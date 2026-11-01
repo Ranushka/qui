@@ -83,7 +83,7 @@ function BillDrawer({ bill, onClose, onAdvance }: { bill: Bill | null; onClose: 
                 <QUI.ReceiptPreview file={{ name: bill.file, kind: "pdf", detail: `Invoice ${bill.number}` }} onView={() => {}} />
                 <QUI.Grid columns={2} gap="4">
                   <QUI.Property icon={Icons.Tag} label="Category">
-                    <QUI.Text size="xs">{bill.category}</QUI.Text>
+                    <QUI.Text size="sm">{bill.category}</QUI.Text>
                   </QUI.Property>
                   <QUI.Property icon={Icons.RefreshCw} label="Accounting">
                     <QUI.TagCell label={bill.sync} color={syncColor[bill.sync]} />
@@ -96,7 +96,7 @@ function BillDrawer({ bill, onClose, onAdvance }: { bill: Bill | null; onClose: 
                   </QUI.Property>
                 </QUI.Grid>
                 <QUI.Stack gap="2">
-                  <QUI.Text size="xs" weight="semibold" color="secondary">
+                  <QUI.Text size="sm" weight="semibold" color="secondary">
                     History
                   </QUI.Text>
                   <QUI.Timeline items={billTimeline(bill)} />
@@ -436,7 +436,7 @@ function SyncView({ records, setSync }: { records: SyncRecord[]; setSync: (keys:
                 <QUI.Text size="sm" weight="semibold" color="primary">
                   Connected to Xero · Acme Trading LLC
                 </QUI.Text>
-                <QUI.Text size="xs" color="secondary">
+                <QUI.Text size="sm" color="secondary">
                   Last synced {lastSync}. Card payments post nightly; bills post when they're approved.
                 </QUI.Text>
               </QUI.Stack>
@@ -490,7 +490,7 @@ function SyncView({ records, setSync }: { records: SyncRecord[]; setSync: (keys:
                     <QUI.Text weight="medium" color="primary">
                       Nothing here
                     </QUI.Text>
-                    <QUI.Text size="xs" color="tertiary">
+                    <QUI.Text size="sm" color="tertiary">
                       {view === "failed" ? "Every record reached Xero." : "No records in this state."}
                     </QUI.Text>
                   </QUI.Stack>
@@ -633,7 +633,7 @@ function CloseView({ bills, records }: { bills: Bill[]; records: SyncRecord[] })
                 <QUI.Heading level={2} size={4} weight="semibold">
                   October 2026 close
                 </QUI.Heading>
-                <QUI.Text size="xs" color="secondary">
+                <QUI.Text size="sm" color="secondary">
                   {locked ? "October is locked. Nothing dated in October can be changed." : `Target: lock the books by 3 Nov. ${all.length - done} tasks left.`}
                 </QUI.Text>
               </QUI.Stack>
@@ -650,7 +650,7 @@ function CloseView({ bills, records }: { bills: Bill[]; records: SyncRecord[] })
         </QUI.Box>
         {groups.map((group) => (
           <QUI.Stack key={group.label} gap="2">
-            <QUI.Text size="xs" weight="semibold" color="secondary">
+            <QUI.Text size="sm" weight="semibold" color="secondary">
               {group.label}
             </QUI.Text>
             <QUI.Box border="subtle" radius="lg" overflow="hidden">
@@ -664,7 +664,7 @@ function CloseView({ bills, records }: { bills: Bill[]; records: SyncRecord[] })
                           <QUI.Text size="sm" weight="medium" color="primary">
                             {task.title}
                           </QUI.Text>
-                          <QUI.Text size="xs" color="secondary">
+                          <QUI.Text size="sm" color="secondary">
                             {task.detail} {task.done ? "" : "Ticks itself off when done."}
                           </QUI.Text>
                         </QUI.Stack>
@@ -687,10 +687,10 @@ function CloseView({ bills, records }: { bills: Bill[]; records: SyncRecord[] })
                     )}
                     <QUI.Inline gap="3" wrap={false}>
                       <QUI.Stack gap="0.5" align="end">
-                        <QUI.Text size="xs" color="primary">
+                        <QUI.Text size="sm" color="primary">
                           {task.owner}
                         </QUI.Text>
-                        <QUI.Text size="2xs" color="tertiary">
+                        <QUI.Text size="xs" color="tertiary">
                           Due {task.due}
                         </QUI.Text>
                       </QUI.Stack>

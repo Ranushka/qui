@@ -78,10 +78,10 @@ function CardDrawer({ card, onClose, onUpdate }: { card: SpendCard | null; onClo
                 )}
                 <QUI.Stack gap="2">
                   <QUI.Inline justify="between" gap="2">
-                    <QUI.Text size="xs" weight="semibold" color="secondary">
+                    <QUI.Text size="sm" weight="semibold" color="secondary">
                       {card.period} limit
                     </QUI.Text>
-                    <QUI.Text size="xs" color="secondary" tabularNums>
+                    <QUI.Text size="sm" color="secondary" tabularNums>
                       {aed.format(card.spent)} of {aed.format(card.limit)}
                     </QUI.Text>
                   </QUI.Inline>
@@ -95,7 +95,7 @@ function CardDrawer({ card, onClose, onUpdate }: { card: SpendCard | null; onClo
                   </QUI.Inline>
                 </QUI.Property>
                 <QUI.Stack gap="2">
-                  <QUI.Text size="xs" weight="semibold" color="secondary">
+                  <QUI.Text size="sm" weight="semibold" color="secondary">
                     Recent transactions
                   </QUI.Text>
                   {recent.map((t) => (
@@ -104,7 +104,7 @@ function CardDrawer({ card, onClose, onUpdate }: { card: SpendCard | null; onClo
                         <QUI.Text size="sm" color="primary">
                           {t.merchant}
                         </QUI.Text>
-                        <QUI.Text size="2xs" color="tertiary">
+                        <QUI.Text size="xs" color="tertiary">
                           {new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(t.date))} · {t.category}
                         </QUI.Text>
                       </QUI.Stack>

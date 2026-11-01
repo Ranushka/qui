@@ -43,7 +43,7 @@ const autocompleteItemVariants = cva(
   {
     variants: {
       size: {
-        md: "min-h-(--control-height-md) gap-(--control-gap-md) text-body-xs-regular [--node-size:var(--control-glyph-md)]",
+        md: "min-h-(--control-height-md) gap-(--control-gap-md) text-body-sm-regular [--node-size:var(--control-glyph-md)]",
         lg: "min-h-(--control-height-lg) gap-(--control-gap-lg) text-body-sm-regular [--node-size:var(--control-glyph-lg)]",
         xl: "min-h-(--control-height-xl) gap-(--control-gap-xl) text-body-sm-regular [--node-size:var(--control-glyph-xl)]",
         "2xl": "min-h-(--control-height-2xl) gap-(--control-gap-2xl) text-body-md-regular [--node-size:var(--control-glyph-2xl)]",
@@ -53,7 +53,7 @@ const autocompleteItemVariants = cva(
   }
 );
 
-const autocompleteEmptyVariants = cva("text-body-xs-regular text-tertiary not-empty:px-2 not-empty:py-1.5");
+const autocompleteEmptyVariants = cva("text-body-sm-regular text-tertiary not-empty:px-2 not-empty:py-1.5");
 
 export interface AutocompleteInputGroupProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseAutocomplete.InputGroup>, "className">> {
   size?: "md" | "lg" | "xl" | "2xl";

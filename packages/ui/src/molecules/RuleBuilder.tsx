@@ -144,7 +144,7 @@ export const RuleBuilder = React.forwardRef<HTMLDivElement, RuleBuilderProps>(
     return (
       <div ref={ref} className="flex w-full flex-col gap-3" {...props}>
         {conditions.length > 1 ? (
-          <div className="flex flex-wrap items-center gap-2 text-body-xs-regular text-secondary">
+          <div className="flex flex-wrap items-center gap-2 text-body-sm-regular text-secondary">
             <span>Match</span>
             <Select
               value={match}
@@ -172,7 +172,7 @@ export const RuleBuilder = React.forwardRef<HTMLDivElement, RuleBuilderProps>(
             const n = i + 1;
             return (
               <li key={condition.id} className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
-                <span className="w-12 shrink-0 text-body-xs-medium text-secondary">{i === 0 ? "When" : joiner}</span>
+                <span className="w-12 shrink-0 text-body-sm-medium text-secondary">{i === 0 ? "When" : joiner}</span>
                 <span className="min-w-40 flex-1">
                   <Select
                     value={field.value}
@@ -236,7 +236,7 @@ export const RuleBuilder = React.forwardRef<HTMLDivElement, RuleBuilderProps>(
                       disabled={disabled}
                       aria-invalid={field.type === "number" && condition.value !== "" && Number.isNaN(Number(condition.value)) ? true : undefined}
                       onChange={(event) => update(condition.id, { value: event.target.value })}
-                      startSlot={field.unit ? <span className="text-body-xs-regular text-tertiary">{field.unit}</span> : undefined}
+                      startSlot={field.unit ? <span className="text-body-sm-regular text-tertiary">{field.unit}</span> : undefined}
                     />
                   )}
                 </span>
@@ -257,7 +257,7 @@ export const RuleBuilder = React.forwardRef<HTMLDivElement, RuleBuilderProps>(
         </span>
         {then != null ? (
           <div className="flex flex-wrap items-center gap-2 border-t border-subtle pt-3 sm:flex-nowrap">
-            <span className="w-12 shrink-0 text-body-xs-medium text-secondary">Then</span>
+            <span className="w-12 shrink-0 text-body-sm-medium text-secondary">Then</span>
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">{then}</div>
           </div>
         ) : null}
@@ -279,7 +279,7 @@ RuleBuilder.displayName = "RuleBuilder";
       { id: "a", field: "amount", operator: "gt", value: "5000" },
       { id: "b", field: "category", operator: "eq", value: "Travel" },
     ]}
-    then={<QUI.Text size="xs">Require approval from Finance</QUI.Text>}
+    then={<QUI.Text size="sm">Require approval from Finance</QUI.Text>}
   />
 </div>
 DOC__ */

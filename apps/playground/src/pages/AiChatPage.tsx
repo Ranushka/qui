@@ -203,10 +203,10 @@ function Steps({ steps, thinking, seconds }: { steps: Step[]; thinking: boolean;
           <QUI.Inline as="li" key={step.label} gap="2" wrap={false} align="start">
             <QUI.Icon icon={step.icon ?? Icons.Circle} tint="secondary" />
             <QUI.Stack gap="0">
-              <QUI.Text size="xs" weight="medium" color="primary">
+              <QUI.Text size="sm" weight="medium" color="primary">
                 {step.label}
               </QUI.Text>
-              <QUI.Text size="2xs" color="tertiary">
+              <QUI.Text size="xs" color="tertiary">
                 {step.detail}
               </QUI.Text>
             </QUI.Stack>
@@ -266,7 +266,7 @@ function AnswerActions({ text, onRegenerate }: { text: string; onRegenerate: () 
         <QUI.IconButton variant="ghost" size="sm" aria-label="Regenerate answer" icon={<QUI.Icon icon={Icons.RefreshCw} />} onClick={onRegenerate} />
       </QUI.Tooltip>
       {feedback === "bad" ? (
-        <QUI.Text size="2xs" color="tertiary">
+        <QUI.Text size="xs" color="tertiary">
           Thanks — this helps us improve.
         </QUI.Text>
       ) : null}
@@ -324,7 +324,7 @@ function AssistantMessage({ message, onRegenerate }: { message: Extract<Message,
           <SpendTable key={i} />
         ) : message.state === "done" ? (
           <QUI.Inline key={i} gap="1">
-            <QUI.Text size="2xs" color="tertiary">
+            <QUI.Text size="xs" color="tertiary">
               Sources
             </QUI.Text>
             {block.sources.map((source) => (
@@ -344,7 +344,7 @@ function AssistantMessage({ message, onRegenerate }: { message: Extract<Message,
         </QUI.Box>
         {visible}
         {message.state === "stopped" ? (
-          <QUI.Text size="2xs" color="tertiary">
+          <QUI.Text size="xs" color="tertiary">
             Stopped — the answer above is incomplete.
           </QUI.Text>
         ) : null}
@@ -515,16 +515,16 @@ function Composer({
         }
       />
       <QUI.Inline justify="between" gap="2">
-        <QUI.Text size="2xs" color="tertiary">
+        <QUI.Text size="xs" color="tertiary">
           Acme AI can make mistakes. Check important figures against the source.
         </QUI.Text>
         <QUI.Inline gap="1" wrap={false} hideBelow="sm">
           <QUI.Shortcut keys="↵" />
-          <QUI.Text size="2xs" color="tertiary">
+          <QUI.Text size="xs" color="tertiary">
             send
           </QUI.Text>
           <QUI.Shortcut keys="⇧↵" />
-          <QUI.Text size="2xs" color="tertiary">
+          <QUI.Text size="xs" color="tertiary">
             new line
           </QUI.Text>
         </QUI.Inline>
@@ -681,7 +681,7 @@ export function AiChatPage() {
           <QUI.Stack gap="2">
             <QUI.Inline justify="between" gap="2">
               {/* Announced politely once per state change, never per streamed token. */}
-              <QUI.Text role="status" aria-live="polite" size="2xs" color="tertiary">
+              <QUI.Text role="status" aria-live="polite" size="xs" color="tertiary">
                 {status}
               </QUI.Text>
               {!atBottom ? <QUI.Button size="sm" variant="secondary" icon={<QUI.Icon icon={Icons.ArrowDown} />} label="Jump to latest" onClick={scrollToBottom} /> : null}

@@ -18,7 +18,7 @@ export function RailItem({ icon, label, current, ...props }: RailItemProps) {
   return (
     <Stack as="li" align="center" gap="1" {...props}>
       <IconButton variant={current ? "secondary" : "ghost"} aria-label={label} showTooltip={false} icon={<Icon icon={icon} />} />
-      <Text size="3xs" color={current ? "primary" : "secondary"}>{label}</Text>
+      <Text size="xs" color={current ? "primary" : "secondary"}>{label}</Text>
     </Stack>
   );
 }

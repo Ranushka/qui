@@ -71,7 +71,7 @@ function Panel({ title, subtitle, action, children }: { title: string; subtitle?
               {title}
             </QUI.Text>
             {subtitle ? (
-              <QUI.Text size="2xs" color="tertiary">
+              <QUI.Text size="xs" color="tertiary">
                 {subtitle}
               </QUI.Text>
             ) : null}
@@ -89,7 +89,7 @@ function Stat({ icon, label, value, children }: { icon: IconComponent; label: st
     <QUI.Box border="subtle" radius="lg" padding="4" background="layer-2">
       <QUI.Stack gap="2">
         <QUI.Inline justify="between" gap="2" wrap={false}>
-          <QUI.Text size="xs" color="secondary">
+          <QUI.Text size="sm" color="secondary">
             {label}
           </QUI.Text>
           <QUI.Icon icon={icon} tint="tertiary" />
@@ -143,24 +143,24 @@ export function SpendOverviewPage() {
             <Stat icon={Icons.Wallet} label="Spent in October" value={aed.format(spent)}>
               <QUI.Inline gap="1">
                 <QUI.Badge size="xs" variant="warning" startIcon={<QUI.Icon icon={Icons.TrendingUp} />} label="+8.4%" />
-                <QUI.Text size="2xs" color="tertiary">
+                <QUI.Text size="xs" color="tertiary">
                   vs September, same day
                 </QUI.Text>
               </QUI.Inline>
             </Stat>
             <Stat icon={Icons.Gauge} label="Budget used" value={`${budgetUsed}%`}>
               <QUI.LinearProgress value={budgetUsed} variant={budgetUsed >= 90 ? "danger" : budgetUsed >= 70 ? "warning" : "brand"} aria-label="Monthly budget used" showValue={false} />
-              <QUI.Text size="2xs" color="tertiary">
+              <QUI.Text size="xs" color="tertiary">
                 {aed.format(totalBudget - spent)} left of {compact.format(totalBudget)} · {daysInMonth - dayOfMonth} days to go
               </QUI.Text>
             </Stat>
             <Stat icon={Icons.ListChecks} label="Pending approvals" value="23">
-              <QUI.Text size="2xs" color="tertiary">
+              <QUI.Text size="xs" color="tertiary">
                 AED 48.2K waiting · oldest 3 days
               </QUI.Text>
             </Stat>
             <Stat icon={Icons.ReceiptText} label="Missing receipts" value={String(missingReceipts)}>
-              <QUI.Text size="2xs" color="tertiary">
+              <QUI.Text size="xs" color="tertiary">
                 {Math.round((missingReceipts / transactions.length) * 100)}% of card spend this month
               </QUI.Text>
             </Stat>
@@ -197,7 +197,7 @@ export function SpendOverviewPage() {
                     <QUI.Text size="sm" weight="semibold" color="primary">
                       {compact.format(spent)}
                     </QUI.Text>
-                    <QUI.Text size="2xs" color="tertiary">
+                    <QUI.Text size="xs" color="tertiary">
                       total
                     </QUI.Text>
                   </QUI.Stack>
@@ -208,11 +208,11 @@ export function SpendOverviewPage() {
                   <QUI.Inline key={c.category} justify="between" gap="2" wrap={false}>
                     <QUI.Inline gap="2" wrap={false}>
                       <QUI.Swatch fill={QUI.chartColor(i)} />
-                      <QUI.Text size="xs" color="secondary">
+                      <QUI.Text size="sm" color="secondary">
                         {c.category}
                       </QUI.Text>
                     </QUI.Inline>
-                    <QUI.Text size="xs" weight="medium" color="primary" tabularNums>
+                    <QUI.Text size="sm" weight="medium" color="primary" tabularNums>
                       {aed.format(c.amount)}
                     </QUI.Text>
                   </QUI.Inline>

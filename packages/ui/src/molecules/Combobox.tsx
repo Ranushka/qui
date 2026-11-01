@@ -27,7 +27,7 @@ const comboboxInputVariants = cva(cn(controlInputClass, "flex-1"));
 /** Shared 32px option-row chrome, matching `Select`'s item look. */
 const comboboxItemVariants = cva(
   cn(
-    "group/item flex h-8 w-full cursor-default items-center gap-(--control-gap-md) rounded-md px-2 text-body-xs-regular text-primary outline-none select-none [--node-size:var(--control-glyph-md)]",
+    "group/item flex h-8 w-full cursor-default items-center gap-(--control-gap-md) rounded-md px-2 text-body-sm-regular text-primary outline-none select-none [--node-size:var(--control-glyph-md)]",
     "data-disabled:pointer-events-none data-disabled:text-disabled data-highlighted:bg-layer-transparent-hover"
   )
 );
@@ -44,7 +44,7 @@ const comboboxPopupVariants = cva(
 const comboboxListVariants = cva("p-1 outline-none");
 
 /** The "no matches" live region — kept mounted, padded only while it holds content. */
-const comboboxEmptyVariants = cva("text-body-xs-regular text-tertiary not-empty:px-2 not-empty:py-1.5");
+const comboboxEmptyVariants = cva("text-body-sm-regular text-tertiary not-empty:px-2 not-empty:py-1.5");
 
 export interface ComboboxInputGroupProps extends NoClass<Omit<React.ComponentPropsWithoutRef<typeof BaseCombobox.InputGroup>, "className">> {
   size?: "md" | "lg" | "xl" | "2xl";

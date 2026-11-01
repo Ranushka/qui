@@ -134,7 +134,7 @@ function BalanceCard() {
         <QUI.Inline gap="3" padding="4" wrap={false}>
           <QUI.Icon icon={Icons.CircleDollarSign} size="lg" tint="secondary" />
           <QUI.Stack gap="1">
-            <QUI.Text size="xs" color="secondary">
+            <QUI.Text size="sm" color="secondary">
               Total balance
             </QUI.Text>
             <QUI.Heading level={2} size={3} weight="semibold">

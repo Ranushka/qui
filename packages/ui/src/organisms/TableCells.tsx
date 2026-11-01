@@ -256,7 +256,7 @@ export function MoneyCell({ amount, currency, display = "symbol", minor = "inlin
       {wrap(
         <>
           {whole}
-          <span className="text-body-xs-regular text-tertiary">{cents}</span>
+          <span className="text-body-sm-regular text-tertiary">{cents}</span>
         </>
       )}
     </span>
@@ -307,7 +307,7 @@ export function NumberCell({ value, format = "decimal", decimals, unit, locale }
   return (
     <span className="whitespace-nowrap tabular-nums text-primary">
       {text}
-      {unit ? <span className="text-body-xs-regular text-tertiary"> {unit}</span> : null}
+      {unit ? <span className="text-body-sm-regular text-tertiary"> {unit}</span> : null}
     </span>
   );
 }
@@ -470,7 +470,7 @@ export function TrendCell({ values, good = "up", showChange = false, label = "Tr
         <polyline points={path} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       {showChange && change != null ? (
-        <span aria-hidden className="whitespace-nowrap tabular-nums text-body-xs-medium">
+        <span aria-hidden className="whitespace-nowrap tabular-nums text-body-sm-medium">
           {new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1, signDisplay: "exceptZero" }).format(change / 100)}
         </span>
       ) : null}
@@ -561,7 +561,7 @@ export interface TagCellProps extends CellActionProps {
 /** A coloured tag, e.g. a quarter, size or status; truncates in a narrow column. With `href` or `onClick` it's clickable. */
 export function TagCell({ label, color = "grey", href, onClick }: TagCellProps) {
   if (label == null || label === "") return <EmptyCell />;
-  const tagClass = cn("inline-block max-w-full truncate rounded-sm px-1.5 align-middle text-body-xs-medium", tagColorClass[color]);
+  const tagClass = cn("inline-block max-w-full truncate rounded-sm px-1.5 align-middle text-body-sm-medium", tagColorClass[color]);
   if (href == null && onClick == null) return <span className={tagClass}>{label}</span>;
   // Like `CellAction`, the tag's `::before` covers the whole cell, so clicking anywhere in it hits the tag.
   const actionClass = cn(tagClass, "cursor-pointer outline-none transition-colors before:absolute before:inset-0 before:transition-colors hover:before:bg-layer-transparent-hover active:before:bg-layer-transparent-active focus-visible:before:ring-2 focus-visible:before:ring-inset focus-visible:before:ring-accent-strong", tagHoverClass[color]);

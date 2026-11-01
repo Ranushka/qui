@@ -11,10 +11,10 @@ describe("Text", () => {
   });
 
   it("maps size/weight/color to tokens and keeps size + color together", () => {
-    render(<Text as="p" size="3xs" weight="semibold" color="tertiary">meta</Text>);
+    render(<Text as="p" size="xs" weight="semibold" color="tertiary">meta</Text>);
     const el = screen.getByText("meta");
     expect(el.tagName).toBe("P");
-    expect(el.className).toContain("text-caption-sm-semibold");
+    expect(el.className).toContain("text-caption-md-semibold");
     expect(el.className).toContain("text-tertiary");
   });
 

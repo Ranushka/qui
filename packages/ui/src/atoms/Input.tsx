@@ -9,7 +9,7 @@ import { controlInputClass } from "../lib/control-input";
 const inputVariants = cva(cn(controlInputClass, "flex-1"), {
   variants: {
     size: {
-      md: "text-body-xs-regular",
+      md: "text-body-sm-regular",
       lg: "text-body-sm-regular",
       xl: "text-body-sm-regular",
       "2xl": "text-body-md-regular",

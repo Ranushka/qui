@@ -10,7 +10,7 @@ const sliderRootClass = "flex w-full flex-col gap-2";
 /** Header: label at inline-start, live value readout at inline-end. */
 const sliderHeaderClass = "flex items-center justify-between gap-3";
 
-const sliderLabelClass = "text-body-xs-medium text-primary";
+const sliderLabelClass = "text-body-sm-medium text-primary";
 
 const sliderValueClass = "text-caption-md-regular text-secondary";
 

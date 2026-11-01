@@ -35,7 +35,7 @@ const collapsibleTitleVariants = cva("min-w-0 text-start", {
   variants: {
     placement: {
       inline: "",
-      sidebar: "col-start-1 flex min-w-0 items-center gap-2 overflow-hidden text-body-xs-semibold text-tertiary [&>*]:truncate",
+      sidebar: "col-start-1 flex min-w-0 items-center gap-2 overflow-hidden text-body-sm-semibold text-tertiary [&>*]:truncate",
     },
   },
   defaultVariants: { placement: "inline" },
@@ -95,7 +95,7 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
         {trailing != null ? <div className={collapsibleTrailingVariants({ placement })}>{trailing}</div> : null}
       </div>
       <BaseCollapsible.Panel keepMounted={keepMounted} hiddenUntilFound={hiddenUntilFound} className={collapsiblePanelClass}>
-        <div className={cn("text-body-xs-regular text-secondary", placement === "inline" && !hug && "px-3 pb-3")}>{children}</div>
+        <div className={cn("text-body-sm-regular text-secondary", placement === "inline" && !hug && "px-3 pb-3")}>{children}</div>
       </BaseCollapsible.Panel>
     </BaseCollapsible.Root>
   )
@@ -134,7 +134,7 @@ CollapsiblePanel.displayName = "CollapsiblePanel";
   </QUI.Collapsible>
   <div className="w-60">
     <QUI.Collapsible defaultOpen placement="sidebar" trigger="Favorites">
-      <div className="px-2 py-1 text-body-xs-regular text-secondary">Pinned projects go here.</div>
+      <div className="px-2 py-1 text-body-sm-regular text-secondary">Pinned projects go here.</div>
     </QUI.Collapsible>
   </div>
 </div>

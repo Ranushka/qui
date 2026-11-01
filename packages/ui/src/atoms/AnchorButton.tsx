@@ -13,8 +13,8 @@ const anchorButtonVariants = cva(cn(textLinkBaseClass, "group gap-1 aria-disable
     variant: textLinkPalette,
     size: {
       xs: "text-caption-md-regular [--node-size:var(--control-glyph-xs)]",
-      sm: "text-body-xs-regular [--node-size:var(--control-glyph-sm)]",
-      md: "text-body-xs-regular [--node-size:var(--control-glyph-md)]",
+      sm: "text-body-sm-regular [--node-size:var(--control-glyph-sm)]",
+      md: "text-body-sm-regular [--node-size:var(--control-glyph-md)]",
       lg: "text-body-sm-regular [--node-size:var(--control-glyph-lg)]",
     },
   },

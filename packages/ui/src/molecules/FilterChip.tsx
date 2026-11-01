@@ -6,7 +6,7 @@ import type { NoClass } from "../lib/no-class";
 
 /** The chip's frame. Empty, it reads as an outline pill; applied, as an accent-tinted chip with an accent border (like a selected card tab) and its own remove button. */
 const chipFrameClass = cn(
-  "inline-flex h-(--control-height-md) max-w-72 shrink-0 items-stretch rounded-md border-sm text-body-xs-regular [--node-size:var(--control-glyph-md)]",
+  "inline-flex h-(--control-height-md) max-w-72 shrink-0 items-stretch rounded-md border-sm text-body-sm-regular [--node-size:var(--control-glyph-md)]",
   "data-empty:border-subtle-1 data-empty:bg-layer-2 data-empty:text-secondary data-empty:has-[button:hover]:border-strong data-empty:has-[button:hover]:bg-layer-2-hover",
   "not-data-empty:border-accent-strong not-data-empty:bg-accent-subtle not-data-empty:text-primary"
 );

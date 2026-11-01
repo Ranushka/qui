@@ -42,7 +42,7 @@ export function IconsPage() {
             </QUI.Box>
             <QUI.Stack gap="1">
               <QUI.Text weight="semibold" color="primary">{selected}</QUI.Text>
-              <QUI.Text size="2xs" color="secondary">{`<Icon icon={Icons.${selected}} />`}</QUI.Text>
+              <QUI.Text size="xs" color="secondary">{`<Icon icon={Icons.${selected}} />`}</QUI.Text>
             </QUI.Stack>
           </QUI.Inline>
           <QUI.Button
@@ -64,7 +64,7 @@ export function IconsPage() {
             startSlot={<QUI.Icon icon={icons.Search} tint="placeholder" />}
           />
         </QUI.Box>
-        <QUI.Text size="2xs" color="tertiary" tabularNums>
+        <QUI.Text size="xs" color="tertiary" tabularNums>
           {names.length} of {allNames.length}
         </QUI.Text>
       </QUI.Inline>

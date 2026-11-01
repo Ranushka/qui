@@ -3,18 +3,16 @@
  * generates classes it can read verbatim in source). Generated from `@qui/tokens` — a style that
  * isn't listed here doesn't exist in the design, so components can't ask for it.
  *
- * Deliberately small: one text scale (16/14/13/12/11), headings h1–h6, and three weights. The token set carries more
- * (body 12, caption 10/9/8, bold) — they are left out on purpose so text stays on a short, readable scale.
+ * Deliberately small: three text sizes (16/14/12), headings h1–h6, and three weights. The token set carries more
+ * (body 13/12, caption 11/10/9/8, bold) — components use only these classes, so text stays on a short, readable scale.
  */
 export type FontWeight = "regular" | "medium" | "semibold";
 
-/** One size scale for all running text, largest first. 2xs and 3xs are label sizes with a tight line height. */
+/** One size scale for all running text: md 16, sm 14 (default), xs 12. xs has a tight line height, for labels and metadata. */
 export const textStyles = {
   "md": { regular: "text-body-md-regular", medium: "text-body-md-medium", semibold: "text-body-md-semibold" },
   "sm": { regular: "text-body-sm-regular", medium: "text-body-sm-medium", semibold: "text-body-sm-semibold" },
-  "xs": { regular: "text-body-xs-regular", medium: "text-body-xs-medium", semibold: "text-body-xs-semibold" },
-  "2xs": { regular: "text-caption-md-regular", medium: "text-caption-md-medium", semibold: "text-caption-md-semibold" },
-  "3xs": { regular: "text-caption-sm-regular", medium: "text-caption-sm-medium", semibold: "text-caption-sm-semibold" },
+  "xs": { regular: "text-caption-md-regular", medium: "text-caption-md-medium", semibold: "text-caption-md-semibold" },
 } as const satisfies Record<string, Record<FontWeight, string>>;
 
 export const headingStyles = {

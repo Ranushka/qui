@@ -111,7 +111,7 @@ PreviewCardEyebrow.displayName = "PreviewCardEyebrow";
 
 /** Muted identifier text inside a `PreviewCardEyebrow`, e.g. an issue key. */
 export const PreviewCardEyebrowLabel = React.forwardRef<HTMLSpanElement, NoClass<React.HTMLAttributes<HTMLSpanElement>>>(({ ...props }, ref) => (
-  <span ref={ref} className={cn("min-w-0 flex-1 truncate text-body-xs-regular text-tertiary")} {...props} />
+  <span ref={ref} className={cn("min-w-0 flex-1 truncate text-body-sm-regular text-tertiary")} {...props} />
 ));
 PreviewCardEyebrowLabel.displayName = "PreviewCardEyebrowLabel";
 
@@ -135,7 +135,7 @@ PreviewCardTitle.displayName = "PreviewCardTitle";
 
 /** Supporting copy beneath the title. */
 export const PreviewCardDescription = React.forwardRef<HTMLParagraphElement, NoClass<React.HTMLAttributes<HTMLParagraphElement>>>(({ ...props }, ref) => (
-  <p ref={ref} className={cn("text-body-xs-regular text-secondary")} {...props} />
+  <p ref={ref} className={cn("text-body-sm-regular text-secondary")} {...props} />
 ));
 PreviewCardDescription.displayName = "PreviewCardDescription";
 

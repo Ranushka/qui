@@ -141,7 +141,7 @@ function PolicyDrawer({
                           </QUI.Box>
                           {draft.action === "approval" ? (
                             <>
-                              <QUI.Text size="xs" color="secondary">
+                              <QUI.Text size="sm" color="secondary">
                                 from
                               </QUI.Text>
                               <QUI.Box width="2xs">
@@ -163,7 +163,7 @@ function PolicyDrawer({
                     />
                   </QUI.Box>
                   {submitted && (errors.conditions || errors.approver) ? (
-                    <QUI.Text size="2xs" color="danger">
+                    <QUI.Text size="xs" color="danger">
                       {errors.conditions ?? errors.approver}
                     </QUI.Text>
                   ) : null}
@@ -173,7 +173,7 @@ function PolicyDrawer({
                     <QUI.Text size="sm" weight="medium" color="primary">
                       Preview: this month
                     </QUI.Text>
-                    <QUI.Text size="xs" color="secondary" tabularNums>
+                    <QUI.Text size="sm" color="secondary" tabularNums>
                       {finished === 0 ? "Add a condition to preview" : `${caught.length} of ${transactions.length} payments · ${aed.format(sum(caught.map((t) => t.amount)))}`}
                     </QUI.Text>
                   </QUI.Inline>
@@ -218,7 +218,7 @@ function PolicyDrawer({
                     </QUI.Table>
                   ) : null}
                   {caught.length > 6 ? (
-                    <QUI.Text size="xs" color="tertiary">
+                    <QUI.Text size="sm" color="tertiary">
                       And {caught.length - 6} more.
                     </QUI.Text>
                   ) : null}
@@ -276,7 +276,7 @@ export function PoliciesPage() {
         <QUI.Grid columns={3} collapseBelow="md" gap="3">
           <QUI.Box border="subtle" radius="lg" padding="4" background="layer-2">
             <QUI.Stack gap="1">
-              <QUI.Text size="xs" color="secondary">
+              <QUI.Text size="sm" color="secondary">
                 Payments caught this month
               </QUI.Text>
               <QUI.Heading level={2} size={4} weight="semibold">
@@ -286,7 +286,7 @@ export function PoliciesPage() {
           </QUI.Box>
           <QUI.Box border="subtle" radius="lg" padding="4" background="layer-2">
             <QUI.Stack gap="1">
-              <QUI.Text size="xs" color="secondary">
+              <QUI.Text size="sm" color="secondary">
                 Sent for approval
               </QUI.Text>
               <QUI.Heading level={2} size={4} weight="semibold">
@@ -296,7 +296,7 @@ export function PoliciesPage() {
           </QUI.Box>
           <QUI.Box border="subtle" radius="lg" padding="4" background="layer-2">
             <QUI.Stack gap="1">
-              <QUI.Text size="xs" color="secondary">
+              <QUI.Text size="sm" color="secondary">
                 Declined at the till
               </QUI.Text>
               <QUI.Heading level={2} size={4} weight="semibold">

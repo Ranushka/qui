@@ -131,7 +131,7 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       scope="col"
       aria-sort={sortable ? (sortDirection ?? "none") : undefined}
       className={cn(
-        "text-body-xs-medium whitespace-nowrap",
+        "text-body-sm-medium whitespace-nowrap",
         sortable ? "p-0" : "px-3",
         sorted ? "text-secondary" : "text-tertiary",
         density === "compact" ? "h-7" : "h-9",
@@ -181,7 +181,7 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
 TableCell.displayName = "TableCell";
 
 export const TableCaption = React.forwardRef<HTMLTableCaptionElement, NoClass<React.ComponentPropsWithoutRef<"caption">>>(({ ...props }, ref) => (
-  <caption ref={ref} className={cn("px-3 py-2 text-left text-body-xs-regular text-tertiary")} {...props} />
+  <caption ref={ref} className={cn("px-3 py-2 text-left text-body-sm-regular text-tertiary")} {...props} />
 ));
 TableCaption.displayName = "TableCaption";
 

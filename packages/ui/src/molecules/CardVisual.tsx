@@ -75,21 +75,21 @@ export const CardVisual = React.forwardRef<HTMLDivElement, CardVisualProps>(
         <span className="flex items-start justify-between gap-2">
           <span className={cn("truncate", small ? "text-caption-md-semibold" : "text-body-sm-semibold")}>{nickname}</span>
           {frozen ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-caption-sm-semibold [--node-size:var(--control-glyph-xs)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-caption-md-semibold [--node-size:var(--control-glyph-xs)]">
               <Snowflake aria-hidden className="size-(--node-size)" />
               Frozen
             </span>
           ) : form === "virtual" ? (
-            <span className="rounded-full bg-white/20 px-2 py-0.5 text-caption-sm-semibold">Virtual</span>
+            <span className="rounded-full bg-white/20 px-2 py-0.5 text-caption-md-semibold">Virtual</span>
           ) : (
             <Nfc aria-hidden className={small ? "size-4" : "size-5"} />
           )}
         </span>
-        <span className={cn("tabular-nums tracking-widest", small ? "text-body-xs-medium" : "text-body-md-medium")}>•••• •••• •••• {last4}</span>
+        <span className={cn("tabular-nums tracking-widest", small ? "text-body-sm-medium" : "text-body-md-medium")}>•••• •••• •••• {last4}</span>
         <span className="flex items-end justify-between gap-2">
           <span className="flex min-w-0 flex-col">
-            <span className={cn("truncate uppercase opacity-90", small ? "text-caption-sm-medium" : "text-caption-md-medium")}>{holder}</span>
-            {expiry ? <span className={cn("tabular-nums opacity-75", small ? "text-caption-sm-regular" : "text-caption-md-regular")}>{expiry}</span> : null}
+            <span className={cn("truncate uppercase opacity-90", small ? "text-caption-md-medium" : "text-caption-md-medium")}>{holder}</span>
+            {expiry ? <span className={cn("tabular-nums opacity-75", small ? "text-caption-md-regular" : "text-caption-md-regular")}>{expiry}</span> : null}
           </span>
           {network === "visa" ? <span className={cn("italic tracking-tight", small ? "text-body-sm-semibold" : "text-h5-semibold")}>VISA</span> : <MastercardMark />}
         </span>

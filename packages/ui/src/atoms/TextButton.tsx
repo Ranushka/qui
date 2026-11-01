@@ -12,7 +12,7 @@ const textButtonVariants = cva(
     variants: {
       variant: textLinkPalette,
       size: {
-        md: "text-body-xs-medium [--node-size:var(--control-glyph-md)]",
+        md: "text-body-sm-medium [--node-size:var(--control-glyph-md)]",
         lg: "text-body-sm-medium [--node-size:var(--control-glyph-lg)]",
       },
     },

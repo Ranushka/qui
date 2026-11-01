@@ -21,7 +21,7 @@ const textAreaVariants = cva(
     variants: {
       size: {
         md: "min-h-[3.75rem] text-caption-md-regular",
-        lg: "min-h-[4.75rem] text-body-xs-regular",
+        lg: "min-h-[4.75rem] text-body-sm-regular",
         xl: "min-h-[6.375rem] text-body-sm-regular",
         "2xl": "min-h-[5.625rem] text-body-md-regular",
       },

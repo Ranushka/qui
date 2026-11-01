@@ -140,10 +140,10 @@ export function ActivityLogPage() {
       </QUI.Box>
       <QUI.Box paddingX="4" paddingY="3">
         <QUI.Inline justify="between" gap="4">
-          <QUI.Text size="xs" color="tertiary" tabularNums>
+          <QUI.Text size="sm" color="tertiary" tabularNums>
             {`${rows.length.toLocaleString("en-US")} of ${total.toLocaleString("en-US")} events loaded · ${pages} of ${total / pageSize} pages`}
           </QUI.Text>
-          <QUI.Text size="xs" color="tertiary">
+          <QUI.Text size="sm" color="tertiary">
             {done ? "All events loaded" : loading ? "Loading the next page…" : "Scroll down to load more"}
           </QUI.Text>
         </QUI.Inline>

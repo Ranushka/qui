@@ -29,7 +29,7 @@ const checkboxBoxClass = cn(
 
 const checkboxLabelClass = cn(
   "inline-flex items-center gap-2 rounded-sm px-2 py-1 align-top",
-  "text-body-xs-regular text-secondary transition-colors",
+  "text-body-sm-regular text-secondary transition-colors",
   "cursor-pointer not-has-[[data-disabled]]:hover:bg-layer-transparent-hover",
   "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:text-disabled has-[[data-disabled]]:[&>span[aria-hidden]]:text-disabled"
 );

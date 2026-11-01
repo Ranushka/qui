@@ -75,7 +75,7 @@ function TransactionDrawer({
                 <QUI.Stack gap="1">
                   <QUI.Inline gap="2" wrap={false}>
                     <QUI.Badge size="xs" label={t.category} />
-                    <QUI.Text size="2xs" color="tertiary">
+                    <QUI.Text size="xs" color="tertiary">
                       #{t.id}
                     </QUI.Text>
                   </QUI.Inline>
@@ -99,7 +99,7 @@ function TransactionDrawer({
                 ) : null}
 
                 <QUI.Stack gap="2">
-                  <QUI.Text size="xs" weight="semibold" color="secondary">
+                  <QUI.Text size="sm" weight="semibold" color="secondary">
                     Receipt
                   </QUI.Text>
                   <QUI.ReceiptPreview
@@ -139,7 +139,7 @@ function TransactionDrawer({
                 </QUI.Grid>
 
                 <QUI.Stack gap="2">
-                  <QUI.Text as="label" size="xs" weight="semibold" color="secondary" htmlFor="transaction-memo">
+                  <QUI.Text as="label" size="sm" weight="semibold" color="secondary" htmlFor="transaction-memo">
                     Memo
                   </QUI.Text>
                   <QUI.TextArea
@@ -346,7 +346,7 @@ export function TransactionsPage() {
       </QUI.Box>
 
       <QUI.Inline justify="between" gap="4" paddingX="4" paddingY="3">
-        <QUI.Text size="xs" color="tertiary" tabularNums>
+        <QUI.Text size="sm" color="tertiary" tabularNums>
           {filtered.length === 0 ? "No transactions" : `${(current - 1) * pageSize + 1}–${(current - 1) * pageSize + pageRows.length} of ${filtered.length}`}
         </QUI.Text>
         <QUI.ActionBar

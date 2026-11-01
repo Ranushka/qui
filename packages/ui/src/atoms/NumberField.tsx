@@ -26,8 +26,8 @@ const numberFieldGroupVariants = cva(
 const numberFieldInputVariants = cva(cn(controlInputClass, "field-sizing-content h-full px-1 text-center"), {
   variants: {
     size: {
-      sm: "min-w-9 text-body-xs-medium",
-      md: "min-w-10 text-body-xs-medium",
+      sm: "min-w-9 text-body-sm-medium",
+      md: "min-w-10 text-body-sm-medium",
       lg: "min-w-10 text-body-sm-medium",
     },
   },

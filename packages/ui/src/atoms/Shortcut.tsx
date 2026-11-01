@@ -6,7 +6,7 @@ import type { NoClass } from "../lib/no-class";
 const shortcutVariants = cva("shrink-0 text-tertiary", {
   variants: {
     size: {
-      sm: "text-caption-sm-regular",
+      sm: "text-caption-md-regular",
       md: "text-caption-md-regular",
     },
   },

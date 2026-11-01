@@ -12,7 +12,7 @@ const pillVariants = cva(
       size: {
         xs: "h-(--control-height-xs) px-1.5 text-caption-md-regular [--node-size:var(--control-glyph-xs)]",
         sm: "h-(--control-height-sm) px-(--control-padding-x-sm) text-caption-md-regular [--node-size:var(--control-glyph-sm)]",
-        md: "h-(--control-height-md) px-2 text-body-xs-regular [--node-size:var(--control-glyph-md)]",
+        md: "h-(--control-height-md) px-2 text-body-sm-regular [--node-size:var(--control-glyph-md)]",
       },
       variant: {
         outline:

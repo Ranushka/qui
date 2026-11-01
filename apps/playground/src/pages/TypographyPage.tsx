@@ -31,10 +31,8 @@ const headings: Style[] = ([1, 2, 3, 4, 5, 6] as const).map((level) => ({
 const text: Style[] = (
   [
     ["md", "Long reading text, chat messages"],
-    ["sm", "Default UI text: rows, menus, form values"],
-    ["xs", "Dense UI: buttons, toolbars, table cells"],
-    ["2xs", "Labels and metadata: helper text, timestamps"],
-    ["3xs", "Tiny labels: badges, counters, avatar initials"],
+    ["sm", "Default: UI text, buttons, rows, menus, form values"],
+    ["xs", "Labels and metadata: helper text, timestamps, badges, counters"],
   ] as const
 ).map(([size, use]) => ({
   name: `Text ${size}`,
@@ -59,12 +57,12 @@ function StyleRow({ style, sample }: { style: Style; sample: string }) {
       <QUI.Stack gap="2">
         <QUI.Inline justify="between" gap="2">
           <QUI.Inline gap="2">
-            <QUI.Text size="xs" weight="medium" color="primary">{style.name}</QUI.Text>
-            <QUI.Text size="2xs" color="tertiary" tabularNums>{metrics} px</QUI.Text>
+            <QUI.Text size="sm" weight="medium" color="primary">{style.name}</QUI.Text>
+            <QUI.Text size="xs" color="tertiary" tabularNums>{metrics} px</QUI.Text>
           </QUI.Inline>
           <QUI.Inline gap="2">
-            <QUI.Text size="2xs" color="tertiary">{style.use}</QUI.Text>
-            <QUI.Text size="2xs" color="secondary">{style.code}</QUI.Text>
+            <QUI.Text size="xs" color="tertiary">{style.use}</QUI.Text>
+            <QUI.Text size="xs" color="secondary">{style.code}</QUI.Text>
           </QUI.Inline>
         </QUI.Inline>
         {style.render(ref, sample)}
@@ -100,7 +98,7 @@ export function TypographyPage() {
       <QUI.Stack gap="1">
         <QUI.Heading level={1} size={4}>Typography</QUI.Heading>
         <QUI.Text color="secondary">
-          One font (IBM Plex Sans), five text sizes, six headings and three weights. Set text only through{" "}
+          One font (IBM Plex Sans), three text sizes, six headings and three weights. Set text only through{" "}
           <QUI.Text weight="medium" color="primary">Text</QUI.Text> and <QUI.Text weight="medium" color="primary">Heading</QUI.Text>, so nothing drifts off the scale.
         </QUI.Text>
       </QUI.Stack>
@@ -113,7 +111,7 @@ export function TypographyPage() {
         <QUI.Box as="ul">{headings.map((s) => <StyleRow key={s.name} style={s} sample={shown} />)}</QUI.Box>
       </Section>
 
-      <Section title="Text" description="One scale for everything people read and act on. sm is the default; 2xs and 3xs have a tight line height, for labels rather than paragraphs.">
+      <Section title="Text" description="One scale for everything people read and act on. sm is the default; xs has a tight line height, for labels rather than paragraphs.">
         <QUI.Box as="ul">{text.map((s) => <StyleRow key={s.name} style={s} sample={shown} />)}</QUI.Box>
       </Section>
 
@@ -123,7 +121,7 @@ export function TypographyPage() {
             {weights.map((w) => (
               <QUI.Stack key={w} gap="0.5">
                 <QUI.Text size="md" weight={w} color="primary">{w[0]!.toUpperCase() + w.slice(1)}</QUI.Text>
-                <QUI.Text size="2xs" color="tertiary">{`weight="${w}"`}</QUI.Text>
+                <QUI.Text size="xs" color="tertiary">{`weight="${w}"`}</QUI.Text>
               </QUI.Stack>
             ))}
           </QUI.Inline>
@@ -136,7 +134,7 @@ export function TypographyPage() {
             {colors.map((c) => (
               <QUI.Stack key={c} gap="0.5">
                 <QUI.Text color={c}>{c}</QUI.Text>
-                <QUI.Text size="2xs" color="tertiary">{`color="${c}"`}</QUI.Text>
+                <QUI.Text size="xs" color="tertiary">{`color="${c}"`}</QUI.Text>
               </QUI.Stack>
             ))}
           </QUI.Inline>

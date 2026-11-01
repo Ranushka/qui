@@ -9,7 +9,7 @@ import { nodeSlotClass } from "../lib/node-slot";
  * bare text stay flush across the trail. The `md` glyph rung sizes any icon dropped in via
  * `--node-size`.
  */
-const crumbBaseClass = "inline-flex h-6 items-center gap-1.5 rounded-md px-1 text-body-xs-medium whitespace-nowrap [--node-size:var(--control-glyph-md)]";
+const crumbBaseClass = "inline-flex h-6 items-center gap-1.5 rounded-md px-1 text-body-sm-medium whitespace-nowrap [--node-size:var(--control-glyph-md)]";
 
 export interface BreadcrumbProps extends NoClass<React.ComponentPropsWithoutRef<"nav">> {
   /** Landmark name for the trail. @default "Breadcrumb" */

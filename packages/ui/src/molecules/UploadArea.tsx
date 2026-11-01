@@ -141,7 +141,7 @@ export const UploadArea = React.forwardRef<HTMLDivElement, UploadAreaProps>(
               <li key={file.id} className="flex items-center gap-2.5 rounded-md border-sm border-subtle bg-layer-2 px-2.5 py-2 [--node-size:var(--control-glyph-md)]">
                 <Icon icon={FileText} tint="secondary" />
                 <span className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className="truncate text-body-xs-medium text-primary">{file.name}</span>
+                  <span className="truncate text-body-sm-medium text-primary">{file.name}</span>
                   {file.error ? (
                     <span className="text-caption-md-regular text-danger-primary">{file.error}</span>
                   ) : file.progress != null && file.progress < 100 ? (

@@ -20,7 +20,7 @@ export const menuPopupSurfaceClass = cn(
 
 /** Interactive row chrome shared by every row kind: full-width flex, control-scale type, glyph slot, disabled treatment. */
 const menuRowBaseClass = cn(
-  "group/item flex h-8 w-full cursor-default items-center gap-(--control-gap-md) rounded-md px-2 text-body-xs-regular outline-none select-none [--node-size:var(--control-glyph-md)]",
+  "group/item flex h-8 w-full cursor-default items-center gap-(--control-gap-md) rounded-md px-2 text-body-sm-regular outline-none select-none [--node-size:var(--control-glyph-md)]",
   "data-disabled:pointer-events-none data-disabled:text-disabled",
   "data-highlighted:bg-layer-transparent-hover"
 );

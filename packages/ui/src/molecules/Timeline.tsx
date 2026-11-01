@@ -51,7 +51,7 @@ export const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(({ ite
           </span>
           <span className={cn("flex min-w-0 flex-1 flex-col gap-0.5 pt-0.5", last ? "pb-0" : "pb-5")}>
             <span className="flex flex-wrap items-baseline justify-between gap-x-3">
-              <span className={cn("text-body-xs-medium", tone === "pending" ? "text-tertiary" : tone === "danger" ? "text-danger-primary" : "text-primary")}>{item.title}</span>
+              <span className={cn("text-body-sm-medium", tone === "pending" ? "text-tertiary" : tone === "danger" ? "text-danger-primary" : "text-primary")}>{item.title}</span>
               {item.time != null ? <span className="text-caption-md-regular tabular-nums text-tertiary">{item.time}</span> : null}
             </span>
             {item.description != null ? <span className="text-caption-md-regular text-secondary">{item.description}</span> : null}

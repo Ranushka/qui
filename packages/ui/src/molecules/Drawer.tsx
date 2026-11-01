@@ -85,7 +85,7 @@ export function DrawerTitle({ ...props }: NoClass<React.ComponentPropsWithoutRef
 
 /** Supporting copy under the title. */
 export function DrawerDescription({ ...props }: NoClass<React.ComponentPropsWithoutRef<typeof BaseDialog.Description>>) {
-  return <BaseDialog.Description className={cn("text-body-xs-regular text-tertiary")} {...props} />;
+  return <BaseDialog.Description className={cn("text-body-sm-regular text-tertiary")} {...props} />;
 }
 
 /* __DOC_BLOCK

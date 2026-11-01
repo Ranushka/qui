@@ -29,8 +29,8 @@ const toggleVariants = cva(
           "h-(--control-height-xs) gap-(--control-gap-xs) rounded-(--control-radius-xs) px-(--control-padding-x-xs) text-caption-md-regular [--node-size:var(--control-glyph-xs)]",
           xsHitArea
         ),
-        sm: "h-(--control-height-sm) gap-(--control-gap-sm) rounded-(--control-radius-sm) px-(--control-padding-x-sm) text-body-xs-regular [--node-size:var(--control-glyph-sm)]",
-        md: "h-(--control-height-md) gap-(--control-gap-md) rounded-(--control-radius-md) px-(--control-padding-x-md) text-body-xs-regular [--node-size:var(--control-glyph-md)]",
+        sm: "h-(--control-height-sm) gap-(--control-gap-sm) rounded-(--control-radius-sm) px-(--control-padding-x-sm) text-body-sm-regular [--node-size:var(--control-glyph-sm)]",
+        md: "h-(--control-height-md) gap-(--control-gap-md) rounded-(--control-radius-md) px-(--control-padding-x-md) text-body-sm-regular [--node-size:var(--control-glyph-md)]",
       },
     },
     defaultVariants: { size: "md" },

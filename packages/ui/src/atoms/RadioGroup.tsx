@@ -19,7 +19,7 @@ RadioGroup.displayName = "RadioGroup";
 
 const radioLabelClass = cn(
   "inline-flex w-fit cursor-pointer items-center gap-2 rounded-sm px-2 py-1 align-top",
-  "text-body-xs-regular text-secondary transition-colors",
+  "text-body-sm-regular text-secondary transition-colors",
   "not-has-[[data-disabled]]:hover:bg-layer-transparent-hover",
   "has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:text-disabled"
 );

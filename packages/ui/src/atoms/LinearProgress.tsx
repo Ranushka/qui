@@ -49,7 +49,7 @@ export function LinearProgress({ value, size = "md", variant = "brand", showValu
 
   return (
     <Progress.Root value={clampedValue} {...props} className={cn("flex w-full items-center gap-2")}>
-      {label != null ? <Progress.Label className="text-body-xs-medium text-secondary">{label}</Progress.Label> : null}
+      {label != null ? <Progress.Label className="text-body-sm-medium text-secondary">{label}</Progress.Label> : null}
       <Progress.Track className={trackVariants({ size })}>
         <Progress.Indicator className={indicatorVariants({ variant })} />
       </Progress.Track>
