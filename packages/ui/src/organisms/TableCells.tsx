@@ -369,7 +369,7 @@ export function ChangeCell({ value, format = "percent", currency = "USD", good =
   const direction = value > 0 ? "Up" : value < 0 ? "Down" : "No change";
   return (
     <span className={cn("inline-flex items-center gap-0.5 whitespace-nowrap tabular-nums text-body-sm-medium", changeTone(value, good))}>
-      <Arrow aria-hidden className="size-3.5 shrink-0" />
+      <Arrow aria-hidden className="size-(--control-glyph-xs) shrink-0" />
       <span className="sr-only">{direction} </span>
       {text}
     </span>
@@ -422,9 +422,9 @@ export function MetricCell({ value, format = "compact", decimals, change, change
       {hasChange ? (
         <span className={cn("inline-flex items-center gap-1 whitespace-nowrap text-caption-md-medium leading-none", changeTone(change, good))}>
           {change === 0 ? (
-            <Minus aria-hidden className="size-2.5 shrink-0" />
+            <Minus aria-hidden className="size-(--control-glyph-xs) shrink-0" />
           ) : (
-            <Triangle aria-hidden className={cn("size-2.5 shrink-0 fill-current", change < 0 && "rotate-180")} />
+            <Triangle aria-hidden className={cn("size-(--control-glyph-xs) shrink-0 fill-current", change < 0 && "rotate-180")} />
           )}
           <span className="sr-only">{change > 0 ? "Up" : change < 0 ? "Down" : "No change"} </span>
           {new Intl.NumberFormat(locale, { style: "percent", minimumFractionDigits: changeDecimals, maximumFractionDigits: changeDecimals }).format(Math.abs(change) / 100)}

@@ -45,7 +45,7 @@ export const Timeline = React.forwardRef<HTMLOListElement, TimelineProps>(({ ite
         <li key={i} aria-current={tone === "current" ? "step" : undefined} className="flex gap-3">
           <span className="flex flex-col items-center">
             <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full", markerClass[tone])}>
-              <Glyph aria-hidden className={cn("size-3.5", tone === "current" && "fill-current")} />
+              <Glyph aria-hidden className={cn("size-(--control-glyph-xs)", tone === "current" && "fill-current")} />
             </span>
             {last ? null : <span aria-hidden className={cn("w-px flex-1", tone === "done" ? "bg-success-primary" : "bg-layer-3")} />}
           </span>

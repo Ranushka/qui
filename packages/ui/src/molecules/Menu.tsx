@@ -38,7 +38,7 @@ export const menuRowVariants = cva(menuRowBaseClass, {
 });
 
 /** Trailing single-select check gutter — reserves its column even unselected, so a toggle never re-truncates the label. */
-const menuItemIndicatorBaseClass = cn(nodeSlotClass, "h-5 w-4 text-icon-secondary [--node-size:1rem]");
+const menuItemIndicatorBaseClass = cn(nodeSlotClass, "h-5 w-4 text-icon-secondary [--node-size:var(--control-glyph-sm)]");
 /** `MenuItem`'s `selected` prop is plain `data-selected` on a bare `<span>`. */
 const menuItemIndicatorClass = cn(menuItemIndicatorBaseClass, "not-data-selected:invisible");
 /** `Menu.RadioItemIndicator` stamps `data-checked`/`data-unchecked` on itself instead — same chrome, different state attribute. */
@@ -50,7 +50,7 @@ const menuItemControlClass = "flex shrink-0 items-center";
 /** Checkbox-row box: the 16px bordered square that fills accent once checked, empty box kept visible while off. */
 const menuCheckboxBoxClass = cn(
   nodeSlotClass,
-  "inline-flex size-4 shrink-0 items-center justify-center rounded-sm border-sm border-transparent bg-clip-padding [--node-size:0.75rem]",
+  "inline-flex size-4 shrink-0 items-center justify-center rounded-sm border-sm border-transparent bg-clip-padding [--node-size:var(--control-glyph-xs)]",
   "shadow-[inset_0_0_0_1px_var(--border-color-icon-tertiary)]",
   "data-checked:bg-accent-primary data-checked:text-icon-on-color data-checked:shadow-none",
   "data-unchecked:[&>*]:invisible"

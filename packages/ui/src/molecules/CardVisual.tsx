@@ -75,7 +75,7 @@ export const CardVisual = React.forwardRef<HTMLDivElement, CardVisualProps>(
         <span className="flex items-start justify-between gap-2">
           <span className={cn("truncate", small ? "text-caption-md-semibold" : "text-body-sm-semibold")}>{nickname}</span>
           {frozen ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-caption-sm-semibold [--node-size:0.75rem]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-caption-sm-semibold [--node-size:var(--control-glyph-xs)]">
               <Snowflake aria-hidden className="size-(--node-size)" />
               Frozen
             </span>

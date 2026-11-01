@@ -23,12 +23,12 @@ import {
 const workspaceAvatarVariants = cva("relative inline-flex shrink-0 items-center justify-center overflow-clip border-subtle bg-layer-1", {
   variants: {
     size: {
-      "2xs": `size-4 rounded-sm border-sm ${avatarInitialsTextClass["2xs"]} [--node-size:0.875rem]`,
-      xs: `size-5 rounded-sm border-sm ${avatarInitialsTextClass.xs} [--node-size:0.875rem]`,
-      sm: `size-6 rounded-sm border-sm ${avatarInitialsTextClass.sm} [--node-size:1rem]`,
-      md: `size-7 rounded-md border-sm ${avatarInitialsTextClass.md} [--node-size:1.25rem]`,
-      lg: `size-8 rounded-md border-sm ${avatarInitialsTextClass.lg} [--node-size:1.5rem]`,
-      xl: `size-10 rounded-md border-lg ${avatarInitialsTextClass.xl} [--node-size:1.5rem]`,
+      "2xs": `size-4 rounded-sm border-sm ${avatarInitialsTextClass["2xs"]} [--node-size:var(--control-glyph-xs)]`,
+      xs: `size-5 rounded-sm border-sm ${avatarInitialsTextClass.xs} [--node-size:var(--control-glyph-xs)]`,
+      sm: `size-6 rounded-sm border-sm ${avatarInitialsTextClass.sm} [--node-size:var(--control-glyph-sm)]`,
+      md: `size-7 rounded-md border-sm ${avatarInitialsTextClass.md} [--node-size:var(--control-glyph-md)]`,
+      lg: `size-8 rounded-md border-sm ${avatarInitialsTextClass.lg} [--node-size:var(--control-glyph-lg)]`,
+      xl: `size-10 rounded-md border-lg ${avatarInitialsTextClass.xl} [--node-size:var(--control-glyph-xl)]`,
       "2xl": `size-14 rounded-lg border-lg ${avatarInitialsTextClass["2xl"]} [--node-size:2rem]`,
       "3xl": `size-16 rounded-lg border-lg ${avatarInitialsTextClass["3xl"]} [--node-size:2rem]`,
     },

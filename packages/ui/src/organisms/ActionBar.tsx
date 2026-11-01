@@ -67,7 +67,7 @@ export const ActionBar = React.forwardRef<HTMLDivElement, ActionBarProps>(
               type="button"
               aria-label={clearLabel}
               onClick={onClear}
-              className="absolute -end-2 -top-2 inline-flex size-5 cursor-pointer items-center justify-center rounded-full bg-inverse text-icon-inverse shadow-[0_0_0_2px_var(--bg-surface-1)] outline-none [--node-size:12px] hover:bg-inverse-hover focus-visible:ring-2 focus-visible:ring-accent-strong"
+              className="absolute -end-2 -top-2 inline-flex size-5 cursor-pointer items-center justify-center rounded-full bg-inverse text-icon-inverse shadow-[0_0_0_2px_var(--bg-surface-1)] outline-none [--node-size:var(--control-glyph-xs)] hover:bg-inverse-hover focus-visible:ring-2 focus-visible:ring-accent-strong"
             >
               <Icon icon={X} />
             </button>

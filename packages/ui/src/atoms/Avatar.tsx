@@ -22,12 +22,12 @@ const initialsTextClass = avatarInitialsTextClass;
 const avatarVariants = cva("relative inline-flex shrink-0 items-center justify-center overflow-clip rounded-full border-subtle bg-layer-1", {
   variants: {
     size: {
-      "2xs": `size-4 border-sm ${initialsTextClass["2xs"]} [--node-size:0.875rem]`,
-      xs: `size-5 border-sm ${initialsTextClass.xs} [--node-size:0.875rem]`,
-      sm: `size-6 border-sm ${initialsTextClass.sm} [--node-size:1rem]`,
-      md: `size-7 border-sm ${initialsTextClass.md} [--node-size:1.25rem]`,
-      lg: `size-8 border-sm ${initialsTextClass.lg} [--node-size:1.5rem]`,
-      xl: `size-10 border-lg ${initialsTextClass.xl} [--node-size:1.5rem]`,
+      "2xs": `size-4 border-sm ${initialsTextClass["2xs"]} [--node-size:var(--control-glyph-xs)]`,
+      xs: `size-5 border-sm ${initialsTextClass.xs} [--node-size:var(--control-glyph-xs)]`,
+      sm: `size-6 border-sm ${initialsTextClass.sm} [--node-size:var(--control-glyph-sm)]`,
+      md: `size-7 border-sm ${initialsTextClass.md} [--node-size:var(--control-glyph-md)]`,
+      lg: `size-8 border-sm ${initialsTextClass.lg} [--node-size:var(--control-glyph-lg)]`,
+      xl: `size-10 border-lg ${initialsTextClass.xl} [--node-size:var(--control-glyph-xl)]`,
       "2xl": `size-14 border-lg ${initialsTextClass["2xl"]} [--node-size:2rem]`,
       "3xl": `size-16 border-lg ${initialsTextClass["3xl"]} [--node-size:2rem]`,
     },

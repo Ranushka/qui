@@ -33,7 +33,7 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(({ steps
         const marker = (
           <span
             className={cn(
-              "flex size-6 shrink-0 items-center justify-center rounded-full border-sm text-caption-md-semibold tabular-nums transition-colors [--node-size:0.875rem]",
+              "flex size-6 shrink-0 items-center justify-center rounded-full border-sm text-caption-md-semibold tabular-nums transition-colors [--node-size:var(--control-glyph-xs)]",
               state === "done" && "border-transparent bg-accent-primary text-on-color",
               state === "current" && "border-accent-strong bg-layer-2 text-accent-primary ring-2 ring-accent-subtle",
               state === "upcoming" && "border-subtle-1 bg-layer-2 text-tertiary"

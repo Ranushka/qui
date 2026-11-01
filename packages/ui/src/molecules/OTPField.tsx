@@ -38,7 +38,7 @@ const otpFieldInputVariants = cva(
 );
 
 /** The divider between slot groups — a fixed 16px glyph box regardless of `size`. */
-const otpFieldSeparatorClass = cn(nodeSlotClass, "size-4 text-tertiary [--node-size:1rem]");
+const otpFieldSeparatorClass = cn(nodeSlotClass, "size-4 text-tertiary [--node-size:var(--control-glyph-sm)]");
 
 export type OTPFieldSize = "lg" | "xl" | "2xl";
 

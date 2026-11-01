@@ -17,7 +17,7 @@ import { menuPopupSurfaceClass, menuRowVariants } from "./Menu";
 
 /** Trailing single-select check gutter, matching `Menu`'s (kept local: `Menu`'s copy isn't exported, and this is one class). */
 const contextMenuItemIndicatorClass = cn(
-  "inline-flex h-5 w-4 shrink-0 items-center justify-center text-icon-secondary [--node-size:1rem] [&>svg]:size-(--node-size)",
+  "inline-flex h-5 w-4 shrink-0 items-center justify-center text-icon-secondary [--node-size:var(--control-glyph-sm)] [&>svg]:size-(--node-size)",
   "not-data-selected:invisible"
 );
 

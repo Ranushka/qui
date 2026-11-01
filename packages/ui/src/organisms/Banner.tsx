@@ -8,7 +8,7 @@ import { Icon } from "../atoms/Icon";
 
 type BannerVariant = "info" | "success" | "warning" | "danger";
 
-const bannerVariants = cva("flex w-full items-start gap-2 border-sm px-3 py-2 text-body-sm-regular text-secondary [--node-size:1rem]", {
+const bannerVariants = cva("flex w-full items-start gap-2 border-sm px-3 py-2 text-body-sm-regular text-secondary [--node-size:var(--control-glyph-sm)]", {
   variants: {
     variant: {
       info: "border-info-subtle bg-info-subtle",
