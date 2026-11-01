@@ -7,7 +7,6 @@ import { IconsPage } from "./IconsPage";
 import { TypographyPage } from "./TypographyPage";
 import { WorkItemsPage } from "./WorkItemsPage";
 import { TablesPage } from "./TablesPage";
-import { WorkPage } from "./WorkPage";
 import { SpecPage } from "../spec/SpecPage";
 
 export type PlaygroundPage = {
@@ -32,7 +31,6 @@ export const pages: PlaygroundPage[] = [
   { path: "/examples/dashboard", title: "Dashboard", component: DashboardPage, fullBleed: true },
   { path: "/examples/ai-chat", title: "AI chat", component: AiChatPage, fullBleed: true },
   { path: "/examples/tables", title: "Tables", component: TablesPage, fullBleed: true },
-  { path: "/examples/work", title: "Work", component: WorkPage, fullBleed: true, hidden: true },
 ];
 
 /** Old links that should keep working. */

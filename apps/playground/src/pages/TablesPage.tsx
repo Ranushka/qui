@@ -1,8 +1,6 @@
 import * as React from "react";
 import * as QUI from "@qui/ui";
 import { Icons } from "@qui/ui";
-import { adminItems } from "../examples/acme/admin-nav";
-import { PlaceholderPage } from "../examples/acme/placeholder";
 import { ActivityLogPage } from "./ActivityLogPage";
 import { ApprovalRequestsPage } from "./ApprovalRequestsPage";
 import { BalanceLogsPage } from "./BalanceLogsPage";
@@ -44,6 +42,5 @@ export function TablesPage() {
   if (slug === "bills") return <BillsPage />;
   if (slug === "travel") return <TravelPage />;
   if (slug === "activity-log") return <ActivityLogPage />;
-  const entry = adminItems.find((e) => e.item.slug === slug);
-  return entry ? <PlaceholderPage key={slug} icon={entry.item.icon} label={entry.item.label} /> : <BalanceLogsPage />;
+  return <BalanceLogsPage />;
 }

@@ -457,7 +457,7 @@ function TrendingMetrics() {
 /** Playground page: the dashboard in the Acme shell, with its own header instead of the project header. */
 export function DashboardPage() {
   return (
-    <AcmeShell current="Dashboards" header={<PageHeader />} panel={false}>
+    <AcmeShell current="Dashboard" header={<PageHeader />} panel={false}>
       <QUI.Box grow overflow="auto">
         <QUI.Stack gap="8" paddingX="6" paddingTop="6" paddingBottom="8">
           <Actions />

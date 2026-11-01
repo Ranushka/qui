@@ -2,11 +2,10 @@ import * as React from "react";
 import * as QUI from "@qui/ui";
 import { Icons } from "@qui/ui";
 import type { IconComponent } from "./data";
-import { adminHref, adminMainItems, adminSections } from "./admin-nav";
 
 /**
- * The "Acme Inc." app chrome shared by the example screens: top bar with the app switcher, sidebar and project
- * header. Built only from qui components — no className or style.
+ * The "Acme Inc." app chrome shared by the example screens: top bar with the workspace switcher, the current app's
+ * sidebar and a header. Built only from qui components — no className or style.
  */
 
 /** ☰ button (below lg) that slides the sidebar in from the start edge. */
@@ -27,37 +26,91 @@ function MobileNav() {
   );
 }
 
-const apps: { icon: IconComponent; label: string }[] = [
-  { icon: Icons.SquareStack, label: "Work" },
-  { icon: Icons.BookOpen, label: "Wiki" },
-  { icon: Icons.Bot, label: "AI" },
-  { icon: Icons.Monitor, label: "Desk" },
+type NavEntry = { icon: IconComponent; label: string; href: string };
+type App = {
+  icon: IconComponent;
+  label: string;
+  /** Where the switcher opens the app. */
+  href: string;
+  entries: NavEntry[];
+  sections: { label: string; items: NavEntry[] }[];
+  /** Screens of the app with no sidebar entry of their own, e.g. AI chat, whose sidebar is its history. */
+  screens?: string[];
+};
+
+const spendHref = (slug: string) => `#/examples/tables/${slug}`;
+
+/**
+ * The apps the switcher moves between, each with its own sidebar. Every entry opens a screen of its own; the shell
+ * shows the app whose sidebar holds the current entry.
+ */
+const apps: App[] = [
+  {
+    icon: Icons.SquareStack,
+    label: "Work",
+    href: "#/examples/work-items",
+    entries: [
+      { icon: Icons.LayoutGrid, label: "Dashboard", href: "#/examples/dashboard" },
+      { icon: Icons.ListTodo, label: "Work items", href: "#/examples/work-items" },
+      { icon: Icons.Columns3, label: "Board", href: "#/examples/board" },
+    ],
+    sections: [],
+  },
+  {
+    icon: Icons.Wallet,
+    label: "Spend",
+    href: spendHref("spend-overview"),
+    entries: [
+      { icon: Icons.ChartPie, label: "Overview", href: spendHref("spend-overview") },
+      { icon: Icons.ReceiptText, label: "Transactions", href: spendHref("transactions") },
+      { icon: Icons.CreditCard, label: "Cards", href: spendHref("cards") },
+      { icon: Icons.PiggyBank, label: "Budgets", href: spendHref("budgets") },
+      { icon: Icons.FileText, label: "Bills", href: spendHref("bills") },
+      { icon: Icons.HandCoins, label: "Reimbursements", href: spendHref("reimbursements") },
+      { icon: Icons.Plane, label: "Travel", href: spendHref("travel") },
+      { icon: Icons.UserRound, label: "My spend", href: spendHref("my-spend") },
+    ],
+    sections: [
+      {
+        label: "Admin",
+        items: [
+          { icon: Icons.ShieldCheck, label: "Policies", href: spendHref("policies") },
+          { icon: Icons.ListChecks, label: "Approval requests", href: spendHref("approval-requests") },
+          { icon: Icons.CircleDollarSign, label: "USD account", href: spendHref("usd-account-summary") },
+          { icon: Icons.WalletCards, label: "Balance logs", href: "#/examples/tables" },
+          { icon: Icons.History, label: "Activity log", href: spendHref("activity-log") },
+        ],
+      },
+    ],
+  },
+  {
+    icon: Icons.Sparkles,
+    label: "AI",
+    href: "#/examples/ai-chat",
+    entries: [],
+    sections: [],
+    screens: ["AI chat"],
+  },
 ];
-type App = (typeof apps)[number];
 
-/** The app the shell is showing; the switcher changes it and the sidebar is titled after it. */
-const AppContext = React.createContext<{ app: App; setApp: (app: App) => void }>({ app: apps[0]!, setApp: () => {} });
+const appScreens = (app: App) => [...app.entries, ...app.sections.flatMap((s) => s.items)].map((e) => e.label).concat(app.screens ?? []);
 
-/** The playground's other screens, so you can hop between the samples and back to the components without the side panel. */
-const playgroundLinks: { icon: IconComponent; label: string; href: string }[] = [
-  { icon: Icons.ListTodo, label: "Work items", href: "#/examples/work-items" },
-  { icon: Icons.Columns3, label: "Board", href: "#/examples/board" },
-  { icon: Icons.LayoutGrid, label: "Dashboard", href: "#/examples/dashboard" },
-  { icon: Icons.Bot, label: "AI chat", href: "#/examples/ai-chat" },
-  { icon: Icons.Table, label: "Tables", href: "#/examples/tables" },
-];
+/** The sidebar entry the current screen belongs to; the shell sets it, `NavLink` marks it and it picks the app. */
+const CurrentNavContext = React.createContext("Work items");
 
-/** Which sample the URL is in: `#/examples/tables/cards` belongs to Tables. */
-const inSample = (href: string) => window.location.hash === href || window.location.hash.startsWith(`${href}/`);
+function useCurrentApp() {
+  const current = React.useContext(CurrentNavContext);
+  return apps.find((app) => appScreens(app).includes(current)) ?? apps[0]!;
+}
 
 const workspaces = ["Acme Inc.", "Big Events"];
 
 /**
  * The workspace switcher: the workspace's logo and name on one button (filled on hover and while open), opening
- * settings, the workspaces, the apps and the playground's screens.
+ * settings, the workspaces, the apps and the way back to the components.
  */
 function AppSwitcher() {
-  const { app: current, setApp } = React.useContext(AppContext);
+  const current = useCurrentApp();
   const [workspace, setWorkspace] = React.useState(workspaces[0]!);
   return (
     <QUI.Box width="3xs">
@@ -87,7 +140,7 @@ function AppSwitcher() {
           <QUI.MenuGroup>
             <QUI.MenuGroupLabel>Apps</QUI.MenuGroupLabel>
             {apps.map((app) => (
-              <QUI.MenuItem key={app.label} icon={<QUI.Icon icon={app.icon} />} selected={app === current} onClick={() => setApp(app)}>
+              <QUI.MenuItem key={app.label} icon={<QUI.Icon icon={app.icon} />} selected={app === current} onClick={() => (window.location.hash = app.href)}>
                 {app.label}
               </QUI.MenuItem>
             ))}
@@ -95,11 +148,6 @@ function AppSwitcher() {
           <QUI.MenuSeparator />
           <QUI.MenuGroup>
             <QUI.MenuGroupLabel>Playground</QUI.MenuGroupLabel>
-            {playgroundLinks.map((link) => (
-              <QUI.MenuItem key={link.href} icon={<QUI.Icon icon={link.icon} />} selected={inSample(link.href)} onClick={() => (window.location.hash = link.href)}>
-                {link.label}
-              </QUI.MenuItem>
-            ))}
             <QUI.MenuItem icon={<QUI.Icon icon={Icons.Component} />} selected={false} onClick={() => (window.location.hash = "#/components")}>
               Components
             </QUI.MenuItem>
@@ -148,60 +196,8 @@ function TopBar() {
   );
 }
 
-type NavEntry = { icon: IconComponent; label: string; href?: string };
-
-/** The entries above the sections. */
-const mainEntries: NavEntry[] = [
-  { icon: Icons.House, label: "Home" },
-  { icon: Icons.UserRound, label: "Your work" },
-  { icon: Icons.Bot, label: "AI chat", href: "#/examples/ai-chat" },
-  ...adminMainItems.map((i) => ({ icon: i.icon, label: i.label, href: adminHref(i) })),
-];
-
-/** The Work sections: every entry opens a screen — a sample where there is one, an empty one otherwise. */
-export const workSections: { label: string; items: NavEntry[] }[] = [
-  {
-    label: "Workspace",
-    items: [
-      { icon: Icons.BriefcaseBusiness, label: "Projects" },
-      { icon: Icons.Lightbulb, label: "Initiatives" },
-      { icon: Icons.ChartNoAxesCombined, label: "Analytics" },
-      { icon: Icons.LayoutGrid, label: "Dashboards" },
-      { icon: Icons.PenLine, label: "Drafts" },
-      { icon: Icons.Layers, label: "Views" },
-      { icon: Icons.Ellipsis, label: "More" },
-    ],
-  },
-  {
-    label: "Projects",
-    items: [
-      { icon: Icons.Tractor, label: "Core product" },
-      { icon: Icons.Puzzle, label: "Wed Development" },
-      { icon: Icons.Rocket, label: "Plane Pro" },
-      { icon: Icons.Compass, label: "Discover" },
-      { icon: Icons.Ellipsis, label: "All projects" },
-    ],
-  },
-];
-
-/** Every Work entry, for looking one up by its URL slug. */
-export const workEntries: NavEntry[] = [...mainEntries.filter((e) => !e.href), ...workSections.flatMap((s) => s.items)];
-
-/** A Work entry's URL slug, e.g. "Your work" → "your-work". */
-export const workSlug = (label: string) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-
-/** Work entries with a sample screen of their own; the rest open `#/examples/work/<slug>`. */
-const navHrefs: Record<string, string> = {
-  Dashboards: "#/examples/dashboard",
-  Views: "#/examples/board",
-  "Core product": "#/examples/work-items",
-};
-
-/** The nav entry the current screen belongs to; the shell sets it and `NavLink` marks it. */
-const CurrentNavContext = React.createContext("Core product");
-
-/** A sidebar entry: a link to its screen (`href`, or the Work one), marked current when it is the shell's `current`. */
-export function NavLink({ icon, label, href = navHrefs[label] ?? `#/examples/work/${workSlug(label)}` }: { icon: IconComponent; label: string; href?: string }) {
+/** A sidebar entry: a link to its screen, marked current when it is the shell's `current`. */
+function NavLink({ icon, label, href }: NavEntry) {
   const current = React.useContext(CurrentNavContext) === label ? "page" : undefined;
   return (
     <QUI.ListItem>
@@ -215,44 +211,28 @@ const NavigationContext = React.createContext<React.ReactNode>(null);
 
 /** Sidebar navigation; shown docked from lg up and in the ☰ drawer below that, where `endAction` is its close button. */
 function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
-  const { app } = React.useContext(AppContext);
+  const app = useCurrentApp();
   const navigation = React.useContext(NavigationContext);
   return (
     <QUI.NavSidebar title={app.label} endAction={endAction}>
-      <AcmeNavigation extra={navigation} />
-    </QUI.NavSidebar>
-  );
-}
-
-/**
- * The one sidebar every example shares: the main entries, the screen's own lists (`extra`), then the Work and admin
- * sections. The section holding the current entry starts open; when none does, the Work sections do.
- */
-function AcmeNavigation({ extra }: { extra?: React.ReactNode }) {
-  const current = React.useContext(CurrentNavContext);
-  const sections = [
-    ...workSections,
-    ...adminSections.map((section) => ({ label: section.label, items: section.items.map((i) => ({ icon: i.icon, label: i.label, href: adminHref(i) })) })),
-  ];
-  const holder = sections.find((section) => section.items.some((i) => i.label === current));
-  return (
-    <>
-      <QUI.List aria-label="Main">
-        {mainEntries.map((i) => (
-          <NavLink key={i.label} icon={i.icon} label={i.label} href={i.href} />
-        ))}
-      </QUI.List>
-      {extra}
-      {sections.map((section) => (
-        <QUI.ListSection key={section.label} label={section.label} defaultOpen={holder ? holder === section : workSections.includes(section as never)}>
+      {app.entries.length > 0 ? (
+        <QUI.List aria-label={app.label}>
+          {app.entries.map((e) => (
+            <NavLink key={e.label} {...e} />
+          ))}
+        </QUI.List>
+      ) : null}
+      {navigation}
+      {app.sections.map((section) => (
+        <QUI.ListSection key={section.label} label={section.label} defaultOpen>
           <QUI.List aria-label={section.label}>
-            {section.items.map((i) => (
-              <NavLink key={i.label} icon={i.icon} label={i.label} href={i.href} />
+            {section.items.map((e) => (
+              <NavLink key={e.label} {...e} />
             ))}
           </QUI.List>
         </QUI.ListSection>
       ))}
-    </>
+    </QUI.NavSidebar>
   );
 }
 
@@ -283,7 +263,7 @@ export const ViewToolbar = QUI.ViewToolbar;
  * `navigation` adds lists of the screen's own to the shared sidebar.
  */
 export function AcmeShell({
-  current = "Core product",
+  current = "Work items",
   header = <CoreProductHeader />,
   navigation,
   panel = true,
@@ -300,28 +280,25 @@ export function AcmeShell({
   panel?: boolean;
   children: React.ReactNode;
 }) {
-  const [app, setApp] = React.useState<App>(apps[0]!);
   return (
-    <AppContext.Provider value={{ app, setApp }}>
-      <CurrentNavContext.Provider value={current}>
-        <NavigationContext.Provider value={navigation}>
-          <QUI.Box height="full" background="canvas">
-            <QUI.Stack height="full">
-              <TopBar />
-              <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
-                <Sidebar />
-                <QUI.Box as="section" aria-label={current} grow overflow="hidden" {...(panel ? { background: "surface-1", border: "subtle", radius: "lg" } as const : {})}>
-                  <QUI.Stack height="full">
-                    {header}
-                    {children}
-                  </QUI.Stack>
-                </QUI.Box>
-              </QUI.Inline>
-            </QUI.Stack>
-          </QUI.Box>
-        </NavigationContext.Provider>
-      </CurrentNavContext.Provider>
-    </AppContext.Provider>
+    <CurrentNavContext.Provider value={current}>
+      <NavigationContext.Provider value={navigation}>
+        <QUI.Box height="full" background="canvas">
+          <QUI.Stack height="full">
+            <TopBar />
+            <QUI.Inline grow wrap={false} align="stretch" gap="0" paddingX="2" paddingBottom="2">
+              <Sidebar />
+              <QUI.Box as="section" aria-label={current} grow overflow="hidden" {...(panel ? { background: "surface-1", border: "subtle", radius: "lg" } as const : {})}>
+                <QUI.Stack height="full">
+                  {header}
+                  {children}
+                </QUI.Stack>
+              </QUI.Box>
+            </QUI.Inline>
+          </QUI.Stack>
+        </QUI.Box>
+      </NavigationContext.Provider>
+    </CurrentNavContext.Provider>
   );
 }
 

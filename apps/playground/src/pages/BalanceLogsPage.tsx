@@ -488,7 +488,7 @@ export function BalanceLogsPage() {
   }
 
   return (
-    <AcmeShell current={title} header={<PageHeader />}>
+    <AcmeShell current="Balance logs" header={<PageHeader />}>
       <QUI.Box paddingX="4" paddingBottom="3" shrink={false}>
         {toolbar}
       </QUI.Box>

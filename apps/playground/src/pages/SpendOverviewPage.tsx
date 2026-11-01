@@ -136,7 +136,7 @@ export function SpendOverviewPage() {
   const budgetUsed = Math.round((spent / totalBudget) * 100);
   const projected = Math.round((spent / dayOfMonth) * daysInMonth);
   return (
-    <AcmeShell current="Spend overview" header={<PageHeader period={period} onPeriod={setPeriod} />} panel={false}>
+    <AcmeShell current="Overview" header={<PageHeader period={period} onPeriod={setPeriod} />} panel={false}>
       <QUI.Box grow overflow="auto" paddingX="4" paddingBottom="4">
         <QUI.Stack gap="4" maxWidth="6xl" centered>
           <QUI.Grid columns={4} collapseBelow="lg" gap="4">

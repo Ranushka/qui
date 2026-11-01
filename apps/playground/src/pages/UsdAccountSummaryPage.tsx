@@ -355,7 +355,7 @@ function PageHeader() {
 export function UsdAccountSummaryPage() {
   const [tab, setTab] = React.useState("cards");
   return (
-    <AcmeShell current="USD account summary" header={<PageHeader />}>
+    <AcmeShell current="USD account" header={<PageHeader />}>
       <QUI.Box paddingX="4" paddingBottom="4" shrink={false}>
         <BalanceCard />
       </QUI.Box>
