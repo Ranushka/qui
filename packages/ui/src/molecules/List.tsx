@@ -16,7 +16,7 @@ const listVariants = cva("flex w-full flex-col", {
 
 const listItemVariants = cva(
   cn(
-    "group/list-item relative flex h-8 w-full items-center gap-2 rounded-lg pr-2 [--node-size:var(--control-glyph-sm)] [--icon-stroke:1px] [--icon-stroke-effect:non-scaling-stroke]",
+    "group/list-item relative flex h-8 w-full items-center gap-2 rounded-lg pr-2 [--node-size:var(--control-glyph-sm)]",
     "text-secondary transition-colors hover:bg-layer-transparent-hover active:bg-layer-transparent-active",
     // The current page looks like the stage it opens: surface fill and the same hairline, inset so nothing shifts.
     "has-[[aria-current=page]]:bg-surface-1 has-[[aria-current=page]]:font-medium has-[[aria-current=page]]:text-primary has-[[aria-current=page]]:shadow-[inset_0_0_0_1px_var(--border-color-subtle)]",
@@ -40,13 +40,13 @@ const listItemPrimaryClass =
   "flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-start outline-none after:absolute after:inset-0 disabled:cursor-not-allowed";
 
 const listItemDisclosureTriggerClass = cn(
-  "group relative flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm outline-none [--node-size:var(--control-glyph-xs)] [--icon-stroke:1px] [--icon-stroke-effect:non-scaling-stroke]",
+  "group relative flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm outline-none [--node-size:var(--control-glyph-xs)]",
   "before:absolute before:-inset-0.5 before:content-['']",
   "focus-visible:ring-2 focus-visible:ring-accent-strong disabled:cursor-not-allowed data-disabled:cursor-not-allowed"
 );
 
 const listSectionTriggerClass = cn(
-  "group flex w-full items-center justify-between gap-1 rounded-md px-2 py-1 [--node-size:var(--control-glyph-md)] [--icon-stroke:1px] [--icon-stroke-effect:non-scaling-stroke]",
+  "group flex w-full items-center justify-between gap-1 rounded-md px-2 py-1 [--node-size:var(--control-glyph-md)]",
   "text-body-xs-semibold text-tertiary transition-colors cursor-pointer outline-none hover:text-secondary",
   "focus-visible:ring-2 focus-visible:ring-accent-strong disabled:cursor-not-allowed data-disabled:cursor-not-allowed"
 );

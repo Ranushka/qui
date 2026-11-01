@@ -12,17 +12,6 @@
     font-optical-sizing: auto;
     font-kerning: normal;
   }
-
-  /* Icon line weight. --icon-stroke is in the glyph's own 24-unit grid, so the line scales with the icon the way Tabler
-     draws it (2 → 2px at 24, 1.67px at 20, 1.33px at 16) and small icons keep their open counters. A scope that wants one
-     screen width at every size (navigation lists: 1px) also sets --icon-stroke-effect: non-scaling-stroke. Applies whether
-     the glyph sits in Icon or is drawn straight by a component. */
-  .tabler-icon {
-    stroke-width: var(--icon-stroke);
-  }
-  .tabler-icon * {
-    vector-effect: var(--icon-stroke-effect, none);
-  }
 }
 
 /* Categorical chart palette (see organisms/ChartShared.tsx for how the slots were chosen). On :root so
