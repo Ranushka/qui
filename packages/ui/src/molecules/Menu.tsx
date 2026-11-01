@@ -133,6 +133,9 @@ export interface MenuItemProps extends NoClass<Omit<React.ComponentPropsWithoutR
   selected?: boolean;
 }
 
+/** A neutral row's leading icon, muted until the row is highlighted (an `Icon` with its own `tint` keeps it). */
+const menuItemIconClass = "inline-flex shrink-0 text-icon-placeholder group-data-highlighted/item:text-icon-primary";
+
 /** A selectable menu row: icon, label, optional trailing content, and a single-select check gutter. */
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   ({ variant, icon, trailing, selected, children, ...props }, ref) => (
@@ -142,7 +145,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       className={cn(menuRowVariants({ variant }))}
       {...props}
     >
-      {icon}
+      {icon != null ? <span className={variant == null || variant === "neutral" ? menuItemIconClass : "inline-flex shrink-0"}>{icon}</span> : null}
       <span className="min-w-0 flex-1 truncate">{children}</span>
       {selected !== undefined ? (
         <span data-selected={selected ? "" : undefined} className={menuItemIndicatorClass}>

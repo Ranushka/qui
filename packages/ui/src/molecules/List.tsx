@@ -183,11 +183,15 @@ interface ListItemContentProps {
   endIcon?: React.ReactNode;
 }
 
+/** The leading icon, muted until the row is hovered or current (an `Icon` with its own `tint` keeps it). */
+const listItemIconClass =
+  "inline-flex shrink-0 text-icon-placeholder transition-colors group-hover/list-item:text-icon-primary group-has-[[aria-current=page]]/list-item:text-icon-primary";
+
 function ListItemContent({ startIcon, label, count, endIcon }: ListItemContentProps) {
   const showCount = count != null && count !== 0 && count !== "";
   return (
     <>
-      {startIcon}
+      {startIcon != null ? <span className={listItemIconClass}>{startIcon}</span> : null}
       <ListItemLabel>{label}</ListItemLabel>
       {showCount ? <ListItemCounter>{count}</ListItemCounter> : null}
       {endIcon}

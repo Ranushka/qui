@@ -50,17 +50,40 @@ const playgroundLinks: { icon: IconComponent; label: string; href: string }[] = 
 /** Which sample the URL is in: `#/examples/tables/cards` belongs to Tables. */
 const inSample = (href: string) => window.location.hash === href || window.location.hash.startsWith(`${href}/`);
 
-/** The workspace logo, and the app switcher: the current app's icon and name, opening a dropdown of the apps and the playground's screens. */
+const workspaces = ["Acme Inc.", "Big Events"];
+
+/**
+ * The workspace switcher: the workspace's logo and name on one button (filled on hover and while open), opening
+ * settings, the workspaces, the apps and the playground's screens.
+ */
 function AppSwitcher() {
   const { app: current, setApp } = React.useContext(AppContext);
+  const [workspace, setWorkspace] = React.useState(workspaces[0]!);
   return (
-    <QUI.Inline gap="1" wrap={false}>
-      <QUI.WorkspaceAvatar size="lg" alt="Acme Inc." />
+    <QUI.Box width="3xs">
       <QUI.Menu>
         <QUI.MenuTrigger
-          render={<QUI.Button variant="ghost" size="lg" icon={<QUI.Icon icon={current.icon} />} endIcon={<QUI.Icon icon={Icons.ChevronDown} />} label={current.label} />}
+          render={
+            <QUI.Button
+              variant="ghost"
+              size="lg"
+              stretch="full"
+              icon={<QUI.WorkspaceAvatar size="sm" alt={workspace} />}
+              endIcon={<QUI.Icon icon={Icons.ChevronDown} size="sm" />}
+              label={workspace}
+            />
+          }
         />
         <QUI.MenuContent align="start">
+          <QUI.MenuItem icon={<QUI.Icon icon={Icons.Settings} />}>Settings</QUI.MenuItem>
+          <QUI.MenuSeparator />
+          {workspaces.map((name) => (
+            <QUI.MenuItem key={name} icon={<QUI.WorkspaceAvatar size="xs" alt={name} />} selected={name === workspace} onClick={() => setWorkspace(name)}>
+              {name}
+            </QUI.MenuItem>
+          ))}
+          <QUI.MenuItem icon={<QUI.Icon icon={Icons.Plus} />}>New workspace…</QUI.MenuItem>
+          <QUI.MenuSeparator />
           <QUI.MenuGroup>
             <QUI.MenuGroupLabel>Apps</QUI.MenuGroupLabel>
             {apps.map((app) => (
@@ -69,8 +92,6 @@ function AppSwitcher() {
               </QUI.MenuItem>
             ))}
           </QUI.MenuGroup>
-          <QUI.MenuSeparator />
-          <QUI.MenuItem icon={<QUI.Icon icon={Icons.Settings} />}>Settings</QUI.MenuItem>
           <QUI.MenuSeparator />
           <QUI.MenuGroup>
             <QUI.MenuGroupLabel>Playground</QUI.MenuGroupLabel>
@@ -85,14 +106,14 @@ function AppSwitcher() {
           </QUI.MenuGroup>
         </QUI.MenuContent>
       </QUI.Menu>
-    </QUI.Inline>
+    </QUI.Box>
   );
 }
 
 function TopBar() {
   return (
     <QUI.Inline as="header" justify="between" wrap={false} gap="4" paddingX="3" paddingY="2">
-      <QUI.Inline gap="1" wrap={false}>
+      <QUI.Inline gap="1" wrap={false} grow>
         <MobileNav />
         <AppSwitcher />
       </QUI.Inline>
@@ -105,7 +126,7 @@ function TopBar() {
           endSlot={<QUI.Shortcut keys="⌘K" />}
         />
       </QUI.Box>
-      <QUI.Inline gap="2" wrap={false}>
+      <QUI.Inline gap="2" wrap={false} grow justify="end">
         <QUI.Box hideAbove="md">
           <QUI.IconButton variant="ghost" size="lg" aria-label="Search" icon={<QUI.Icon icon={Icons.Search} />} />
         </QUI.Box>

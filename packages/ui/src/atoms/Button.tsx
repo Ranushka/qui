@@ -35,7 +35,7 @@ export interface ButtonProps extends NoClass<Omit<React.ComponentPropsWithoutRef
   iconPosition?: "start" | "end";
   /**
    * A second icon after the label, alongside `icon` — e.g. a `ChevronDown` on a button that opens a
-   * menu, while `icon` names what the button is.
+   * menu, while `icon` names what the button is. With `stretch="full"` it sits at the far edge.
    */
   endIcon?: React.ReactNode;
   /** Shows a spinner in the icon slot, sets `aria-busy`, and makes the button non-interactive. */
@@ -61,7 +61,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {iconPosition === "start" ? iconSlot : null}
-        <span className="truncate">{label}</span>
+        {/* full width with a trailing icon reads as a picker: label starts at the icon, the end icon sits at the far edge */}
+        <span className={cn("truncate", stretch === "full" && endIcon != null && "flex-1 text-start")}>{label}</span>
         {iconPosition === "end" ? iconSlot : null}
         {endIcon}
       </BaseButton>

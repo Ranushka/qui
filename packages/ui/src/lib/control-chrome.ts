@@ -22,9 +22,9 @@ export const controlChromeVariants = cva(
         secondary:
           "shadow-raised-100 border border-strong bg-layer-2 text-secondary hover:bg-layer-2-hover active:bg-layer-2-active disabled:border-subtle disabled:bg-transparent disabled:text-disabled disabled:shadow-none aria-disabled:border-subtle aria-disabled:bg-transparent aria-disabled:text-disabled aria-disabled:shadow-none aria-busy:border-subtle aria-busy:bg-transparent aria-busy:text-disabled aria-busy:shadow-none",
         tertiary:
-          "bg-layer-3 text-secondary hover:bg-layer-3-hover active:bg-layer-3-active disabled:bg-transparent disabled:text-disabled aria-disabled:bg-transparent aria-disabled:text-disabled aria-busy:bg-transparent aria-busy:text-disabled",
+          "bg-layer-3 text-secondary hover:bg-layer-3-hover active:bg-layer-3-active data-popup-open:bg-layer-3-active disabled:bg-transparent disabled:text-disabled aria-disabled:bg-transparent aria-disabled:text-disabled aria-busy:bg-transparent aria-busy:text-disabled",
         ghost:
-          "bg-layer-transparent text-secondary hover:bg-layer-transparent-hover active:bg-layer-transparent-active disabled:bg-transparent disabled:text-disabled aria-disabled:bg-transparent aria-disabled:text-disabled aria-busy:bg-transparent aria-busy:text-disabled",
+          "bg-layer-transparent text-secondary hover:bg-layer-transparent-hover active:bg-layer-transparent-active data-popup-open:bg-layer-transparent-active disabled:bg-transparent disabled:text-disabled aria-disabled:bg-transparent aria-disabled:text-disabled aria-busy:bg-transparent aria-busy:text-disabled",
         danger:
           "bg-danger-primary text-on-color hover:bg-danger-primary-hover active:bg-danger-primary-active disabled:bg-layer-disabled disabled:text-on-color-disabled aria-disabled:bg-layer-disabled aria-disabled:text-on-color-disabled aria-busy:bg-layer-disabled aria-busy:text-on-color-disabled",
         "danger-outline":
