@@ -108,7 +108,7 @@ function Stat({ icon, label, value, caption }: { icon: IconComponent; label: str
         <QUI.Heading level={3} size={3} weight="semibold">
           {value}
         </QUI.Heading>
-        <QUI.Text variant="caption" size="md" color="tertiary">
+        <QUI.Text size="2xs" color="tertiary">
           {caption}
         </QUI.Text>
       </QUI.Stack>
@@ -130,7 +130,7 @@ function BudgetCard({ budget }: { budget: Budget }) {
             </QUI.Text>
             <QUI.Inline gap="1.5" wrap={false}>
               <QUI.Avatar size="2xs" alt={budget.owner} />
-              <QUI.Text variant="caption" size="md" color="tertiary">
+              <QUI.Text size="2xs" color="tertiary">
                 {budget.owner} · {budget.kind} · {budget.period}
               </QUI.Text>
             </QUI.Inline>
@@ -156,13 +156,13 @@ function BudgetCard({ budget }: { budget: Budget }) {
             <QUI.Heading level={3} size={4} weight="semibold" color={left < 0 ? "danger" : "primary"}>
               {left < 0 ? `${aed.format(-left)} over` : `${aed.format(left)} left`}
             </QUI.Heading>
-            <QUI.Text variant="caption" size="md" color="tertiary">
+            <QUI.Text size="2xs" color="tertiary">
               of {aed.format(budget.amount)}
             </QUI.Text>
           </QUI.Stack>
           <QUI.Stack gap="0.5" align="end">
             <QUI.TrendCell values={budget.weekly} good="down" label={`${budget.name} spend per week this period`} />
-            <QUI.Text variant="caption" size="md" color="tertiary">
+            <QUI.Text size="2xs" color="tertiary">
               Weekly spend
             </QUI.Text>
           </QUI.Stack>
@@ -183,7 +183,7 @@ function BudgetCard({ budget }: { budget: Budget }) {
         <QUI.Inline justify="between" gap="2">
           <QUI.Inline gap="1" wrap={false}>
             <QUI.Icon icon={Icons.Bell} size="sm" tint="tertiary" />
-            <QUI.Text variant="caption" size="md" color="tertiary">
+            <QUI.Text size="2xs" color="tertiary">
               Alerts at {budget.alerts.map((a) => `${a}%`).join(", ")}
             </QUI.Text>
           </QUI.Inline>

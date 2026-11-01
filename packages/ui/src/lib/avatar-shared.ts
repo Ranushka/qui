@@ -11,8 +11,8 @@ export type AvatarVariant = (typeof AVATAR_VARIANTS)[number];
 
 /** Initials type ramp per avatar size — shared by the person `Avatar` and `WorkspaceAvatar`. */
 export const avatarInitialsTextClass: Record<AvatarSize, string> = {
-  "2xs": "text-caption-2xs-regular",
-  xs: "text-caption-2xs-regular",
+  "2xs": "text-caption-sm-regular",
+  xs: "text-caption-sm-regular",
   sm: "text-caption-sm-regular",
   md: "text-caption-md-regular",
   lg: "text-body-xs-regular",

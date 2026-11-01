@@ -69,7 +69,7 @@ Inline.displayName = "Inline";
     <QUI.Box grow>
       <QUI.Text maxLines={1}>A long issue title that truncates instead of pushing the actions off the row</QUI.Text>
     </QUI.Box>
-    <QUI.Text variant="caption" color="tertiary">WEB-142</QUI.Text>
+    <QUI.Text size="2xs" color="tertiary">WEB-142</QUI.Text>
   </QUI.Inline>
 </QUI.Stack>
 DOC__ */

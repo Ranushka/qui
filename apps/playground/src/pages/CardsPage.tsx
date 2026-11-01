@@ -104,7 +104,7 @@ function CardDrawer({ card, onClose, onUpdate }: { card: SpendCard | null; onClo
                         <QUI.Text size="sm" color="primary">
                           {t.merchant}
                         </QUI.Text>
-                        <QUI.Text variant="caption" size="md" color="tertiary">
+                        <QUI.Text size="2xs" color="tertiary">
                           {new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(t.date))} · {t.category}
                         </QUI.Text>
                       </QUI.Stack>

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "../lib/cn";
-import { headingStyles, resolveWeight, textColorClass, type FontWeight, type TextColor } from "../lib/typography";
+import { headingStyles, textColorClass, type FontWeight, type TextColor } from "../lib/typography";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -30,7 +30,7 @@ export const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
     return (
       <Tag
         ref={ref}
-        className={cn("m-0", resolveWeight(headingStyles[size ?? level], weight), textColorClass[color], align && alignClass[align], truncate && "truncate")}
+        className={cn("m-0", headingStyles[size ?? level][weight], textColorClass[color], align && alignClass[align], truncate && "truncate")}
         {...props}
       />
     );
@@ -50,7 +50,6 @@ Heading.displayName = "Heading";
     <QUI.Heading level={3} weight="regular">Regular</QUI.Heading>
     <QUI.Heading level={3} weight="medium">Medium</QUI.Heading>
     <QUI.Heading level={3} weight="semibold">Semibold</QUI.Heading>
-    <QUI.Heading level={3} weight="bold">Bold</QUI.Heading>
   </div>
   <QUI.Heading level={2} size={5} color="secondary">An h2 that looks like h5</QUI.Heading>
 </div>
@@ -60,7 +59,7 @@ DOC__ */
 {
   "level": [1, 2, 3, 4, 5, 6],
   "size": [1, 2, 3, 4, 5, 6],
-  "weight": ["regular", "medium", "semibold", "bold"],
+  "weight": ["regular", "medium", "semibold"],
   "color": ["primary", "secondary", "tertiary", "accent", "danger", "success", "warning", "info", "on-color", "inverse", "inherit"],
   "align": ["start", "center", "end"],
   "truncate": "boolean"

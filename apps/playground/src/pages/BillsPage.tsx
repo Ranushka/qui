@@ -690,7 +690,7 @@ function CloseView({ bills, records }: { bills: Bill[]; records: SyncRecord[] })
                         <QUI.Text size="xs" color="primary">
                           {task.owner}
                         </QUI.Text>
-                        <QUI.Text variant="caption" size="md" color="tertiary">
+                        <QUI.Text size="2xs" color="tertiary">
                           Due {task.due}
                         </QUI.Text>
                       </QUI.Stack>

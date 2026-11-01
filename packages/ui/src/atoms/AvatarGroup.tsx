@@ -6,8 +6,8 @@ import { Tooltip } from "./Tooltip";
 import { AvatarGroupContext, type AvatarSize } from "../lib/avatar-shared";
 
 const counterSizeClass: Record<"2xs" | "xs" | "sm", string> = {
-  "2xs": "size-4 border-sm text-caption-2xs-regular",
-  xs: "size-5 border-sm text-caption-2xs-regular",
+  "2xs": "size-4 border-sm text-caption-sm-regular",
+  xs: "size-5 border-sm text-caption-sm-regular",
   sm: "size-6 border-sm text-caption-sm-regular",
 };
 

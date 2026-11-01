@@ -89,7 +89,7 @@ Box.displayName = "Box";
     <QUI.Text>Raised: surface-1 with raised-200 shadow</QUI.Text>
   </QUI.Box>
   <QUI.Box border="subtle" dashed radius="lg" padding="6">
-    <QUI.Text variant="caption" color="tertiary" align="center" as="p">Empty state drop zone</QUI.Text>
+    <QUI.Text size="2xs" color="tertiary" align="center" as="p">Empty state drop zone</QUI.Text>
   </QUI.Box>
   <QUI.Box background="layer-1" border="subtle" radius="lg" overflow="hidden">
     <QUI.Box padding="4">

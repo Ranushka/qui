@@ -75,7 +75,7 @@ function TransactionDrawer({
                 <QUI.Stack gap="1">
                   <QUI.Inline gap="2" wrap={false}>
                     <QUI.Badge size="xs" label={t.category} />
-                    <QUI.Text variant="caption" size="md" color="tertiary">
+                    <QUI.Text size="2xs" color="tertiary">
                       #{t.id}
                     </QUI.Text>
                   </QUI.Inline>

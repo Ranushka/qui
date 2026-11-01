@@ -61,7 +61,7 @@ export function WorkItemCard({
         <Inline justify="between" wrap={false}>
           <Inline gap="1.5" wrap={false}>
             <Icon icon={typeIcon} size="sm" tint="secondary" />
-            <Text variant="caption" color="tertiary" tabularNums>
+            <Text size="2xs" color="tertiary" tabularNums>
               {parentId ? `${parentId} › ${itemId}` : itemId}
             </Text>
           </Inline>
@@ -89,7 +89,7 @@ export function WorkItemCard({
           {subItems > 0 && (
             <Inline gap="1" wrap={false}>
               <Icon icon={ListTree} size="xs" tint="tertiary" />
-              <Text variant="caption" color="tertiary">
+              <Text size="2xs" color="tertiary">
                 {subItems} sub-items
               </Text>
             </Inline>

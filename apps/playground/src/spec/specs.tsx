@@ -221,10 +221,10 @@ export const specs: Spec[] = [
   {
     name: "Heading",
     level: "atoms",
-    axes: { Size: ["1", "2", "3", "4", "5", "6"], Weight: ["regular", "medium", "semibold", "bold"] },
+    axes: { Size: ["1", "2", "3", "4", "5", "6"], Weight: ["regular", "medium", "semibold"] },
     valid: oneAtATime({ Size: "1", Weight: "semibold" }),
     render: (v) => (
-      <QUI.Heading level={Number(v.Size) as 1} size={Number(v.Size) as 1} weight={v.Weight as "bold"}>
+      <QUI.Heading level={Number(v.Size) as 1} size={Number(v.Size) as 1} weight={v.Weight as "semibold"}>
         Heading
       </QUI.Heading>
     ),
@@ -964,7 +964,7 @@ export const specs: Spec[] = [
           v.Center === "true" ? (
             <>
               <QUI.Text size="md" weight="semibold">186</QUI.Text>
-              <QUI.Text variant="caption" size="md" color="tertiary">Customers</QUI.Text>
+              <QUI.Text size="2xs" color="tertiary">Customers</QUI.Text>
             </>
           ) : undefined
         }

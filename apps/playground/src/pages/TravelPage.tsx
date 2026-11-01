@@ -99,7 +99,7 @@ function FlightResult({ offer, exception, selected, onSelect, oneWay }: { offer:
           </QUI.Text>
           <PolicyBadge exception={exception} />
           {exception ? (
-            <QUI.Text variant="caption" size="md" color="warning">
+            <QUI.Text size="2xs" color="warning">
               {exception}
             </QUI.Text>
           ) : null}
@@ -139,7 +139,7 @@ function HotelResult({ hotel, count, exception, selected, onSelect }: { hotel: H
           </QUI.Text>
           <PolicyBadge exception={exception} />
           {exception ? (
-            <QUI.Text variant="caption" size="md" color="warning">
+            <QUI.Text size="2xs" color="warning">
               {exception}
             </QUI.Text>
           ) : null}
@@ -174,7 +174,7 @@ function TripBasket({ flight, hotel, hotelNights, onRemoveFlight, onRemoveHotel,
                   {flight.offer.outbound.from} → {flight.offer.outbound.to}
                   {flight.offer.inbound ? " → " + flight.offer.inbound.to : ""}
                 </QUI.Text>
-                <QUI.Text variant="caption" size="md" color="secondary">
+                <QUI.Text size="2xs" color="secondary">
                   {flight.offer.outbound.airline} · {flight.offer.cabin} · {aed.format(flight.offer.fare)}
                 </QUI.Text>
               </QUI.Stack>
@@ -190,7 +190,7 @@ function TripBasket({ flight, hotel, hotelNights, onRemoveFlight, onRemoveHotel,
                 <QUI.Text size="xs" weight="medium" color="primary">
                   {hotel.offer.name}
                 </QUI.Text>
-                <QUI.Text variant="caption" size="md" color="secondary">
+                <QUI.Text size="2xs" color="secondary">
                   {hotelNights} nights · {aed.format(hotel.offer.nightly * hotelNights)}
                 </QUI.Text>
               </QUI.Stack>
@@ -690,7 +690,7 @@ function TripsView({ trips, setTrips, notice, setNotice }: { trips: Trip[]; setT
                   <QUI.Stack gap="1">
                     <QUI.Inline gap="2" wrap={false}>
                       <QUI.TagCell label={trip.status} color={statusColor[trip.status]} />
-                      <QUI.Text variant="caption" size="md" color="tertiary">
+                      <QUI.Text size="2xs" color="tertiary">
                         Trip #{trip.id}
                       </QUI.Text>
                     </QUI.Inline>

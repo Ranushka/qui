@@ -10,17 +10,12 @@ describe("Text", () => {
     expect(el.className).toBe("text-body-sm-regular");
   });
 
-  it("maps variant/size/weight/color to tokens and keeps size + color together", () => {
-    render(<Text as="p" variant="caption" size="xs" weight="semibold" color="tertiary">meta</Text>);
+  it("maps size/weight/color to tokens and keeps size + color together", () => {
+    render(<Text as="p" size="3xs" weight="semibold" color="tertiary">meta</Text>);
     const el = screen.getByText("meta");
     expect(el.tagName).toBe("P");
-    expect(el.className).toContain("text-caption-xs-semibold");
+    expect(el.className).toContain("text-caption-sm-semibold");
     expect(el.className).toContain("text-tertiary");
-  });
-
-  it("falls back to the nearest lighter weight a style defines", () => {
-    render(<Text size="2xs" weight="bold">tiny</Text>);
-    expect(screen.getByText("tiny").className).toContain("text-body-2xs-semibold");
   });
 
   it("clamps lines", () => {
@@ -38,7 +33,7 @@ describe("Heading", () => {
   });
 
   it("lets visual size differ from level", () => {
-    render(<Heading level={2} size={5} weight="bold">Small</Heading>);
-    expect(screen.getByRole("heading", { level: 2 }).className).toContain("text-h5-bold");
+    render(<Heading level={2} size={5} weight="medium">Small</Heading>);
+    expect(screen.getByRole("heading", { level: 2 }).className).toContain("text-h5-medium");
   });
 });

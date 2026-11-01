@@ -156,7 +156,7 @@ export function ComponentsPage() {
     <QUI.Text>Raised: surface-1 with raised-200 shadow</QUI.Text>
   </QUI.Box>
   <QUI.Box border="subtle" dashed radius="lg" padding="6">
-    <QUI.Text variant="caption" color="tertiary" align="center" as="p">Empty state drop zone</QUI.Text>
+    <QUI.Text size="2xs" color="tertiary" align="center" as="p">Empty state drop zone</QUI.Text>
   </QUI.Box>
   <QUI.Box background="layer-1" border="subtle" radius="lg" overflow="hidden">
     <QUI.Box padding="4">
@@ -237,14 +237,14 @@ export function ComponentsPage() {
   {["Open", "In progress", "Done"].map((title, i) => (
     <QUI.Box key={title} background="layer-1" border="subtle" radius="lg" padding="4">
       <QUI.Stack gap="1">
-        <QUI.Text variant="caption" color="tertiary">{title}</QUI.Text>
+        <QUI.Text size="2xs" color="tertiary">{title}</QUI.Text>
         <QUI.Heading level={4}>{[24, 8, 112][i]}</QUI.Heading>
       </QUI.Stack>
     </QUI.Box>
   ))}
 </QUI.Grid>
           </Section>
-          <Section title="Heading" align="block" props={{"level":[1,2,3,4,5,6],"size":[1,2,3,4,5,6],"weight":["regular","medium","semibold","bold"],"color":["primary","secondary","tertiary","accent","danger","success","warning","info","on-color","inverse","inherit"],"align":["start","center","end"],"truncate":"boolean"}}>
+          <Section title="Heading" align="block" props={{"level":[1,2,3,4,5,6],"size":[1,2,3,4,5,6],"weight":["regular","medium","semibold"],"color":["primary","secondary","tertiary","accent","danger","success","warning","info","on-color","inverse","inherit"],"align":["start","center","end"],"truncate":"boolean"}}>
 <div className="flex w-full flex-col gap-3 p-4">
   <QUI.Heading level={1}>Heading 1</QUI.Heading>
   <QUI.Heading level={2}>Heading 2</QUI.Heading>
@@ -256,7 +256,6 @@ export function ComponentsPage() {
     <QUI.Heading level={3} weight="regular">Regular</QUI.Heading>
     <QUI.Heading level={3} weight="medium">Medium</QUI.Heading>
     <QUI.Heading level={3} weight="semibold">Semibold</QUI.Heading>
-    <QUI.Heading level={3} weight="bold">Bold</QUI.Heading>
   </div>
   <QUI.Heading level={2} size={5} color="secondary">An h2 that looks like h5</QUI.Heading>
 </div>
@@ -307,7 +306,7 @@ export function ComponentsPage() {
     <QUI.Box grow>
       <QUI.Text maxLines={1}>A long issue title that truncates instead of pushing the actions off the row</QUI.Text>
     </QUI.Box>
-    <QUI.Text variant="caption" color="tertiary">WEB-142</QUI.Text>
+    <QUI.Text size="2xs" color="tertiary">WEB-142</QUI.Text>
   </QUI.Inline>
 </QUI.Stack>
           </Section>
@@ -468,26 +467,19 @@ export function ComponentsPage() {
   </div>
 </div>
           </Section>
-          <Section title="Text" align="block" props={{"variant":["body","caption"],"size (body)":["2xs","xs","sm","md"],"size (caption)":["3xs","2xs","xs","sm","md"],"weight":["regular","medium","semibold","bold"],"color":["primary","secondary","tertiary","placeholder","disabled","accent","danger","success","warning","info","link","on-color","inverse","inherit"],"align":["start","center","end"],"maxLines":[1,2,3,4],"tabularNums":"boolean","as":["span","p","div","label","strong","em","small","li","dt","dd","figcaption","legend"]}}>
+          <Section title="Text" align="block" props={{"size":["md","sm","xs","2xs","3xs"],"weight":["regular","medium","semibold"],"color":["primary","secondary","tertiary","placeholder","disabled","accent","danger","success","warning","info","link","on-color","inverse","inherit"],"align":["start","center","end"],"maxLines":[1,2,3,4],"tabularNums":"boolean","as":["span","p","div","label","strong","em","small","li","dt","dd","figcaption","legend"]}}>
 <div className="flex w-full flex-col gap-6 p-4">
   <div className="flex flex-col gap-1">
-    <QUI.Text size="md">Body md — The quick brown fox jumps over the lazy dog.</QUI.Text>
-    <QUI.Text size="sm">Body sm — The quick brown fox jumps over the lazy dog.</QUI.Text>
-    <QUI.Text size="xs">Body xs — The quick brown fox jumps over the lazy dog.</QUI.Text>
-    <QUI.Text size="2xs">Body 2xs — The quick brown fox jumps over the lazy dog.</QUI.Text>
-  </div>
-  <div className="flex flex-col gap-1">
-    <QUI.Text variant="caption" size="md">Caption md — Updated 3 minutes ago</QUI.Text>
-    <QUI.Text variant="caption" size="sm">Caption sm — Updated 3 minutes ago</QUI.Text>
-    <QUI.Text variant="caption" size="xs">Caption xs — Updated 3 minutes ago</QUI.Text>
-    <QUI.Text variant="caption" size="2xs">Caption 2xs — Updated 3 minutes ago</QUI.Text>
-    <QUI.Text variant="caption" size="3xs">Caption 3xs — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text size="md">md · 16 — The quick brown fox jumps over the lazy dog.</QUI.Text>
+    <QUI.Text size="sm">sm · 14 — The quick brown fox jumps over the lazy dog.</QUI.Text>
+    <QUI.Text size="xs">xs · 13 — The quick brown fox jumps over the lazy dog.</QUI.Text>
+    <QUI.Text size="2xs">2xs · 12 — Updated 3 minutes ago</QUI.Text>
+    <QUI.Text size="3xs">3xs · 11 — Updated 3 minutes ago</QUI.Text>
   </div>
   <div className="flex flex-wrap gap-4">
     <QUI.Text weight="regular">Regular</QUI.Text>
     <QUI.Text weight="medium">Medium</QUI.Text>
     <QUI.Text weight="semibold">Semibold</QUI.Text>
-    <QUI.Text weight="bold">Bold</QUI.Text>
   </div>
   <div className="flex flex-wrap gap-4">
     <QUI.Text color="primary">primary</QUI.Text>

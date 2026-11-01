@@ -60,7 +60,7 @@ export function ClaimDrawer({
                 <QUI.Stack gap="1">
                   <QUI.Inline gap="2" wrap={false}>
                     <QUI.TagCell label={claim.status} color={claimStatusColor[claim.status]} />
-                    <QUI.Text variant="caption" size="md" color="tertiary">
+                    <QUI.Text size="2xs" color="tertiary">
                       Claim #{claim.id}
                     </QUI.Text>
                   </QUI.Inline>
@@ -238,7 +238,7 @@ export function NewClaimDialog({
                       onRemove={() => setReceipt(null)}
                     />
                     {show("receipt") ? (
-                      <QUI.Text variant="caption" size="md" color="danger">
+                      <QUI.Text size="2xs" color="danger">
                         {show("receipt")}
                       </QUI.Text>
                     ) : null}

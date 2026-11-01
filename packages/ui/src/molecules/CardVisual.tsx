@@ -91,7 +91,7 @@ export const CardVisual = React.forwardRef<HTMLDivElement, CardVisualProps>(
             <span className={cn("truncate uppercase opacity-90", small ? "text-caption-sm-medium" : "text-caption-md-medium")}>{holder}</span>
             {expiry ? <span className={cn("tabular-nums opacity-75", small ? "text-caption-sm-regular" : "text-caption-md-regular")}>{expiry}</span> : null}
           </span>
-          {network === "visa" ? <span className={cn("italic tracking-tight", small ? "text-body-sm-bold" : "text-h5-bold")}>VISA</span> : <MastercardMark />}
+          {network === "visa" ? <span className={cn("italic tracking-tight", small ? "text-body-sm-semibold" : "text-h5-semibold")}>VISA</span> : <MastercardMark />}
         </span>
       </div>
     );

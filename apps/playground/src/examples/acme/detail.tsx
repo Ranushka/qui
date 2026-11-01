@@ -101,7 +101,7 @@ function Activity({ details }: { details: WorkItemDetails }) {
                 <QUI.Stack gap="1">
                   <QUI.Inline gap="2">
                     <QUI.Text size="xs" weight="medium" color="primary">{comment.who}</QUI.Text>
-                    <QUI.Text variant="caption" color="tertiary">{comment.when}</QUI.Text>
+                    <QUI.Text size="2xs" color="tertiary">{comment.when}</QUI.Text>
                   </QUI.Inline>
                   <QUI.Text as="p" size="sm" color="secondary">{comment.text}</QUI.Text>
                 </QUI.Stack>
@@ -128,7 +128,7 @@ export function WorkItemDetail({ entry, details, onOpenItem }: { entry: WorkItem
       <QUI.Stack gap="3">
         <QUI.Inline gap="1.5" wrap={false}>
           <QUI.Icon icon={typeIcon[item.type]} size="sm" tint="secondary" />
-          <QUI.Text variant="caption" color="tertiary" tabularNums>{item.id}</QUI.Text>
+          <QUI.Text size="2xs" color="tertiary" tabularNums>{item.id}</QUI.Text>
         </QUI.Inline>
         <QUI.Heading level={2} size={3}>{item.title}</QUI.Heading>
         {details.description.map((paragraph, i) => (
@@ -177,7 +177,7 @@ export function WorkItemPeek({
           </QUI.Breadcrumb>
           <QUI.Inline gap="1" wrap={false} shrink={false}>
             <QUI.Box hideBelow="sm">
-              <QUI.Text variant="caption" color="tertiary" tabularNums>
+              <QUI.Text size="2xs" color="tertiary" tabularNums>
                 {position.index + 1} / {position.total}
               </QUI.Text>
             </QUI.Box>

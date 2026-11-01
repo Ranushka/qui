@@ -47,7 +47,7 @@ function Row({ icon, title, detail, trailing }: { icon: QUI.TimelineItem["icon"]
           <QUI.Text size="sm" weight="medium" color="primary" maxLines={1}>
             {title}
           </QUI.Text>
-          <QUI.Text variant="caption" size="md" color="tertiary">
+          <QUI.Text size="2xs" color="tertiary">
             {detail}
           </QUI.Text>
         </QUI.Stack>
@@ -183,7 +183,7 @@ export function MySpendPage() {
                       </QUI.Box>
                     ))}
                     {missing.length > 6 ? (
-                      <QUI.Text variant="caption" size="md" color="tertiary">
+                      <QUI.Text size="2xs" color="tertiary">
                         and {missing.length - 6} more
                       </QUI.Text>
                     ) : null}
@@ -224,13 +224,13 @@ export function MySpendPage() {
                             <QUI.Text size="sm" weight="semibold" color="primary">
                               {aed.format(Math.max(0, card.limit - card.spent))} left
                             </QUI.Text>
-                            <QUI.Text variant="caption" size="md" color="tertiary">
+                            <QUI.Text size="2xs" color="tertiary">
                               of {aed.format(card.limit)} · {card.period.toLowerCase()}
                             </QUI.Text>
                           </QUI.Stack>
                           <QUI.LinearProgress value={Math.min(pct, 100)} variant={pct >= 90 ? "danger" : pct >= 70 ? "warning" : "brand"} aria-label={`${card.nickname} limit used`} showValue={false} />
                           {card.status === "Frozen" ? (
-                            <QUI.Text variant="caption" size="md" color="tertiary">
+                            <QUI.Text size="2xs" color="tertiary">
                               Frozen by finance — ask {myApprover.name} to unfreeze.
                             </QUI.Text>
                           ) : null}

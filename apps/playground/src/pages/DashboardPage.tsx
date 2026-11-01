@@ -235,7 +235,7 @@ function AccountSnapshot() {
             </QUI.Inline>
             <QUI.Stack gap="1" align="start">
               <QUI.Badge size="xs" variant="success" startIcon={<QUI.Icon icon={Icons.TrendingUp} />} label={stat.change} />
-              <QUI.Text variant="caption" size="md" color="tertiary">
+              <QUI.Text size="2xs" color="tertiary">
                 vs last month
               </QUI.Text>
             </QUI.Stack>
@@ -338,7 +338,7 @@ function ToneDonut({ label, data, nameKey, center, caption }: { label: string; d
           <QUI.Text size="md" weight="semibold">
             {center}
           </QUI.Text>
-          <QUI.Text variant="caption" size="md" color="tertiary">
+          <QUI.Text size="2xs" color="tertiary">
             {caption}
           </QUI.Text>
         </>
@@ -369,7 +369,7 @@ function HealthScores() {
             </QUI.Inline>
           ))}
         </QUI.Stack>
-        <QUI.Text variant="caption" size="md" color="tertiary">
+        <QUI.Text size="2xs" color="tertiary">
           Targets vary by contract type.
         </QUI.Text>
       </Panel>
@@ -399,7 +399,7 @@ function SpendTrends() {
           { label: "YoY", value: "39.1%" },
         ].map((metric, i) => (
           <QUI.Stack key={metric.label} gap="0.5">
-            <QUI.Text variant="caption" size="md" color="tertiary">
+            <QUI.Text size="2xs" color="tertiary">
               {metric.label}
             </QUI.Text>
             <QUI.Inline gap="0.5" wrap={false}>
@@ -427,7 +427,7 @@ function SpendTrends() {
         valueFormatter={(value) => `${value}M`}
         showLegend={false}
       />
-      <QUI.Text variant="caption" size="md" color="tertiary">
+      <QUI.Text size="2xs" color="tertiary">
         Month to date, cumulative
       </QUI.Text>
     </Panel>
@@ -441,7 +441,7 @@ function TrendingMetrics() {
         <QUI.Grid columns={4} collapseBelow="md" gap="4">
           {adoption.map((row) => (
             <QUI.Stack key={row.feature} gap="1">
-              <QUI.Text variant="caption" size="md" color="tertiary" maxLines={1}>
+              <QUI.Text size="2xs" color="tertiary" maxLines={1}>
                 {row.feature}
               </QUI.Text>
               <QUI.LinearProgress aria-label={row.feature} size="sm" value={row.value} variant={adoptionVariant(row.value)} />

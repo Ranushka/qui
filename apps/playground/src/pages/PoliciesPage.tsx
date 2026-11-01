@@ -163,7 +163,7 @@ function PolicyDrawer({
                     />
                   </QUI.Box>
                   {submitted && (errors.conditions || errors.approver) ? (
-                    <QUI.Text variant="caption" size="md" color="danger">
+                    <QUI.Text size="2xs" color="danger">
                       {errors.conditions ?? errors.approver}
                     </QUI.Text>
                   ) : null}

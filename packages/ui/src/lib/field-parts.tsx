@@ -39,8 +39,8 @@ export const fieldLabelVariants = cva("inline-flex items-center gap-0.5 text-pri
 export const fieldDescriptionVariants = cva("text-tertiary", {
   variants: {
     size: {
-      md: "text-body-2xs-regular",
-      lg: "text-body-2xs-regular",
+      md: "text-caption-md-regular",
+      lg: "text-caption-md-regular",
       xl: "text-body-xs-regular",
       "2xl": "text-body-xs-regular",
     },
@@ -51,8 +51,8 @@ export const fieldDescriptionVariants = cva("text-tertiary", {
 export const fieldErrorVariants = cva("text-danger-primary", {
   variants: {
     size: {
-      md: "text-body-2xs-regular",
-      lg: "text-body-2xs-regular",
+      md: "text-caption-md-regular",
+      lg: "text-caption-md-regular",
       xl: "text-body-xs-regular",
       "2xl": "text-body-xs-regular",
     },

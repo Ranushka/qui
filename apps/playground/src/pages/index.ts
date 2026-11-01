@@ -4,6 +4,7 @@ import { BoardPage } from "./BoardPage";
 import { ComponentsPage } from "./ComponentsPage";
 import { DashboardPage } from "./DashboardPage";
 import { IconsPage } from "./IconsPage";
+import { TypographyPage } from "./TypographyPage";
 import { WorkItemsPage } from "./WorkItemsPage";
 import { TablesPage } from "./TablesPage";
 import { WorkPage } from "./WorkPage";
@@ -24,6 +25,7 @@ export type PlaygroundPage = {
 export const pages: PlaygroundPage[] = [
   { path: "/components", title: "Components", component: ComponentsPage },
   { path: "/icons", title: "Icons", component: IconsPage },
+  { path: "/typography", title: "Typography", component: TypographyPage },
   { path: "/spec", title: "Spec sheet", component: SpecPage },
   { path: "/examples/work-items", title: "Work items", component: WorkItemsPage, fullBleed: true },
   { path: "/examples/board", title: "Board", component: BoardPage, fullBleed: true },
