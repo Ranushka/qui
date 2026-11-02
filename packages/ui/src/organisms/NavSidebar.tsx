@@ -33,7 +33,7 @@ export function NavSidebar({ title, endAction, action, collapsed = false, onColl
     <ListCollapsedContext.Provider value={collapsed}>
       <Stack height="full" gap="0" {...props}>
         <Box grow overflow="auto">
-          <Stack gap="4" padding="3">
+          <Stack gap="4" padding={collapsed ? "2" : "3"}>
             {collapsed ? null : (
               <Inline justify="between" wrap={false} paddingStart="2">
                 <Heading level={2} size={5}>{title}</Heading>
@@ -45,7 +45,7 @@ export function NavSidebar({ title, endAction, action, collapsed = false, onColl
           </Stack>
         </Box>
         {onCollapsedChange ? (
-          <Box padding="3">
+          <Box padding={collapsed ? "2" : "3"}>
             <List aria-label="Sidebar">
               <ListItem>
                 <ListItemButton
