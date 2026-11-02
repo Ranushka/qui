@@ -160,7 +160,7 @@ export interface ListItemProps extends NoClass<React.HTMLAttributes<HTMLDivEleme
  */
 export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(({ level, density, ...props }, ref) => {
   const collapsed = React.useContext(ListCollapsedContext);
-  return <div ref={ref} className={cn(listItemVariants({ level, density }), collapsed && "w-8 justify-center pr-0 pl-0")} {...props} />;
+  return <div ref={ref} className={cn(listItemVariants({ level, density }), collapsed && "w-8 justify-center pr-0 pl-0 [&_[data-list-item-primary]]:justify-center")} {...props} />;
 });
 ListItem.displayName = "ListItem";
 
