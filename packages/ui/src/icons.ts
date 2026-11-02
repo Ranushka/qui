@@ -42,6 +42,8 @@ import {
   CheckBadgeIcon,
   CheckCircleIcon,
   CheckIcon,
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -196,6 +198,8 @@ export const ChevronDown: Glyph = ChevronDownIcon as Glyph;
 export const ChevronLeft: Glyph = ChevronLeftIcon as Glyph;
 export const ChevronRight: Glyph = ChevronRightIcon as Glyph;
 export const ChevronUp: Glyph = ChevronUpIcon as Glyph;
+export const ChevronsLeft: Glyph = ChevronDoubleLeftIcon as Glyph;
+export const ChevronsRight: Glyph = ChevronDoubleRightIcon as Glyph;
 export const ChevronsUpDown: Glyph = ChevronUpDownIcon as Glyph;
 export const Circle: Glyph = IconCircle as Glyph;
 export const CircleAlert: Glyph = ExclamationCircleIcon as Glyph;

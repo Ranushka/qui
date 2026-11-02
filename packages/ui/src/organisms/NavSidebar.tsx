@@ -3,6 +3,10 @@ import type { NoClass } from "../lib/no-class";
 import { Heading } from "../atoms/Heading";
 import { Inline } from "../atoms/Inline";
 import { Stack } from "../atoms/Stack";
+import { Box } from "../atoms/Box";
+import { Icon } from "../atoms/Icon";
+import { List, ListCollapsedContext, ListItem, ListItemButton } from "../molecules/List";
+import { ChevronsLeft, ChevronsRight } from "../icons";
 
 export interface NavSidebarProps extends NoClass<Omit<React.ComponentPropsWithoutRef<"div">, "title">> {
   /** Name of the app area, e.g. "Work". */
@@ -13,19 +17,49 @@ export interface NavSidebarProps extends NoClass<Omit<React.ComponentPropsWithou
   action?: React.ReactNode;
   /** Navigation: `List`s and `ListSection`s. */
   children: React.ReactNode;
+  /** Icons only: rows keep their icon with the label as a tooltip, sections become dividers, title and action hide. */
+  collapsed?: boolean;
+  /** Pins a Collapse / Expand row to the bottom; called with the new state. Leave out where it can't collapse, e.g. a drawer. */
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-/** Content of an app's side navigation: title (with an optional end control), a primary action, then lists and collapsible sections. */
-export function NavSidebar({ title, endAction, action, children, ...props }: NavSidebarProps) {
+/**
+ * Content of an app's side navigation: title (with an optional end control), a primary action, then lists and
+ * collapsible sections, scrolling between them; with `onCollapsedChange`, a Collapse / Expand row at the bottom.
+ * Fills its container's height.
+ */
+export function NavSidebar({ title, endAction, action, collapsed = false, onCollapsedChange, children, ...props }: NavSidebarProps) {
   return (
-    <Stack gap="4" padding="3" {...props}>
-      <Inline justify="between" wrap={false} paddingStart="2">
-        <Heading level={2} size={5}>{title}</Heading>
-        {endAction}
-      </Inline>
-      {action}
-      {children}
-    </Stack>
+    <ListCollapsedContext.Provider value={collapsed}>
+      <Stack height="full" gap="0" {...props}>
+        <Box grow overflow="auto">
+          <Stack gap="4" padding="3">
+            {collapsed ? null : (
+              <Inline justify="between" wrap={false} paddingStart="2">
+                <Heading level={2} size={5}>{title}</Heading>
+                {endAction}
+              </Inline>
+            )}
+            {collapsed ? null : action}
+            {children}
+          </Stack>
+        </Box>
+        {onCollapsedChange ? (
+          <Box padding="3">
+            <List aria-label="Sidebar">
+              <ListItem>
+                <ListItemButton
+                  aria-expanded={!collapsed}
+                  startIcon={<Icon icon={collapsed ? ChevronsRight : ChevronsLeft} />}
+                  label={collapsed ? "Expand" : "Collapse"}
+                  onClick={() => onCollapsedChange(!collapsed)}
+                />
+              </ListItem>
+            </List>
+          </Box>
+        ) : null}
+      </Stack>
+    </ListCollapsedContext.Provider>
   );
 }
 

@@ -4,10 +4,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import type { NoClass } from "../lib/no-class";
 import { DisclosureIndicator, collapsiblePanelClass } from "../lib/disclosure";
+import { Tooltip } from "../atoms/Tooltip";
 
 /** Marks the elements a `List` roves between (row primaries and opted-in sibling controls). */
 const ROVING_ATTR = "data-list-roving-item";
 const ROOT_ATTR = "data-list-root";
+
+/**
+ * Set by a collapsed `NavSidebar`: rows show only their icon (the label moves to a tooltip and stays the accessible
+ * name), counters and end icons hide, and sections drop their heading for a divider and stay open.
+ */
+export const ListCollapsedContext = React.createContext(false);
 
 const listVariants = cva("flex w-full flex-col", {
   variants: { gap: { px: "gap-px", "0.5": "gap-0.5" } },
@@ -151,9 +158,10 @@ export interface ListItemProps extends NoClass<React.HTMLAttributes<HTMLDivEleme
  * primary). Holds one `ListItemLink`/`ListItemButton` plus optional sibling controls. `level`
  * (1–5) indents nested rows; `density` sets the label/counter text scale.
  */
-export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(({ level, density, ...props }, ref) => (
-  <div ref={ref} className={cn(listItemVariants({ level, density }))} {...props} />
-));
+export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(({ level, density, ...props }, ref) => {
+  const collapsed = React.useContext(ListCollapsedContext);
+  return <div ref={ref} className={cn(listItemVariants({ level, density }), collapsed && "w-8 justify-center pr-0 pl-0")} {...props} />;
+});
 ListItem.displayName = "ListItem";
 
 /** The row label — fills the remaining width and truncates. */
@@ -188,7 +196,15 @@ const listItemIconClass =
   "inline-flex shrink-0 text-icon-placeholder transition-colors group-hover/list-item:text-icon-primary group-has-[[aria-current=page]]/list-item:text-icon-primary";
 
 function ListItemContent({ startIcon, label, count, endIcon }: ListItemContentProps) {
+  const collapsed = React.useContext(ListCollapsedContext);
   const showCount = count != null && count !== 0 && count !== "";
+  if (collapsed)
+    return (
+      <>
+        {startIcon != null ? <span className={listItemIconClass}>{startIcon}</span> : null}
+        <span className="sr-only">{label}</span>
+      </>
+    );
   return (
     <>
       {startIcon != null ? <span className={listItemIconClass}>{startIcon}</span> : null}
@@ -199,6 +215,18 @@ function ListItemContent({ startIcon, label, count, endIcon }: ListItemContentPr
   );
 }
 
+/** In a collapsed sidebar the label is only a tooltip, beside the row. */
+function CollapsedTooltip({ label, children }: { label: React.ReactNode; children: React.ReactElement }) {
+  const collapsed = React.useContext(ListCollapsedContext);
+  return collapsed ? (
+    <Tooltip label={label} side="right">
+      {children}
+    </Tooltip>
+  ) : (
+    children
+  );
+}
+
 export interface ListItemLinkProps extends NoClass<Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "children">>, ListItemContentProps {}
 
 /**
@@ -206,9 +234,11 @@ export interface ListItemLinkProps extends NoClass<Omit<React.AnchorHTMLAttribut
  * with `aria-current="page"`. Keep sibling controls (`ListItemDisclosureTrigger`) outside it.
  */
 export const ListItemLink = React.forwardRef<HTMLAnchorElement, ListItemLinkProps>(({ startIcon, label, count, endIcon, ...props }, ref) => (
-  <a ref={ref} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass)} {...props}>
-    <ListItemContent startIcon={startIcon} label={label} count={count} endIcon={endIcon} />
-  </a>
+  <CollapsedTooltip label={label}>
+    <a ref={ref} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass)} {...props}>
+      <ListItemContent startIcon={startIcon} label={label} count={count} endIcon={endIcon} />
+    </a>
+  </CollapsedTooltip>
 ));
 ListItemLink.displayName = "ListItemLink";
 
@@ -217,9 +247,11 @@ export interface ListItemButtonProps extends NoClass<Omit<React.ButtonHTMLAttrib
 /** A row's primary action — a `<button>` in the list's roving order. Keep sibling controls outside it. */
 export const ListItemButton = React.forwardRef<HTMLButtonElement, ListItemButtonProps>(
   ({ startIcon, label, count, endIcon, type = "button", ...props }, ref) => (
-    <button ref={ref} type={type} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass)} {...props}>
-      <ListItemContent startIcon={startIcon} label={label} count={count} endIcon={endIcon} />
-    </button>
+    <CollapsedTooltip label={label}>
+      <button ref={ref} type={type} {...{ [ROVING_ATTR]: "", "data-list-item-primary": "" }} className={cn(listItemPrimaryClass)} {...props}>
+        <ListItemContent startIcon={startIcon} label={label} count={count} endIcon={endIcon} />
+      </button>
+    </CollapsedTooltip>
   )
 );
 ListItemButton.displayName = "ListItemButton";
@@ -259,17 +291,21 @@ export interface ListSectionProps extends NoClass<Omit<React.ComponentPropsWitho
  * inline-end (pointing inline-end while collapsed, down when open). Drive it with `defaultOpen`
  * or `open` + `onOpenChange`.
  */
-export const ListSection = React.forwardRef<HTMLDivElement, ListSectionProps>(({ label, indicator = true, children, ...props }, ref) => (
-  <BaseCollapsible.Root ref={ref} className={cn("w-full")} {...props}>
-    <BaseCollapsible.Trigger className={listSectionTriggerClass}>
-      {label}
-      {indicator ? <DisclosureIndicator /> : null}
-    </BaseCollapsible.Trigger>
-    <BaseCollapsible.Panel className={collapsiblePanelClass}>
-      <div className="pt-2">{children}</div>
-    </BaseCollapsible.Panel>
-  </BaseCollapsible.Root>
-));
+export const ListSection = React.forwardRef<HTMLDivElement, ListSectionProps>(({ label, indicator = true, children, ...props }, ref) => {
+  const collapsed = React.useContext(ListCollapsedContext);
+  if (collapsed) return <div ref={ref} className="w-full border-t border-subtle pt-4">{children}</div>;
+  return (
+    <BaseCollapsible.Root ref={ref} className={cn("w-full")} {...props}>
+      <BaseCollapsible.Trigger className={listSectionTriggerClass}>
+        {label}
+        {indicator ? <DisclosureIndicator /> : null}
+      </BaseCollapsible.Trigger>
+      <BaseCollapsible.Panel className={collapsiblePanelClass}>
+        <div className="pt-2">{children}</div>
+      </BaseCollapsible.Panel>
+    </BaseCollapsible.Root>
+  );
+});
 ListSection.displayName = "ListSection";
 
 /* __DOC_BLOCK

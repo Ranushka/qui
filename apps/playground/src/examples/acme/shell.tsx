@@ -210,11 +210,19 @@ function NavLink({ icon, label, href }: NavEntry) {
 const NavigationContext = React.createContext<React.ReactNode>(null);
 
 /** Sidebar navigation; shown docked from lg up and in the ☰ drawer below that, where `endAction` is its close button. */
-function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
+function SidebarContent({
+  endAction,
+  collapsed,
+  onCollapsedChange,
+}: {
+  endAction?: React.ReactNode;
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
+}) {
   const app = useCurrentApp();
   const navigation = React.useContext(NavigationContext);
   return (
-    <QUI.NavSidebar title={app.label} endAction={endAction}>
+    <QUI.NavSidebar title={app.label} endAction={endAction} collapsed={collapsed} onCollapsedChange={onCollapsedChange}>
       {app.entries.length > 0 ? (
         <QUI.List aria-label={app.label}>
           {app.entries.map((e) => (
@@ -222,7 +230,8 @@ function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
           ))}
         </QUI.List>
       ) : null}
-      {navigation}
+      {/* a screen's own lists (e.g. chat history) are rows of text, so they leave the icon-only rail */}
+      {collapsed ? null : navigation}
       {app.sections.map((section) => (
         <QUI.ListSection key={section.label} label={section.label} defaultOpen>
           <QUI.List aria-label={section.label}>
@@ -236,10 +245,28 @@ function SidebarContent({ endAction }: { endAction?: React.ReactNode }) {
   );
 }
 
+const COLLAPSED_KEY = "acme-sidebar-collapsed";
+
+/** The docked sidebar (lg up), collapsible to icons; the choice is remembered in this browser. */
 function Sidebar() {
+  const [collapsed, setCollapsed] = React.useState(() => {
+    try {
+      return localStorage.getItem(COLLAPSED_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const onCollapsedChange = (next: boolean) => {
+    setCollapsed(next);
+    try {
+      localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0");
+    } catch {
+      // private window or blocked storage: it just isn't remembered
+    }
+  };
   return (
-    <QUI.Box as="aside" width="3xs" shrink={false} overflow="auto" hideBelow="lg">
-      <SidebarContent />
+    <QUI.Box as="aside" width={collapsed ? undefined : "3xs"} shrink={false} hideBelow="lg">
+      <SidebarContent collapsed={collapsed} onCollapsedChange={onCollapsedChange} />
     </QUI.Box>
   );
 }
